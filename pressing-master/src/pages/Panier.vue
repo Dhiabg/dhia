@@ -105,7 +105,7 @@
 
                   <q-separator vertical />
                   <!-- <q-card-section vertical> -->
-
+                  <!-- 
                   <q-item>
                     <q-item-section avatar>
                       <q-item-label caption>Quantité</q-item-label>
@@ -114,7 +114,7 @@
                     <q-item-section>
                       <q-input type="number" class="inputQte" outlined />
                     </q-item-section>
-                  </q-item>
+                  </q-item> -->
                   <!-- <q-card-section vertical>
                     <q-btn
                       flat
@@ -156,7 +156,7 @@
 
           <q-item-section class="totalcss">Produits :</q-item-section>
           <q-item-section class="totalcss"
-            >{{ this.totalPrice }} TND</q-item-section
+            >{{ this.ProductPrices }} TND</q-item-section
           >
         </q-item>
 
@@ -173,7 +173,7 @@
           </q-item-section>
           <q-item-section class="total">Prix Total :</q-item-section>
           <q-item-section class="total"
-            >{{ this.totalPrice + this.frais_livraison }} TND</q-item-section
+            >{{ this.totalPrice }} TND</q-item-section
           >
         </q-item>
         <q-item>
@@ -255,6 +255,7 @@ export default {
       editDialog: false,
       filter: "",
       totalPrice: 0,
+      ProductPrices: 0,
       frais_livraison: 7,
       categories: [],
       services: [],
@@ -308,6 +309,9 @@ export default {
   },
 
   methods: {
+    prixTotal() {
+      return (this.totalPrice = this.ProductPrices + this.frais_livraison);
+    },
     passerCommande() {
       this.editDialog = true;
     },
@@ -338,12 +342,13 @@ export default {
       this.Panier = JSON.parse(localStorage.getItem("panier"));
       return console.log("Panier :", this.Panier);
     },
-    prixTotal() {
+    prixProduits() {
       for (let elem in this.Panier) {
-        this.totalPrice = this.totalPrice + parseFloat(this.Panier[elem].prix);
+        this.ProductPrices =
+          this.ProductPrices + parseFloat(this.Panier[elem].prix);
         console.log(elem.prix);
       }
-      return this.totalPrice;
+      return this.ProductPrices;
     }
   },
   computed: {},
@@ -351,6 +356,7 @@ export default {
 
   async mounted() {
     await this.getPanier();
+    await this.prixProduits();
     await this.prixTotal();
     await this.getAllCategories();
     await this.getAllServices();

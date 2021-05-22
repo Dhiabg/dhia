@@ -4,7 +4,9 @@ const Schema = mongoose.Schema;
 const commandes = new Schema({
   createdAt: { type: Date, default: Date.now },
   client: { type: Schema.Types.ObjectId, ref: "Client" },
-  livreur: { type: Schema.Types.ObjectId, ref: "Livreur" },
+  importer_par: { type: Schema.Types.ObjectId, ref: "Livreur" },
+
+  livrer_par: { type: Schema.Types.ObjectId, ref: "Livreur" },
   avance: { type: String },
   rest: { type: String },
   prixTotal: { type: String },

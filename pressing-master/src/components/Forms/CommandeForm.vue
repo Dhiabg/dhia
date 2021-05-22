@@ -76,11 +76,37 @@
         </q-item-section>
       </q-item>
       <br />
+
       <div>
         <label class="title2">
-          Livreur
+          Client :
         </label>
-        <select v-model="commande.livreur">
+        <select v-model="commande.client">
+          <option v-for="cl in clients" :key="cl._id" :value="cl._id">
+            {{ cl.nom }} {{ cl.prenom }}
+          </option>
+        </select>
+      </div>
+      <br />
+      <label class="title2"> Livreur : </label>
+      <br />
+      <br />
+      <div>
+        <label class="title2">
+          Importer par :
+        </label>
+        <select v-model="commande.importer_par">
+          <option v-for="liv in this.livreurs" :key="liv._id" :value="liv._id">
+            {{ liv.nom }} {{ liv.prenom }}
+          </option>
+        </select>
+      </div>
+      <br />
+      <div>
+        <label class="title2">
+          Livrer par :
+        </label>
+        <select v-model="commande.livrer_par">
           <option v-for="liv in this.livreurs" :key="liv._id" :value="liv._id">
             {{ liv.nom }} {{ liv.prenom }}
           </option>
@@ -89,16 +115,7 @@
         <br />
         <br />
       </div>
-      <div>
-        <label class="title2">
-          clients
-        </label>
-        <select v-model="commande.client">
-          <option v-for="cl in clients" :key="cl._id" :value="cl._id">
-            {{ cl.nom }} {{ cl.prenom }}
-          </option>
-        </select>
-      </div>
+
       <br />
 
       <!-- <q-select

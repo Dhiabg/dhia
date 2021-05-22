@@ -6,7 +6,8 @@ const route = express.Router();
 route.post("/", async (req, res) => {
   const {
     client,
-    livreur,
+    importer_par,
+    livrer_par,
     avance,
     rest,
     prixTotal,
@@ -23,7 +24,8 @@ route.post("/", async (req, res) => {
   date2.setDate(date2.getDate() + 3);
   let Commandes = {};
   Commandes.client = client;
-  Commandes.livreur = livreur;
+  Commandes.importer_par = importer_par;
+  Commandes.livrer_par = livrer_par;
   Commandes.avance = avance;
   Commandes.rest = rest;
   Commandes.prixTotal = prixTotal;

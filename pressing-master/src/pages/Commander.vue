@@ -283,11 +283,13 @@ export default {
   },
   methods: {
     ajoutPanier(element) {
-      this.panier = JSON.parse(localStorage.getItem("panier"));
+      if (localStorage.getItem("panier")) {
+        this.panier = JSON.parse(localStorage.getItem("panier"));
 
-      for (let i in this.panier) {
-        if (element._id === this.panier[i]._id) {
-          this.ajoutTest = false;
+        for (let i in this.panier) {
+          if (element._id === this.panier[i]._id) {
+            this.ajoutTest = false;
+          }
         }
       }
       if (element.etat === "Actif" && this.ajoutTest) {
