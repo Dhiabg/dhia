@@ -31,6 +31,10 @@ route.post("/register", async (req, res) => {
       imageUrl,
       etat,
     } = req.body;
+    let date = new Date()
+      .toISOString()
+      .replace(/T/, " ") // replace T with a space
+      .replace(/\..+/, ""); // delete the dot and everything after
     await bcrypt.hash(password, 8).then((hashedPassword) => {
       const Livreurs = {};
       Livreurs.nom = nom;
@@ -45,6 +49,7 @@ route.post("/register", async (req, res) => {
       Livreurs.telephone = telephone;
       Livreurs.imageUrl = imageUrl;
       Livreurs.etat = etat;
+      Livreurs.createdAt = date;
 
       let livreursModel = new livreurs(Livreurs);
       livreursModel.save();

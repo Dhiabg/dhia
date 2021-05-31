@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const config = require("../routes/config");
 
 const livreurs = new Schema({
-  createdAt: { type: Date, default: Date.now },
+  createdAt: { type: Date },
   nom: { type: String },
   prenom: { type: String },
   email: { type: String },

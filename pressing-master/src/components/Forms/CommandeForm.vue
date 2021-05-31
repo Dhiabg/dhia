@@ -2,10 +2,37 @@
   <q-card class="mydialog">
     <q-form class="q-pa-md bg-white text-black" ref="myForm">
       <br />
-      <label class="title">
-        Finaliser la commande :
+      <label class="title2">
+        Finaliser la commande
       </label>
       <br />
+      <br />
+      <q-item>
+        <q-item-section>
+          <label class="title"> Paiement : </label>
+        </q-item-section>
+        <q-item-section>
+          <q-select
+            style="width:250px;margin-left:-120px"
+            label="Moyen de paiement"
+            outlined
+            color="secondary"
+            v-model="commande.MoyenPaiement"
+            :options="optionsPaiement"
+          >
+            <template v-slot:prepend>
+              <div class="row items-center all-pointer-events">
+                <q-icon
+                  class="q-mr-xs"
+                  color="secondary"
+                  size="20px"
+                  name="account_box"
+                />
+              </div>
+            </template>
+          </q-select>
+        </q-item-section>
+      </q-item>
       <br />
       <q-item>
         <q-item-section>
@@ -77,9 +104,11 @@
       </q-item>
       <br />
 
+      <br />
+
       <div>
-        <label class="title2">
-          Client :
+        <label class="title">
+          Choisir le client :
         </label>
         <select v-model="commande.client">
           <option v-for="cl in clients" :key="cl._id" :value="cl._id">
@@ -88,11 +117,11 @@
         </select>
       </div>
       <br />
-      <label class="title2"> Livreur : </label>
-      <br />
-      <br />
-      <div>
-        <label class="title2">
+      <!-- <label class="title"> Livreur : </label>
+      <br /> -->
+      <!-- <br /> -->
+      <!-- <div>
+        <label class="title">
           Importer par :
         </label>
         <select v-model="commande.importer_par">
@@ -100,11 +129,11 @@
             {{ liv.nom }} {{ liv.prenom }}
           </option>
         </select>
-      </div>
+      </div> -->
       <br />
       <div>
-        <label class="title2">
-          Livrer par :
+        <label class="title">
+          Choisir le livreur :
         </label>
         <select v-model="commande.livrer_par">
           <option v-for="liv in this.livreurs" :key="liv._id" :value="liv._id">
@@ -165,15 +194,15 @@
           outline
           style="margin-right: 15px"
           rounded
+          glossy
           @click="onAdd()"
-          color="blue"
+          color="secondary"
         />
 
         <q-btn
           @click="onCancel()"
           label="Annuler"
           style="margin-right: 15px"
-          outline
           rounded
           v-close-popup
           color="red"
@@ -194,6 +223,7 @@ export default {
       livreurs: [],
       clients: [],
       produitsID: [],
+      optionsPaiement: ["Espéces", "Chéque Bancaire", "Carte Bancaire"],
       prixTotal: null,
       commande: {},
       rest: 0,
@@ -208,6 +238,15 @@ export default {
     },
 
     ajoutProd() {
+      let com = {};
+      let QteCmd = JSON.parse(localStorage.getItem("qtecmd"));
+      for (let i in QteCmd) {
+        com.produit = i;
+        com.quantite = QteCmd[i];
+        this.produitsID.push(com);
+        com = {};
+      }
+      this.commande.produits = this.produitsID;
       this.commande.rest = this.rest;
       this.commande.avance = this.avance;
       this.commande.prixTotal = this.prix;
@@ -217,10 +256,10 @@ export default {
         this.commande.etatPaiement = "Non Payer";
       }
       this.commande.etatLivraison = "Non Livrer";
-      for (let el in this.produitPanier) {
-        this.produitsID.push(this.produitPanier[el]._id);
-      }
-      this.commande.produits = this.produitsID;
+      //   for (let el in this.produitPanier) {
+      //     this.produitsID.push(this.produitPanier[el]._id);
+      //   }
+      //   this.commande.produits = this.produitsID;
     },
     async getAllClients() {
       let res = await this.$axios.get("/client");
@@ -259,6 +298,8 @@ export default {
     await console.log("panier:", this.produitPanier);
     await this.getAllClients();
     await this.getAllLivreurs();
+    let QteCmd = JSON.parse(localStorage.getItem("qtecmd"));
+    console.log("qtecmd :", QteCmd);
   }
 };
 </script>
@@ -269,25 +310,25 @@ export default {
 }
 .title2 {
   color: rgb(0, 0, 0);
-  font-family: monospace;
+  font-weight: bold;
+  font-family: "Courier New", Courier, monospace;
   font-size: large;
 }
 .mydialog {
-  width: 700px;
+  width: 760px;
   padding: 15px;
-  height: 400px;
+  height: 650px;
   background-color: white;
 }
 select {
-  width: 100%;
+  width: 170px;
+  height: 50px;
   color: rgb(0, 0, 0);
-  max-width: 150px;
-  border: 1px solid rgb(2, 78, 2);
-  border-radius: 5.25em;
+  border: 1px solid #009688;
+  border-radius: 0.25em;
   padding: 0.25em 0.5em;
   font-size: 0.9rem;
   cursor: pointer;
-  line-height: 1.1;
   background-color: rgb(255, 255, 255);
 }
 </style>

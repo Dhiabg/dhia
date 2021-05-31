@@ -287,7 +287,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 .mydialog {
   width: 700px;
   padding: 25px;

@@ -87,8 +87,9 @@
         rounded
         outlined
         color="secondary"
-        type="mail"
-        :offset="[0, 8]"
+        type="email"
+        lazy-rules
+        :rules="[val => (val && val.length > 0) || 'Please type something']"
         v-model="clientCopy.email"
         label=""
       >
@@ -287,7 +288,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 .mydialog {
   width: 700px;
   padding: 25px;

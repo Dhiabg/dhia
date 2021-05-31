@@ -1,8 +1,10 @@
 <template>
   <q-page vertical class="q-pa-lg">
     <br />
-
-    <h4 align="center">Récapitulatif de mon panier</h4>
+    <q-btn label="click me" @click="price()" />
+    <h4 align="center">
+      Récapitulatif de mon panier
+    </h4>
 
     <br />
     <br />
@@ -14,6 +16,7 @@
         :bar-style="barStyle"
       >
         <q-table
+          v-if="Panier.length > 0"
           :data="Panier"
           :columns="columns"
           row-key="_id"
@@ -105,25 +108,22 @@
 
                   <q-separator vertical />
                   <!-- <q-card-section vertical> -->
-                  <!-- 
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-item-label caption>Quantité</q-item-label>
-                    </q-item-section>
+                  <keep-alive>
+                    <q-item>
+                      <q-item-section avatar>
+                        <q-item-label caption>Quantité</q-item-label>
+                      </q-item-section>
 
-                    <q-item-section>
-                      <q-input type="number" class="inputQte" outlined />
-                    </q-item-section>
-                  </q-item> -->
-                  <!-- <q-card-section vertical>
-                    <q-btn
-                      flat
-                      round
-                      icon="delete_forever"
-                      @click="deleteFromPanier(props.row)"
-                      class="iconitem"
-                    />
-                  </q-card-section> -->
+                      <q-item-section>
+                        <q-input
+                          v-model="QteCmd[props.row._id]"
+                          type="number"
+                          class="inputQte"
+                          outlined
+                        />
+                      </q-item-section>
+                    </q-item>
+                  </keep-alive>
                   <q-item-section top side>
                     <div class="text-grey-8 q-gutter-xs">
                       <q-btn
@@ -141,6 +141,9 @@
             </q-card>
           </template>
         </q-table>
+        <div v-else>
+          Panier vide
+        </div>
       </q-scroll-area>
     </div>
 
@@ -155,9 +158,10 @@
           </q-item-section> -->
 
           <q-item-section class="totalcss">Produits :</q-item-section>
-          <q-item-section class="totalcss"
+          <!-- <q-item-section class="totalcss"
             >{{ this.ProductPrices }} TND</q-item-section
-          >
+          > -->
+          <q-item-section class="totalcss">{{ prixProd }} TND</q-item-section>
         </q-item>
 
         <q-item>
@@ -172,9 +176,7 @@
             <q-icon color="green" name="attach_money" />
           </q-item-section>
           <q-item-section class="total">Prix Total :</q-item-section>
-          <q-item-section class="total"
-            >{{ this.totalPrice }} TND</q-item-section
-          >
+          <q-item-section class="total">{{ prixTotal() }} TND</q-item-section>
         </q-item>
         <q-item>
           <q-item-section>
@@ -250,7 +252,6 @@ export default {
         page: 1,
         rowsPerPage: 100
       },
-      quantite: [],
       selected: [],
       editDialog: false,
       filter: "",
@@ -258,8 +259,10 @@ export default {
       ProductPrices: 0,
       frais_livraison: 7,
       categories: [],
+      prixProd: 0,
       services: [],
       Panier: [],
+      QteCmd: [],
       columns: [
         {
           name: "imageUrl",
@@ -309,10 +312,40 @@ export default {
   },
 
   methods: {
+    async price() {
+      this.prixProd = 0;
+      for (let i in this.QteCmd) {
+        let res = await this.$axios.get(`/produit/${i}`);
+        let produ = res.data;
+        this.prixProd =
+          this.prixProd + parseFloat(produ.prix) * parseInt(this.QteCmd[i]);
+      }
+      // console.log("prix prod : ", this.prixProd);
+      return this.prixProd;
+    },
+    // for (let el in this.Panier) {
+    //   this.prixProd =
+    //     this.prixProd +
+    //     parseFloat(this.Panier[el].prix) *
+    //       parseFloat(this.QteCmd[this.Panier[el]._id]);
+    // }
+    // console.log(this.prixProd);
+    // return this.prixProd;
+    // },
+    // quantite() {
+    //   if (localStorage.getItem("panier")) {
+    //     this.Panier = JSON.parse(localStorage.getItem("panier"));
+    //     this.Panier.forEach(el => {
+    //       this.QteCmd[el._id] = 1;
+    //     });
+    //     console.log("qtecmd : ", this.QteCmd);
+    //   }
+    // },
     prixTotal() {
-      return (this.totalPrice = this.ProductPrices + this.frais_livraison);
+      return (this.totalPrice = this.prixProd + this.frais_livraison);
     },
     passerCommande() {
+      localStorage.setItem("qtecmd", JSON.stringify(this.QteCmd));
       this.editDialog = true;
     },
     deleteFromPanier(_id) {
@@ -338,28 +371,51 @@ export default {
       });
       this.services = { ...services };
     },
+    // getQteCmd() {
+    //   if (localStorage.getItem("qtecmd")) {
+    //     this.QteCmd = localStorage.getItem("qtecmd");
+    //     //   console.log("qtecmd : ", this.QteCmd);
+    //     //   this.panier.forEach(el => {
+    //     //     this.QteCmd[el._id] = 1;
+    //     //   });
+    //     //   console.log("qtecmd : ", this.QteCmd);
+    //   }
+    // },
+
     getPanier() {
       this.Panier = JSON.parse(localStorage.getItem("panier"));
       return console.log("Panier :", this.Panier);
-    },
-    prixProduits() {
-      for (let elem in this.Panier) {
-        this.ProductPrices =
-          this.ProductPrices + parseFloat(this.Panier[elem].prix);
-        console.log(elem.prix);
-      }
-      return this.ProductPrices;
     }
   },
-  computed: {},
+  // prixProduits() {
+  //   for (let elem in this.Panier) {
+  //     this.ProductPrices =
+  //       this.ProductPrices + parseFloat(this.Panier[elem].prix);
+  //     console.log(elem.prix);
+  //   }
+  //   return this.ProductPrices;
+  // }
+  computed() {
+    this.price();
+    this.prixTotal();
+  },
   watch: {},
 
+  async created() {
+    //await this.getQteCmd();
+  },
   async mounted() {
+    //await console.log(this.QteCmd);
     await this.getPanier();
-    await this.prixProduits();
-    await this.prixTotal();
+    // await this.price();
+    //  await this.getQteCmd();
+    //await this.prixProduits();
+    // await this.prixTotal();
     await this.getAllCategories();
     await this.getAllServices();
+    this.QteCmd = JSON.parse(localStorage.getItem("qtecmd"));
+    await this.price();
+    await console.log("qtecmd : ", this.QteCmd);
   }
 };
 </script>

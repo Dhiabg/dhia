@@ -3,17 +3,16 @@
     <!-- <q-card-section class="bg-primary text-white">-->
     <h4>Clients</h4>
     <!-- </q-card-section> -->
+    <q-separator style="margin-bottom:10px;" color="black" />
 
     <div>
       <q-btn
         align="left"
         glossy
         outline
-        rounded
         v-close-popup
         text-color="primary"
         label="Ajouter un client"
-        color="white"
         @click="addClient"
         :disable="selected.length > 0"
       ></q-btn>
@@ -23,6 +22,8 @@
           outline
           rounded
           v-close-popup
+          style="margin-right:30px"
+          size="13px"
           glossy
           label="Modifier"
           color="green"
@@ -31,6 +32,7 @@
         ></q-btn>
         <q-btn
           align="right"
+          size="13px"
           outline
           glossy
           rounded
@@ -47,7 +49,7 @@
 
     <q-space />
     <br />
-    <div>
+    <div align="right">
       <q-input
         class="searchy"
         dense
@@ -63,7 +65,8 @@
     <template class="q-pa-md">
       <q-table
         :filter="filter"
-        separator="horizontal"
+        title="Liste des clients"
+        separator="cell"
         :data="clients"
         :columns="columns"
         row-key="_id"
@@ -73,6 +76,13 @@
         hide-pagination
         color="secondary"
       >
+        <!-- <template v-slot:no-data="{ icon, message, filter }">
+          <div class="full-width row flex-center text-accent q-gutter-sm">
+            <q-icon size="2em" name="sentiment_dissatisfied" />
+            <span> Well this is sad... {{ message }}</span>
+            <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
+          </div>
+        </template> -->
         <!-- <template v-slot:top-right>
           <q-input
             class="searchy"
@@ -86,10 +96,10 @@
           </q-input>
         </template> -->
       </q-table>
-      <div class="row justify-center q-mt-md">
+      <div class="row justify-center q-mt-md" style="margin-top:30px">
         <q-pagination
           v-model="pagination.page"
-          color="secondary"
+          color="grey"
           :max="pagesNumber"
           size="sm"
         />
@@ -207,19 +217,19 @@ export default {
       }
     },
     async deleteClient() {
-      if (!this.selected[0]._id) {
-        return this.$q.notify({
-          color: "warning",
-          message: "no client selected"
-        });
-      }
-      this.selected.forEach(element => {
+      // if (!this.selected[0]._id) {
+      //   return this.$q.notify({
+      //     color: "warning",
+      //     message: "no client selected"
+      //   });
+      // }
+      await this.selected.forEach(element => {
         this.$axios.delete(`/client/delete/${element._id}`);
       });
+
       window.location.reload(true);
 
-      this.$emit("updated");
-      await this.getAll();
+      // await this.getAll();
     },
     EditClient() {
       if (!this.selected[0]._id) {
@@ -249,10 +259,9 @@ export default {
 }
 h4 {
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
-  font-size: 2.37em;
-  margin-top: 0.33em;
-  color: #1a037e;
-  margin-bottom: 1em;
+  font-size: 2em;
+  margin-top: 0.5em;
+  margin-bottom: 0.15em;
   margin-left: 0;
   margin-right: 0;
   letter-spacing: 3px;
@@ -263,7 +272,7 @@ h4 {
 
 .q-table__top,
 thead tr:first-child th
-  background-color: darkblue,
-  color: #fff,
-  font: 100% Helvetica, sans-serif
+  font-size: 15px,
+  color: darkblue,
+  font: monospace
 </style>

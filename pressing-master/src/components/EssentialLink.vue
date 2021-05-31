@@ -34,7 +34,7 @@ export default {
 </script>
 <style scoped>
 .qtem {
-  font-size: 13px;
+  font-size: 12.5px;
   color: rgb(255, 255, 255);
   font-family: monospace;
   background-color: rgba(17, 24, 39, 1);

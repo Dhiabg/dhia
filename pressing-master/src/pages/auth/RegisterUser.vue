@@ -149,6 +149,9 @@ export default {
       //accept: false
     };
   },
+  created() {
+    localStorage.removeItem("panier");
+  },
   methods: {
     onReset() {
       this.register.prenom = null;

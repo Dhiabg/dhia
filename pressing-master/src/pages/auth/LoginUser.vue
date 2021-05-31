@@ -154,6 +154,9 @@ export default {
       this.login.password = null;
       // this.accept = false;
     }
+  },
+  created() {
+    localStorage.removeItem("token");
   }
 };
 </script>

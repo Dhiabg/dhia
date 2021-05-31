@@ -277,6 +277,7 @@ export default {
       cat: [],
       ajoutTest: true,
       serv: [],
+      QteCmd: [],
       panier: [],
       editDialog: false
     };
@@ -294,6 +295,33 @@ export default {
       }
       if (element.etat === "Actif" && this.ajoutTest) {
         this.panier.push(element);
+        let Qtecmd = {};
+        this.panier.forEach(el => {
+          Qtecmd[el._id] = 1;
+        });
+        this.QteCmd = { ...Qtecmd };
+
+        // this.panier.forEach(el => {
+        //   this.QteCmd[el._id] = 1;
+        // });
+        localStorage.setItem("qtecmd", JSON.stringify(this.QteCmd));
+        console.log("qtecmd : ", this.QteCmd);
+        // console.log("aa", this.QteCmd);
+        // if (localStorage.getItem("qtecmd")) {
+        //   this.QteCmd = localStorage.getItem("qtecmd");
+        //   console.log(this.QteCmd);
+        // }
+
+        //  this.QteCmd[element._id] = 1;
+
+        // this.panier.forEach(el => {
+        //   this.QteCmd[el._id] = 1;
+        // });
+        // console.log("qtecmd : ", this.QteCmd);
+        // localStorage.setItem("qtecmd", this.QteCmd);
+        //  localStorage.setItem("qtecmd", this.QteCmd);
+
+        //console.log(this.QteCmd);
         console.log(this.panier);
         localStorage.setItem("panier", JSON.stringify(this.panier));
         return this.$q.notify({
@@ -349,16 +377,16 @@ export default {
       });
       this.services = { ...services };
     },
-    addProduit() {
-      if (this.selected[0]) {
-        return this.$q.notify({
-          color: "warning",
-          message: "produit selected"
-        });
-      } else {
-        this.editDialog = true;
-      }
-    },
+    // addProduit() {
+    //   if (this.selected[0]) {
+    //     return this.$q.notify({
+    //       color: "warning",
+    //       message: "produit selected"
+    //     });
+    //   } else {
+    //     this.editDialog = true;
+    //   }
+    // },
     async deleteFromPanier() {
       this.selected.forEach(element => {
         this.$axios.delete(`/produit/delete/${element._id}`);
@@ -375,9 +403,22 @@ export default {
       }
       this.editDialog = true;
     },
+    // getQteCmd() {
+    //   if (localStorage.getItem("qtecmd")) {
+    //     this.QteCmd = localStorage.getItem("qtecmd");
+    //     console.log("qtecmd : ", this.QteCmd);
+    //   }
+    //   console.log("qtecmd : ", this.QteCmd);
+    // },
     getPanier() {
       if (JSON.parse(localStorage.getItem("panier"))) {
-        return (this.panier = JSON.parse(localStorage.getItem("panier")));
+        this.panier = JSON.parse(localStorage.getItem("panier"));
+
+        //     this.panier.forEach(el => {
+        //       this.QteCmd[el._id] = 1;
+        //     });
+        //     console.log("qtecmd : ", this.QteCmd);
+        //   }
       }
     }
   },
@@ -400,8 +441,8 @@ export default {
     await this.getAllCategories();
     await this.getCategories();
     await this.getPanier();
-
-    // await console.log("panier : ", this.panier);
+    //  await this.getQteCmd();
+    await console.log("panier : ", this.panier);
   }
 };
 

@@ -13,15 +13,24 @@ route.post("/", async (req, res) => {
     prixTotal,
     etatPaiement,
     etatLivraison,
-    dateLivraison,
+    MoyenPaiement,
     produits,
   } = req.body;
   let date = new Date()
     .toISOString()
     .replace(/T/, " ") // replace T with a space
     .replace(/\..+/, ""); // delete the dot and everything after
-  let date2 = new Date();
-  date2.setDate(date2.getDate() + 3);
+  var someDate = new Date();
+
+  var numberOfDaysToAdd = 2;
+  someDate.setDate(someDate.getDate() + numberOfDaysToAdd);
+  // var produits = {
+  //   produit: req.body.produit,
+  //   quantite: req.body.quantite,
+  // };
+  // var date2 = new Date();
+  // var yesterday = date  1000 * 60 * 60 * 24 * 2; // current date's milliseconds - 1,000 ms * 60 s * 60 mins * 24 hrs * (# of days beyond one to go back)
+  // yesterday = new Date(yesterday);
   let Commandes = {};
   Commandes.client = client;
   Commandes.importer_par = importer_par;
@@ -31,10 +40,13 @@ route.post("/", async (req, res) => {
   Commandes.prixTotal = prixTotal;
   Commandes.etatPaiement = etatPaiement;
   Commandes.etatLivraison = etatLivraison;
-  Commandes.dateLivraison = dateLivraison;
   Commandes.produits = produits;
+  Commandes.MoyenPaiement = MoyenPaiement;
   Commandes.createdAt = date;
-  commandes.dateLivraison = date2;
+  Commandes.dateLivraison = someDate;
+  // .toISOString()
+  // .replace(/T/, " ") // replace T with a space
+  // .replace(/\..+/, "");
 
   let commandesModel = new commandes(Commandes);
   await commandesModel.save();

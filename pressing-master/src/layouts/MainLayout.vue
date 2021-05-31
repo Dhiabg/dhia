@@ -16,23 +16,25 @@
             Le Pressing
           </div>
         </q-toolbar-title>
-        <q-btn
+        <!-- <q-btn
           @click="logUserOut()"
           class="butcol"
           rounded
           glossy
           color="red"
+          size="9px"
+          style="margin-right:35px"
           icon-right="highlight_off"
           label="Déconnecter"
-        />
+        /> -->
         <q-btn
           to="/panier"
           flat
           dense
           round
-          icon="shopping_cart"
+          icon="shopping_bag"
           class="iconitem2"
-          size="20px"
+          size="17px"
         />
         <q-btn
           to="/Profile"
@@ -41,7 +43,7 @@
           round
           icon="account_circle"
           class="iconitem"
-          size="20px"
+          size="17px"
         />
         <!-- <q-img
             class="absolute-right"
@@ -62,6 +64,22 @@
       <!-- src="https://wallpapercave.com/wp/wp3404275.jpg" -->
 
       <q-list>
+        <div
+          style="margin-left:160px;
+        margin-top:20px"
+        >
+          <q-btn
+            @click="logUserOut()"
+            class="butcol"
+            glossy
+            rounded
+            v-close-popup
+            style="width:125px"
+            size="9px"
+            icon-right="logout"
+            label="Déconnecter"
+          />
+        </div>
         <!-- <q-img
           src="https://image.freepik.com/vecteurs-libre/papier-peint-abstrait-blanc_23-2148808302.jpg"
           style="height: 180px"
@@ -77,7 +95,6 @@
           </q-avatar>
           <div class="text">{{ this.userdata.nom }}</div>
           <div class="text">{{ this.userdata.prenom }}</div>
-
           <div class="text">{{ this.userdata.email }}</div>
         </header>
         <q-item to="/home" aria-label="" class="qtem">
@@ -271,7 +288,7 @@ export default {
 .toolbar-title {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  font-size: 25px;
+  font-size: 20px;
   letter-spacing: 5px;
   font-weight: bold;
   color: gainsboro;
@@ -280,18 +297,23 @@ export default {
   /* text-shadow: 0.5px 0 0 #fff, -0.5px 0 0 #fff, 0 0.5px 0 #fff, 0 -0.5px 0 #fff,
     0.5px 0.5px #fff, -0.5px -1px 0 #fff, 1px -1px 0 #fff, -0.5px 0.5px 0 #fff; */
   font-family: Georgia, "Times New Roman", Times, serif;
-  font-size: 15.8px;
+  font-size: 14px;
   font-weight: bold;
-  color: #e0e0e0;
+  color: #e0e0e0e7;
 }
 .butcol {
-  font-size: 10px;
-  margin-right: 60px;
-  display: flex;
+  background-color: rgba(17, 24, 39, 1);
+  border: 1px solid red;
+  font-weight: bolder;
+  color: red;
+}
+.butcol:hover {
+  background-color: red;
+  color: white;
 }
 .qtem {
   color: rgb(180, 179, 179);
-  font-size: 17px;
+  font-size: 15px;
   font-family: monospace;
   background-color: rgba(17, 24, 39, 1);
   position: relative;
@@ -305,17 +327,17 @@ export default {
   color: white;
 }
 .iconitem:hover {
-  color: rgb(167, 167, 167);
+  color: rgb(233, 174, 64);
 }
 
 .ss {
   color: rgb(248, 242, 242);
   mix-blend-mode: lighten;
 }
-.iconitem2 {
-  color: rgb(118, 189, 118);
-}
 .iconitem2:hover {
-  color: rgb(167, 167, 167);
+  color: rgb(233, 174, 64);
+}
+.iconitem2 {
+  color: rgb(255, 255, 255);
 }
 </style>

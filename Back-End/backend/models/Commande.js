@@ -2,10 +2,9 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const commandes = new Schema({
-  createdAt: { type: Date, default: Date.now },
+  createdAt: { type: String },
   client: { type: Schema.Types.ObjectId, ref: "Client" },
   importer_par: { type: Schema.Types.ObjectId, ref: "Livreur" },
-
   livrer_par: { type: Schema.Types.ObjectId, ref: "Livreur" },
   avance: { type: String },
   rest: { type: String },
@@ -13,10 +12,14 @@ const commandes = new Schema({
   etatPaiement: { type: String },
   etatLivraison: { type: String },
   dateLivraison: { type: String },
+  MoyenPaiement: { type: String },
   produits: [
     {
-      type: Schema.Types.ObjectId,
-      ref: "Produit",
+      produit: {
+        type: Schema.Types.ObjectId,
+        ref: "Produit",
+      },
+      quantite: { type: String },
     },
   ],
 });
