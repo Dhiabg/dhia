@@ -1,140 +1,159 @@
 <template>
   <q-card class="mydialog">
-    <q-form class="q-pa-md bg-dark text-white" ref="myForm">
-      <q-input
-        dark
-        rounded
-        outlined
-        color="secondary"
-        v-model="serviceCopy.imageUrl"
-        label="Image URL"
-        lazy-rules
-        :rules="[val => (val && val.length > 0) || 'Please type something']"
-      >
-        <template v-slot:prepend>
-          <div class="row items-center all-pointer-events">
-            <q-icon
-              class="q-mr-xs"
-              color="secondary"
-              size="20px"
-              name="image"
-            />
-          </div>
-        </template>
-      </q-input>
-      <q-input
-        dark
-        rounded
-        outlined
-        color="secondary"
-        v-model="serviceCopy.code"
-        label="Code"
-        lazy-rules
-        :rules="[val => (val && val.length > 0) || 'Please type something']"
-      >
-        <template v-slot:prepend>
-          <div class="row items-center all-pointer-events">
-            <q-icon class="q-mr-xs" color="secondary" size="20px" name="code" />
-          </div>
-        </template>
-      </q-input>
-      <q-input
-        dark
-        rounded
-        outlined
-        color="secondary"
-        v-model="serviceCopy.nom"
-        label="Nom"
-        lazy-rules
-        :rules="[val => (val && val.length > 0) || 'Please type something']"
-      >
-        <template v-slot:prepend>
-          <div class="row items-center all-pointer-events">
-            <q-icon
-              class="q-mr-xs"
-              color="secondary"
-              size="20px"
-              name="person"
-            />
-          </div>
-        </template>
-      </q-input>
-      <q-input
-        dark
-        rounded
-        outlined
-        color="secondary"
-        v-model="serviceCopy.description"
-        label="Description"
-        lazy-rules
-        :rules="[val => (val && val.length > 0) || 'Please type something']"
-      >
-        <template v-slot:prepend>
-          <div class="row items-center all-pointer-events">
-            <q-icon
-              class="q-mr-xs"
-              color="secondary"
-              size="20px"
-              name="description"
-            />
-          </div>
-        </template>
-      </q-input>
-      <q-select
-        dark
-        rounded
-        outlined
-        color="secondary"
-        v-model="serviceCopy.etat"
-        label="Etat"
-        :options="etatOptions"
-        lazy-rules
-        :rules="[val => (val && val.length > 0) || 'Please type something']"
-      >
-        <template v-slot:prepend>
-          <div class="row items-center all-pointer-events">
-            <q-icon
-              class="q-mr-xs"
-              color="secondary"
-              size="20px"
-              name="light"
-            />
-          </div>
-        </template>
-      </q-select>
+    <q-form class="q-pa-md bg-white text-black" @submit="onAdd()" ref="myForm">
+      <br />
+      <label class="title2">
+        Formulaire service
+      </label>
+      <q-separator style="width:550px;" color="black" />
 
-      <div>
-        <div>
-          <q-btn
-            v-if="!this.service"
-            label="Ajouter"
-            outline
-            style="margin-right: 15px"
-            rounded
-            @click="onAdd()"
-            color="blue"
-          />
+      <br />
+      <br />
+      <q-item>
+        <label class="title"> Image URL du service :</label>
+      </q-item>
+      <q-item>
+        <q-input
+          outlined
+          style="width:500px"
+          color="secondary"
+          dense
+          v-model="serviceCopy.imageUrl"
+          label="Image Url"
+        >
+          <template v-slot:prepend>
+            <div class="row items-center all-pointer-events">
+              <q-icon
+                class="q-mr-xs"
+                color="secondary"
+                size="20px"
+                name="image"
+              />
+            </div>
+          </template>
+        </q-input>
+      </q-item>
+      <q-item>
+        <q-item-section>
+          <label class="title"> Code :</label>
+        </q-item-section>
+        <q-item-section>
+          <q-input
+            outlined
+            style="margin-left:-105px;width:330px"
+            color="secondary"
+            label="Code"
+            dense
+            v-model="serviceCopy.code"
+            lazy-rules
+            :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+          >
+            <template v-slot:prepend>
+              <div class="row items-center all-pointer-events">
+                <q-icon
+                  class="q-mr-xs"
+                  color="secondary"
+                  size="20px"
+                  name="code"
+                />
+              </div>
+            </template>
+          </q-input>
+        </q-item-section>
+      </q-item>
+      <q-item>
+        <q-item-section>
+          <label class="title"> Nom :</label>
+        </q-item-section>
+        <q-item-section>
+          <q-input
+            outlined
+            style="margin-left:-105px;width:330px"
+            color="secondary"
+            label="Nom "
+            dense
+            v-model="serviceCopy.nom"
+            lazy-rules
+            :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+          >
+            <template v-slot:prepend>
+              <div class="row items-center all-pointer-events">
+                <q-icon
+                  class="q-mr-xs"
+                  color="secondary"
+                  size="20px"
+                  name="drive_file_rename_outline"
+                />
+              </div>
+            </template>
+          </q-input>
+        </q-item-section>
+      </q-item>
+      <q-item>
+        <q-item-section>
+          <label class="title">Etat : </label>
+        </q-item-section>
+        <q-item-section>
+          <q-select
+            label="Etat"
+            outlined
+            dense
+            style="margin-left:-105px;width:330px"
+            color="secondary"
+            v-model="serviceCopy.etat"
+            :options="etatOptions"
+            lazy-rules
+            :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+          >
+            <template v-slot:prepend>
+              <div class="row items-center all-pointer-events">
+                <q-icon
+                  class="q-mr-xs"
+                  color="secondary"
+                  size="20px"
+                  name="published_with_changes"
+                />
+              </div>
+            </template>
+          </q-select>
+        </q-item-section>
+      </q-item>
 
-          <q-btn
-            v-if="this.service"
-            style="margin-right: 15px"
-            label="Modifier"
-            outline
-            rounded
-            @click="onEdit()"
-            color="green"
-          />
+      <br />
+      <br />
 
-          <q-btn
-            @click="onCancel()"
-            label="Annuler"
-            style="margin-right: 15px"
-            outline
-            rounded
-            v-close-popup
-            color="red"
-          />
-        </div>
+      <div align="center">
+        <q-btn
+          v-if="!this.service"
+          label="Ajouter"
+          type="submit"
+          icon-right="assignment_turned_in"
+          style="margin-right: 15px"
+          glossy
+          color="blue-10"
+        />
+
+        <q-btn
+          v-if="this.service"
+          style="margin-right: 15px"
+          label="confirmer la modification"
+          icon-right="assignment_turned_in"
+          glossy
+          type="submit"
+          @click="onEdit()"
+          color="secondary"
+        />
+
+        <q-btn
+          @click="onCancel()"
+          label="Annuler"
+          style="margin-right: 15px"
+          rounded
+          icon-right="cancel_presentation"
+          glossy
+          v-close-popup
+          color="red"
+        />
       </div>
     </q-form>
   </q-card>
@@ -169,14 +188,24 @@ export default {
     async onAdd() {
       this.$refs.myForm.validate().then(async success => {
         if (success) {
-          let res = await this.$axios.post(`/service/`, {
-            ...this.serviceCopy
-          });
-          window.location.reload(true);
+          try {
+            let res = await this.$axios.post(`/service/`, {
+              ...this.serviceCopy
+            });
+            window.location.reload(true);
+            return this.$q.notify({
+              color: "green",
+              message: "Service ajouté avec succées"
+            });
+            // this.$emit("updated");
 
-          this.$emit("updated");
-
-          await this.getAll();
+            // await this.getAll();
+          } catch {
+            return this.$q.notify({
+              color: "red",
+              message: "Code deja utilisé"
+            });
+          }
         }
       });
     },
@@ -211,9 +240,20 @@ export default {
 </script>
 <style scoped>
 .mydialog {
-  width: 500px;
-  padding: 15px;
-  height: 480px;
-  background: rgb(32, 29, 29);
+  min-width: 600px;
+  padding: 20px;
+  height: 670px;
+  background: white;
+}
+.title2 {
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  font-size: 18px;
+
+  font-family: monospace;
+}
+.title {
+  color: rgb(0, 0, 0);
+  font-family: monospace;
 }
 </style>

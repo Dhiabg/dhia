@@ -2,76 +2,56 @@
   <q-page class="q-pa-lg">
     <!-- <q-card> -->
     <!-- <q-card-section class="bg-primary text-white"> -->
-    <h4>Services</h4>
-    <!-- <div class="text-subtitle2">by John Doe</div> -->
-    <!-- </q-card-section> -->
-
-    <!-- <q-separator />
-      <q-card-actions align="left">
-        <q-btn
-          label="Ajouter un service"
-          color="primary"
-          @click="addService"
-          :disable="selected.length > 0"
-        ></q-btn>
-        <q-btn
-          label="Supprimer"
-          color="red"
-          @click="deleteService"
-          :disable="!selected.length"
-        ></q-btn>
-        <q-btn
-          label="Modifier"
-          color="green"
-          @click="EditService"
-          :disable="!selected.length"
-        ></q-btn>
-      </q-card-actions>
-    </q-card> -->
     <div>
-      <q-btn
-        align="left"
-        glossy
-        outline
-        rounded
-        v-close-popup
-        text-color="primary"
-        label="Ajouter un service"
-        color="white"
-        @click="addService"
-        :disable="selected.length > 0"
-      ></q-btn>
+      <h4>Gestion des services</h4>
+    </div>
+    <q-separator style="margin-bottom:10px;" color="black" />
+    <br />
+
+    <div>
+      <div>
+        <q-btn
+          glossy
+          rounded
+          dense
+          :disable="selected.length > 0"
+          style="margin-left:30px;padding-right:10px"
+          icon="add_circle_outline"
+          @click="addService()"
+          v-close-popup
+          label="Ajouter un service "
+          color="blue-10"
+        ></q-btn>
+      </div>
       <div align="right">
         <q-btn
           align="right"
-          outline
-          rounded
-          v-close-popup
+          style="margin-right:30px;background-color:#148F77;color:white"
+          size="13px"
           glossy
+          icon-right="change_circle"
           label="Modifier"
-          color="green"
-          @click="EditService"
+          @click="EditService()"
           :disable="!selected.length || selected.length > 1"
         ></q-btn>
         <q-btn
           align="right"
-          outline
+          size="13px"
           glossy
           rounded
+          icon="delete_forever"
           v-close-popup
-          label="Supprimer"
           color="red"
-          @click="deleteService"
+          @click="deleteService()"
           :disable="!selected.length"
         ></q-btn>
       </div>
     </div>
 
-    <!-- <q-separator /> -->
-
-    <q-space />
     <br />
-    <div>
+    <br />
+    <br />
+    <div align="right">
       <q-input
         class="searchy"
         dense
@@ -114,10 +94,30 @@
             <q-list dense>
               <q-card :class="props.selected ? 'bg-grey-3' : ''">
                 <!-- {{ props.row.imageUrl }} -->
-                <img class="mycard" :src="props.row.imageUrl" />
+
+                <img
+                  v-if="props.row.imageUrl"
+                  class="mycard"
+                  :src="props.row.imageUrl"
+                />
+                <img
+                  v-else
+                  class="mycard"
+                  src="https://www.radiobeton.com/www/wp-content/uploads/2017/01/arton17969.jpg"
+                />
                 <q-separator horizontal />
 
                 <q-list>
+                  <q-item>
+                    <q-item-section avatar>
+                      <q-item-label caption>Code</q-item-label>
+                    </q-item-section>
+
+                    <q-item-section class="absolute-center">
+                      <q-item-label>{{ props.row.code }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-separator horizontal />
                   <q-item>
                     <q-item-section avatar>
                       <q-item-label caption>Nom</q-item-label>
@@ -160,7 +160,7 @@
                     </q-item-section>
                   </q-item> -->
                   <!-- description list -->
-                  <q-card-actions>
+                  <!-- <q-card-actions>
                     <label caption>
                       Description
                     </label>
@@ -184,7 +184,7 @@
                         {{ props.row.description }}
                       </q-card-section>
                     </div>
-                  </q-slide-transition>
+                  </q-slide-transition> -->
                 </q-list>
               </q-card>
             </q-list>
@@ -210,7 +210,7 @@
     <div class="absolute-bottom q-mt-md">
       <q-pagination
         v-model="pagination.page"
-        color="secondary"
+        color="blue-10"
         class="pagin"
         size="sm"
         :max="pagesNumber"
@@ -226,7 +226,7 @@ export default {
   data() {
     return {
       pagination: {
-        rowsPerPage: 5,
+        rowsPerPage: 7,
         page: 1
       },
       filter: "",
@@ -295,13 +295,7 @@ export default {
       }
     },
     async deleteService() {
-      if (!this.selected[0]._id) {
-        return this.$q.notify({
-          color: "warning",
-          message: "aucun service selectionné"
-        });
-      }
-      this.selected.forEach(element => {
+      await this.selected.forEach(element => {
         this.$axios.delete(`/service/delete/${element._id}`);
       });
       //  window.location.reload(true);
@@ -315,7 +309,7 @@ export default {
       //       color: "red",
       //       message: "Service Supprimé"
       //     }),
-      await this.$emit("updated");
+      // this.$emit("updated");
       window.location.reload(true);
 
       // );
@@ -377,16 +371,14 @@ export default {
   background-color: red;
 }
 .searchy {
-  background-color: rgb(233, 233, 233);
   max-width: 250px;
-  border: 1px solid rgb(197, 133, 166);
+  border: solid 1px rgb(224, 224, 224);
 }
 h4 {
-  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
-  font-size: 2.37em;
-  margin-top: 0.33em;
-  color: #1a037e;
-  margin-bottom: 1em;
+  font-family: monospace;
+  font-size: 2em;
+  margin-top: 0.5em;
+  margin-bottom: 0.15em;
   margin-left: 0;
   margin-right: 0;
   letter-spacing: 3px;
@@ -394,6 +386,6 @@ h4 {
 }
 .pagin {
   margin-left: 750px;
-  margin-bottom: 20px;
+  margin-bottom: 170px;
 }
 </style>

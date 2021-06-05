@@ -6,16 +6,26 @@ const services = require("../models/Service");
 const route = express.Router();
 
 route.post("/", async (req, res) => {
-  const { code, etat, description, imageUrl, nom } = req.body;
-  let Services = {};
-  Services.code = code;
-  Services.etat = etat;
-  Services.description = description;
-  Services.imageUrl = imageUrl;
-  Services.nom = nom;
-  let servicesModel = new services(Services);
-  await servicesModel.save();
-  res.json(servicesModel);
+  try {
+    let sameCode = await services.find({ code: req.body.code });
+    if (sameCode.length >= 1) {
+      return res.status(409).json({
+        message: "article deja ajouté",
+      });
+    }
+    const { code, etat, description, imageUrl, nom } = req.body;
+    let Services = {};
+    Services.code = code;
+    Services.etat = etat;
+    Services.description = description;
+    Services.imageUrl = imageUrl;
+    Services.nom = nom;
+    let servicesModel = new services(Services);
+    await servicesModel.save();
+    res.json(servicesModel);
+  } catch (err) {
+    res.json(err, "err");
+  }
 });
 
 route.get("/", async (req, res) => {

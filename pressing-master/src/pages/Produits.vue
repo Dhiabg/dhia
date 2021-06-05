@@ -1,52 +1,51 @@
 <template>
   <q-page class="q-pa-lg">
-    <h4>Produits</h4>
-    <!-- </q-card-section> -->
+    <h4>Gestion des produits</h4>
+    <q-separator style="margin-bottom:10px;" color="black" />
+    <br />
 
     <div>
-      <q-btn
-        align="left"
-        glossy
-        outline
-        rounded
-        v-close-popup
-        text-color="primary"
-        label="Ajouter un produit"
-        color="white"
-        @click="addProduit"
-        :disable="selected.length > 0"
-      ></q-btn>
+      <div>
+        <q-btn
+          glossy
+          rounded
+          dense
+          :disable="selected.length > 0"
+          style="margin-left:30px;padding-right:10px"
+          icon="add_circle_outline"
+          @click="addProduit()"
+          v-close-popup
+          label="Ajouter un produit "
+          color="blue-10"
+        ></q-btn>
+      </div>
       <div align="right">
         <q-btn
           align="right"
-          outline
-          rounded
-          v-close-popup
+          style="margin-right:30px;background-color:#148F77;color:white"
+          size="13px"
           glossy
+          icon-right="change_circle"
           label="Modifier"
-          color="green"
-          @click="EditProduit"
+          @click="EditProduit()"
           :disable="!selected.length || selected.length > 1"
         ></q-btn>
         <q-btn
           align="right"
-          outline
+          size="13px"
           glossy
           rounded
+          icon="delete_forever"
           v-close-popup
-          label="Supprimer"
           color="red"
-          @click="deleteProduit"
+          @click="deleteProduit()"
           :disable="!selected.length"
         ></q-btn>
       </div>
     </div>
-
-    <!-- <q-separator /> -->
-
-    <q-space />
     <br />
-    <div>
+    <br />
+    <div align="right">
       <q-input
         class="searchy"
         dense
@@ -89,7 +88,16 @@
             <q-list dense>
               <q-card :class="props.selected ? 'bg-grey-3' : ''">
                 <!-- {{ props.row.imageUrl }} -->
-                <img class="mycard" :src="props.row.imageUrl" />
+                <img
+                  v-if="props.row.imageUrl"
+                  class="mycard"
+                  :src="props.row.imageUrl"
+                />
+                <img
+                  v-else
+                  class="mycard"
+                  src="https://www.radiobeton.com/www/wp-content/uploads/2017/01/arton17969.jpg"
+                />
                 <q-separator horizontal />
 
                 <q-list>
@@ -130,10 +138,14 @@
                       <q-item-label caption>Service</q-item-label>
                     </q-item-section>
 
-                    <q-item-section class="absolute-center">
-                      <q-item-label>{{
-                        services[props.row.service]
-                      }}</q-item-label>
+                    <q-item-section
+                      v-for="item in props.row.service"
+                      :key="item._id"
+                      class="absolute-center"
+                    >
+                      <q-item-label>
+                        {{ services[item] }}
+                      </q-item-label>
                     </q-item-section>
                   </q-item>
                   <q-separator horizontal />
@@ -170,7 +182,7 @@
                       >
                     </q-item-section>
                   </q-item>
-                  <q-separator horizontal />
+                  <!-- <q-separator horizontal />
 
                   <q-card-actions>
                     <label caption>
@@ -196,7 +208,7 @@
                         {{ props.row.description }}
                       </q-card-section>
                     </div>
-                  </q-slide-transition>
+                  </q-slide-transition> -->
                 </q-list>
               </q-card>
             </q-list>
@@ -237,7 +249,7 @@
     <div class="row absolute-bottom q-mt-md">
       <q-pagination
         v-model="pagination.page"
-        color="secondary"
+        color="blue-10"
         class="pagin"
         :max="pagesNumber"
         size="sm"
@@ -254,7 +266,7 @@ export default {
     return {
       expanded: false,
       pagination: {
-        rowsPerPage: 5,
+        rowsPerPage: 7,
         page: 1
       },
       filter: "",
@@ -356,10 +368,10 @@ export default {
       }
     },
     async deleteProduit() {
-      this.selected.forEach(element => {
+      await this.selected.forEach(element => {
         this.$axios.delete(`/produit/delete/${element._id}`);
       });
-      await this.$emit("updated");
+      //   this.$emit("updated");
       window.location.reload(true);
     },
     EditProduit() {
@@ -421,14 +433,13 @@ export default {
 }
 .searchy {
   max-width: 250px;
-  border: 1px solid black;
+  border: solid 1px rgb(224, 224, 224);
 }
 h4 {
-  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
-  font-size: 2.37em;
-  margin-top: 0.33em;
-  color: #1a037e;
-  margin-bottom: 1em;
+  font-family: monospace;
+  font-size: 2em;
+  margin-top: 0.5em;
+  margin-bottom: 0.15em;
   margin-left: 0;
   margin-right: 0;
   letter-spacing: 3px;
@@ -436,6 +447,6 @@ h4 {
 }
 .pagin {
   margin-left: 750px;
-  margin-bottom: 20px;
+  margin-bottom: 100px;
 }
 </style>

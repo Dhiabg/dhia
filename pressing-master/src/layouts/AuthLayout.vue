@@ -3,11 +3,12 @@
     <q-header style="background-color: #1a037e" elevated>
       <q-toolbar>
         <q-toolbar-title
-          ><div class="toolbar-title">Le Pressing</div>
+          ><div class="toolbar-title">LE PRESSING</div>
         </q-toolbar-title>
-        <router-link to="/login">Login</router-link>
+        <div class="toolbar-text">CONNEXION</div>
+        <!-- <router-link to="/login">Login</router-link>
 
-        <router-link to="/register">Register</router-link>
+        <router-link to="/register">Register</router-link> -->
       </q-toolbar>
     </q-header>
 
@@ -17,6 +18,14 @@
   </q-layout>
 </template>
 <style scoped>
+.toolbar-text {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-size: 20px;
+  letter-spacing: 3px;
+  font-weight: bold;
+  color: rgb(189, 185, 185);
+}
 .toolbar-title {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
@@ -26,7 +35,10 @@
   color: gainsboro;
 }
 .q-layout {
-  background-color: gainsboro;
+  background-color: rgb(235, 232, 232);
+  /* background-image: url("https://www.creer-entreprendre.fr/wp-content/uploads/2019/09/pressing.jpg");
+  background-repeat: no-repeat;
+  background-size: 100%; */
 }
 a {
   text-decoration: none;

@@ -433,7 +433,7 @@ export default {
 }
 
 h4 {
-  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  font-family: monospace;
   font-size: 2.37em;
   margin-top: 0.33em;
   color: #1a037e;
@@ -444,7 +444,7 @@ h4 {
   font-weight: bold;
 }
 h5 {
-  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  font-family: monospace;
   font-size: 1.37em;
   margin-top: 0.33em;
   color: #1a037e;

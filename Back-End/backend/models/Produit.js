@@ -5,10 +5,12 @@ const produits = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Categorie",
   },
-  service: {
-    type: Schema.Types.ObjectId,
-    ref: "Service",
-  },
+  service: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Service",
+    },
+  ],
 
   code: { type: String },
   nom: { type: String },

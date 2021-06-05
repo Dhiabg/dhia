@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const config = require("../routes/config");
 
 const utilisateurs = new Schema({
-  createdAt: { type: Date },
+  createdAt: { type: String },
   nom: { type: String },
   prenom: { type: String },
   email: { type: String },
@@ -18,6 +18,7 @@ const utilisateurs = new Schema({
   rue: { type: String },
   code_postal: { type: String },
   etat: { type: String },
+  isAdmin: { type: Boolean },
   tokens: [
     {
       token: {

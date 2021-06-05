@@ -7,24 +7,34 @@ const route = express.Router();
 //ajouter un produit
 route.post("/", async (req, res) => {
   try {
-    let Produit = new produits();
-    Produit.code = req.body.code;
-    Produit.nom = req.body.nom;
-    Produit.description = req.body.description;
-    Produit.imageUrl = req.body.imageUrl;
-    Produit.etat = req.body.etat;
-    Produit.prix = req.body.prix;
-    Produit.categorie = req.body.categorie;
-    Produit.service = req.body.service;
+    let sameCode = await produits.find({ code: req.body.code });
+    if (sameCode.length >= 1) {
+      return res.status(409).json({
+        message: "article deja ajouté",
+      });
+    }
+    try {
+      let Produit = new produits();
+      Produit.code = req.body.code;
+      Produit.nom = req.body.nom;
+      Produit.description = req.body.description;
+      Produit.imageUrl = req.body.imageUrl;
+      Produit.etat = req.body.etat;
+      Produit.prix = req.body.prix;
+      Produit.categorie = req.body.categorie;
+      Produit.service = req.body.service;
 
-    await Produit.save();
+      await Produit.save();
 
-    res.json(Produit);
+      res.json(Produit);
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: err.message,
+      });
+    }
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    res.json(err, "err");
   }
 });
 

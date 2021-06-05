@@ -1,7 +1,32 @@
 <template>
   <q-page class="q-pa-lg">
-    <h4>Commander</h4>
-    <div align="right">
+    <q-item>
+      <q-item-section>
+        <h4>Commander</h4>
+      </q-item-section>
+      <q-item-section>
+        <div align="right">
+          <q-btn
+            to="/panier"
+            dense
+            glossy
+            rounded
+            style="padding:2px;width:150px"
+            color="secondary"
+            icon-right="shopping_cart"
+            size="15px"
+          >
+            Panier
+          </q-btn>
+        </div>
+      </q-item-section>
+    </q-item>
+    <q-separator style="margin-bottom:10px;" color="black" />
+
+    <br />
+    <br />
+
+    <!-- <div align="right">
       <q-btn
         to="/panier"
         flat
@@ -13,7 +38,7 @@
       >
         Panier
       </q-btn>
-    </div>
+    </div> -->
 
     <!-- Categories -->
 
@@ -39,7 +64,7 @@
             <div class="row absolute-bottom q-mt-md">
               <q-pagination
                 v-model="paginationCat.page"
-                color="secondary"
+                color="blue-10"
                 class="pagin"
                 :max="pagesNumberCat"
                 size="sm"
@@ -55,7 +80,7 @@
 
     <!-- Services -->
 
-    <q-table
+    <!-- <q-table
       :data="serv"
       row-key="_id"
       grid
@@ -99,13 +124,13 @@
           />
         </div>
       </template>
-    </q-table>
+    </q-table> -->
 
     <!-- Services -->
     <br />
     <q-space />
 
-    <div>
+    <div align="right">
       <q-input
         class="searchy"
         dense
@@ -133,31 +158,45 @@
       <template #item="props">
         <div
           class="mycard"
-          v-if="
-            services[props.row.service] === servName &&
-              categories[props.row.categorie] === catName
-          "
+          v-if="categories[props.row.categorie] === catName"
           :style="props.selected ? 'transform: scale(0.95);' : ''"
         >
           <q-card class="mycard" :class="props.selected ? 'bg-grey-3' : ''">
             <q-list dense>
               <q-card :class="props.selected ? 'bg-grey-3' : ''">
                 <!-- {{ props.row.imageUrl }} -->
-                <img class="mycard" :src="props.row.imageUrl" />
+                <q-card-section horizontal>
+                  <img class="image" :src="props.row.imageUrl" />
 
-                <q-separator horizontal />
+                  <q-separator vertical />
+                  <q-card-section class="image" horizontal>
+                    <q-list>
+                      <q-item>
+                        <q-item-section avatar>
+                          <q-item-label caption> Nom</q-item-label>
+                        </q-item-section>
+                        <q-item-section>
+                          <q-item-label>{{ props.row.nom }}</q-item-label>
+                        </q-item-section>
+                      </q-item>
+                      <!-- <q-item>
+                        <q-item-section avatar>
+                          <q-item-label caption>Service</q-item-label>
+                        </q-item-section>
 
-                <q-list>
-                  <!-- <q-item>
-                    <q-item-section avatar>
-                      <q-item-label caption> Nom</q-item-label>
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>{{ props.row.nom }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
+                        <q-item-section
+                          v-for="item in props.row.service"
+                          :key="item._id"
+                          class="absolute-center"
+                        >
+                          <q-item-label>
+                            {{ services[item] }}
+                          </q-item-label>
+                        </q-item-section>
+                      </q-item>
+                      <q-separator horizontal /> -->
 
-                  <q-separator horizontal />
+                      <!--<q-separator horizontal />
                   <q-item>
                     <q-item-section avatar>
                       <q-item-label caption>Categorie</q-item-label>
@@ -181,56 +220,71 @@
                       }}</q-item-label>
                     </q-item-section>
                   </q-item> -->
-                  <q-separator horizontal />
+                      <!-- <q-separator horizontal /> -->
 
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-item-label caption>Prix</q-item-label>
-                    </q-item-section>
+                      <q-item>
+                        <q-item-section avatar>
+                          <q-item-label caption>Prix</q-item-label>
+                        </q-item-section>
 
-                    <q-item-section class="absolute-center">
-                      <q-item-label
-                        >{{ props.row.prix }}
-                        <q-space></q-space> Dinars</q-item-label
-                      >
-                    </q-item-section>
-                  </q-item>
-                  <q-separator horizontal />
+                        <q-item-section class="absolute-center">
+                          <q-item-label
+                            >{{ props.row.prix }}
+                            <q-space></q-space> Dinars</q-item-label
+                          >
+                        </q-item-section>
+                      </q-item>
+                      <br />
+                      <q-item>
+                        <q-item-section avatar>
+                          <q-btn
+                            @click="ajoutPanier(props.row)"
+                            size="10px"
+                            glossy
+                            rounded
+                            color="green"
+                            label="Ajouter au panier"
+                          />
+                        </q-item-section>
+                      </q-item>
+                      <!-- <q-separator horizontal /> -->
 
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-item-label caption>Etat</q-item-label>
-                    </q-item-section>
+                      <!-- <q-item>
+                        <q-item-section avatar>
+                          <q-item-label caption>Etat</q-item-label>
+                        </q-item-section>
 
-                    <q-item-section class="absolute-center">
-                      <q-item-label
-                        ><q-badge
-                          :class="
-                            props.row.etat === 'Actif'
-                              ? 'actifcss'
-                              : 'inactifcss'
-                          "
-                          >{{ props.row.etat }}</q-badge
-                        ></q-item-label
-                      >
-                      <q-separator vertical />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>
-                        <q-btn
-                          @click="ajoutPanier(props.row)"
-                          flat
-                          dense
-                          round
-                          icon="add_shopping_cart"
-                          style="margin-left:80px"
-                          class="iconitem"
-                        />
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-separator horizontal />
-                </q-list>
+                        <q-item-section class="absolute-center">
+                          <q-item-label
+                            ><q-badge
+                              :class="
+                                props.row.etat === 'Actif'
+                                  ? 'actifcss'
+                                  : 'inactifcss'
+                              "
+                              >{{ props.row.etat }}</q-badge
+                            ></q-item-label
+                          >
+                          <q-separator vertical />
+                        </q-item-section>
+                        <q-item-section>
+                          <q-item-label>
+                            <q-btn
+                              @click="ajoutPanier(props.row)"
+                              flat
+                              dense
+                              round
+                              icon="add_shopping_cart"
+                              style="margin-left:80px"
+                              class="iconitem"
+                            />
+                          </q-item-label>
+                        </q-item-section>
+                      </q-item> -->
+                      <!-- <q-separator horizontal /> -->
+                    </q-list>
+                  </q-card-section>
+                </q-card-section>
               </q-card>
             </q-list>
           </q-card>
@@ -241,7 +295,7 @@
     <div class="row absolute-bottom q-mt-md">
       <q-pagination
         v-model="pagination.page"
-        color="secondary"
+        color="blue-10"
         class="pagin"
         :max="pagesNumber"
         size="sm"
@@ -263,10 +317,10 @@ export default {
         rowsPerPage: 3,
         page: 1
       },
-      paginationServ: {
-        rowsPerPage: 3,
-        page: 1
-      },
+      // paginationServ: {
+      //   rowsPerPage: 3,
+      //   page: 1
+      // },
       filter: "",
       produits: [],
       categories: [],
@@ -426,9 +480,9 @@ export default {
     pagesNumber() {
       return Math.ceil(this.produits.length / this.pagination.rowsPerPage);
     },
-    pagesNumberServ() {
-      return Math.ceil(this.serv.length / this.paginationServ.rowsPerPage);
-    },
+    // pagesNumberServ() {
+    //   return Math.ceil(this.serv.length / this.paginationServ.rowsPerPage);
+    // },
     pagesNumberCat() {
       return Math.ceil(this.cat.length / this.paginationCat.rowsPerPage);
     }
@@ -466,9 +520,17 @@ export default {
 // },
 </script>
 <style scoped>
-.mycard {
+.image {
+  min-width: 180px;
+  height: 200px;
+}
+.restcard {
   width: 200px;
-  height: 160px;
+  height: 200px;
+}
+.mycard {
+  width: 350px;
+  height: 180px;
   margin-right: 20px;
 }
 .catservcard {
@@ -496,11 +558,10 @@ export default {
   border: 1px solid black;
 }
 h4 {
-  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
-  font-size: 2.37em;
-  margin-top: 0.33em;
-  color: #1a037e;
-  margin-bottom: 1em;
+  font-family: monospace;
+  font-size: 2em;
+  margin-top: 0.5em;
+  margin-bottom: 0.15em;
   margin-left: 0;
   margin-right: 0;
   letter-spacing: 3px;
@@ -510,7 +571,7 @@ h4 {
   margin-left: 750px;
   margin-bottom: 20px;
 }
-.iconitem {
+/* .iconitem {
   color: rgb(5, 100, 5);
 }
 .iconitem:hover {
@@ -520,9 +581,9 @@ h4 {
   color: rgb(85, 209, 85);
 
   background-color: rgb(235, 233, 233);
-}
-.shopicon:hover {
+} */
+/* .shopicon:hover {
   color: rgb(93, 199, 102);
   background-color: rgb(231, 255, 231);
-}
+} */
 </style>

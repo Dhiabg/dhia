@@ -6,16 +6,26 @@ const categories = require("../models/Categorie");
 const route = express.Router();
 
 route.post("/", async (req, res) => {
-  const { code, etat, description, imageUrl, nom } = req.body;
-  let Categories = {};
-  Categories.code = code;
-  Categories.etat = etat;
-  Categories.description = description;
-  Categories.imageUrl = imageUrl;
-  Categories.nom = nom;
-  let categoriesModel = new categories(Categories);
-  await categoriesModel.save();
-  res.json(categoriesModel);
+  try {
+    let sameCode = await categories.find({ code: req.body.code });
+    if (sameCode.length >= 1) {
+      return res.status(409).json({
+        message: "article deja ajouté",
+      });
+    }
+    const { code, etat, description, imageUrl, nom } = req.body;
+    let Categories = {};
+    Categories.code = code;
+    Categories.etat = etat;
+    Categories.description = description;
+    Categories.imageUrl = imageUrl;
+    Categories.nom = nom;
+    let categoriesModel = new categories(Categories);
+    await categoriesModel.save();
+    res.json(categoriesModel);
+  } catch (err) {
+    res.json(err, "err");
+  }
 });
 
 route.get("/", async (req, res) => {

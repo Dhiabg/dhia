@@ -1,29 +1,29 @@
 <template>
-  <!-- <q-card>
-    <div>
-      <div>
-        <h3>{{ this.userdata.email }}</h3>
-      </div>
-      <button @click="logUserOut">Logout</button>
-    </div>
-  </q-card> -->
   <div>
-    <h4>Bonjour {{ this.userdata.prenom }}</h4>
+    <h4>Bienvenue {{ this.userdata.prenom }}</h4>
+    <q-separator
+      style="margin-bottom:10px;width:1340px;margin-left:30px"
+      color="black"
+    />
 
-    <q-card class="profilcard">
-      <q-card-section horizontal>
-        <q-card-section class="col-5 flex flex-center">
-          <q-btn
-            class="absolute-top"
-            outline
-            rounded
-            @click="EditUser()"
-            v-close-popup
-            label="Modifier"
-            color="green"
-          ></q-btn>
-          <!-- <div class="absolute-top">Données d'utilisateur</div> -->
-          <br />
+    <div>
+      <q-btn
+        glossy
+        rounded
+        dense
+        style="margin-left:30px;margin-top:20px"
+        icon="change_circle"
+        icon-right="send"
+        @click="EditUser()"
+        v-close-popup
+        label="Modifier le profil"
+        color="blue-10"
+      ></q-btn>
+    </div>
+    <!-- xxxxxxxxxxx -->
+    <q-item>
+      <q-item-section>
+        <q-card class="imagecard">
           <q-img
             @click="EditUser()"
             v-if="!this.userdata.imageUrl"
@@ -36,53 +36,290 @@
             class="image"
             :src="this.userdata.imageUrl"
           />
-        </q-card-section>
-        <q-separator vertical />
-        <q-card-section class="q-pt-xs">
-          <!-- <q-card-section class="col-1 flex flex-center">
-            <q-img class="image" :src="this.userdata.imageUrl" />
-          </q-card-section> -->
-          <!-- <div class="text-h4 q-mt-sm q-mb-xs">
-            Title
-          </div> -->
+        </q-card>
+      </q-item-section>
+      <q-item-section class="move">
+        <q-card class="profilcard">
+          <q-item>
+            <q-item-section>
+              <label class="title"> Nom et Prénom :</label>
+            </q-item-section>
+            <q-item-section>
+              <q-input
+                outlined
+                readonly
+                dense
+                style="width:160px;margin-left:-10px"
+                color="secondary"
+                v-model="userdata.nom"
+                label="Nom"
+                lazy-rules
+                :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+              >
+                <template v-slot:prepend>
+                  <div class="row items-center all-pointer-events">
+                    <q-icon
+                      class="q-mr-xs"
+                      color="blue-8"
+                      size="20px"
+                      name="person"
+                    />
+                  </div>
+                </template>
+              </q-input>
+            </q-item-section>
+            <q-item-section>
+              <q-input
+                outlined
+                readonly
+                dense
+                color="secondary"
+                style="width:160px;"
+                v-model="userdata.prenom"
+                label="Prénom"
+                lazy-rules
+                :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+              >
+                <template v-slot:prepend>
+                  <div class="row items-center all-pointer-events">
+                    <q-icon
+                      class="q-mr-xs"
+                      color="blue-8"
+                      size="20px"
+                      name="person"
+                    />
+                  </div>
+                </template>
+              </q-input>
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section>
+              <label class="title"> Date de naissance :</label>
+            </q-item-section>
+            <q-item-section>
+              <q-input
+                readonly
+                outlined
+                dense
+                style="margin-left:-105px;width:360px"
+                color="secondary"
+                v-model="userdata.date_naissance"
+                type="date"
+                lazy-rules
+                :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+              >
+                <template v-slot:prepend>
+                  <div class="row items-center all-pointer-events">
+                    <q-icon
+                      class="q-mr-xs"
+                      color="blue-8"
+                      size="20px"
+                      name="today"
+                    />
+                  </div>
+                </template>
+              </q-input>
+            </q-item-section>
+          </q-item>
+          <!-- date -->
+          <q-item>
+            <q-item-section>
+              <label class="title"> Sexe :</label>
+            </q-item-section>
+            <q-item-section>
+              <q-input
+                readonly
+                dense
+                style="margin-left:-105px;width:360px;"
+                outlined
+                color="secondary"
+                v-model="userdata.genre"
+                lazy-rules
+                :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+              >
+                <template v-slot:prepend>
+                  <div class="row items-center all-pointer-events">
+                    <q-icon
+                      class="q-mr-xs"
+                      color="blue-8"
+                      size="20px"
+                      name="wc"
+                    />
+                  </div>
+                </template>
+              </q-input>
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section>
+              <label class="title"> Email :</label>
+            </q-item-section>
+            <q-item-section>
+              <br />
+              <q-input
+                outlined
+                readonly
+                dense
+                style="margin-left:-105px;width:360px"
+                color="secondary"
+                type="email"
+                lazy-rules
+                :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+                v-model="userdata.email"
+              >
+                <template v-slot:prepend>
+                  <div class="row items-center all-pointer-events">
+                    <q-icon
+                      class="q-mr-xs"
+                      color="blue-8"
+                      size="20px"
+                      name="mail"
+                    />
+                  </div>
+                </template>
+              </q-input>
+            </q-item-section>
+          </q-item>
 
-          <br />
-          <span class="text1">Nom</span
-          ><span class="text2"> {{ this.userdata.nom }}</span>
-          <br />
-          <span class="text1">Prenom</span
-          ><span class="text2"> {{ this.userdata.prenom }}</span>
-          <br />
-
-          <span class="text1">Genre</span
-          ><span class="text2"> {{ this.userdata.genre }}</span>
-          <br />
-          <span class="text1">Email</span
-          ><span class="text2"> {{ this.userdata.email }}</span>
-          <br />
-
-          <span class="text1">Date de naissance</span
-          ><span class="text2"> {{ this.userdata.date_naissance }}</span>
-          <br />
-
-          <span class="text1">Télephone</span
-          ><span class="text2"> {{ this.userdata.telephone }}</span>
-          <br />
-          <span class="text1">Ville</span
-          ><span class="text2"> {{ this.userdata.ville }}</span>
-          <br />
-          <span class="text1">Rue</span
-          ><span class="text2"> {{ this.userdata.rue }}</span>
-          <br />
-          <span class="text1">Code Postal</span
-          ><span class="text2"> {{ this.userdata.code_postal }}</span>
-          <br />
-          <span class="text1">Etat</span
-          ><span class="text2"> {{ this.userdata.etat }}</span>
-          <br />
-        </q-card-section>
-      </q-card-section>
-    </q-card>
+          <q-item>
+            <q-item-section>
+              <label class="title"> Adresse :</label>
+            </q-item-section>
+            <q-item-section>
+              <q-input
+                outlined
+                readonly
+                dense
+                color="secondary"
+                style="width:160px;margin-left:-10px"
+                v-model="userdata.rue"
+                label="Rue"
+                lazy-rules
+                :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+              >
+                <template v-slot:prepend>
+                  <div class="row items-center all-pointer-events">
+                    <q-icon
+                      class="q-mr-xs"
+                      color="blue-8"
+                      size="20px"
+                      name="home"
+                    />
+                  </div>
+                </template>
+              </q-input>
+            </q-item-section>
+            <q-item-section>
+              <q-input
+                outlined
+                readonly
+                color="secondary"
+                style="width:160px"
+                dense
+                v-model="userdata.code_postal"
+                label="Code postal"
+                lazy-rules
+                :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+              >
+                <template v-slot:prepend>
+                  <div class="row items-center all-pointer-events">
+                    <q-icon
+                      class="q-mr-xs"
+                      color="blue-8"
+                      size="20px"
+                      name="code"
+                    />
+                  </div>
+                </template>
+              </q-input>
+            </q-item-section>
+          </q-item>
+          <q-input
+            outlined
+            style="margin-left:195px;width:360px"
+            color="secondary"
+            v-model="userdata.ville"
+            dense
+            label="Ville"
+            lazy-rules
+            readonly
+            :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+          >
+            <template v-slot:prepend>
+              <div class="row items-center all-pointer-events">
+                <q-icon
+                  class="q-mr-xs"
+                  color="blue-8"
+                  size="20px"
+                  name="home"
+                />
+              </div>
+            </template>
+          </q-input>
+          <q-item>
+            <q-item-section>
+              <label class="title"> Numéro téléphone :</label>
+            </q-item-section>
+            <q-item-section>
+              <q-input
+                outlined
+                color="secondary"
+                mask="## ### ###"
+                readonly
+                dense
+                unmasked-value
+                style="margin-left:-105px;width:360px"
+                v-model="userdata.telephone"
+                lazy-rules
+                :rules="[val => (val && val.length === 8) || 'Champ vide !!']"
+              >
+                <template v-slot:prepend>
+                  <div class="row items-center all-pointer-events">
+                    <q-icon
+                      class="q-mr-xs"
+                      color="blue-8"
+                      size="20px"
+                      name="phone"
+                    />
+                  </div>
+                </template>
+              </q-input>
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section>
+              <label class="title">Etat : </label>
+            </q-item-section>
+            <q-item-section>
+              <q-input
+                dense
+                readonly
+                outlined
+                style="margin-left:-105px;width:360px"
+                color="secondary"
+                v-model="userdata.etat"
+                lazy-rules
+                :rules="[
+                  val => (val && val.length > 0) || 'Valeur incorrect !!'
+                ]"
+              >
+                <template v-slot:prepend>
+                  <div class="row items-center all-pointer-events">
+                    <q-icon
+                      class="q-mr-xs"
+                      color="blue-8"
+                      size="20px"
+                      name="published_with_changes"
+                    />
+                  </div>
+                </template>
+              </q-input>
+            </q-item-section>
+          </q-item>
+        </q-card>
+      </q-item-section>
+    </q-item>
     <q-dialog v-model="editDialog" v-if="editDialog">
       <profil-form :userdata="userdata" />
     </q-dialog>
@@ -139,37 +376,41 @@ export default {
 };
 </script>
 <style scoped>
-.text1 {
-  color: #bd3a96;
-  font-family: monospace;
-  font-size: 22px;
-}
-
-.text2 {
-  color: rgb(0, 0, 0);
-  font-family: monospace;
-  font-size: 20px;
+.move {
+  margin-right: 170px;
 }
 .profilcard {
-  margin: 5rem auto;
-  max-width: 65rem;
-  box-shadow: 0 0px 25px rgba(0, 0, 0, 0.39);
+  max-width: 40rem;
+  height: 41rem;
   padding: 1.5rem;
   background-color: white;
 }
+.imagecard {
+  max-width: 23rem;
+  height: 23rem;
+  padding: 0.7rem;
+  background-color: white;
+  margin-left: 200px;
+  margin-bottom: 120px;
+}
 .image {
-  max-width: 270px;
-  border: 5px solid #0d1647;
+  width: 350px;
+  height: 350px;
 }
 h4 {
   font-family: monospace;
   font-size: 2em;
-  margin-top: 1.33em;
-  color: #140263;
-  margin-bottom: 1em;
-  margin-left: 1em;
+  margin-top: 1.5em;
+  margin-bottom: 0.15em;
+  margin-left: 2rem;
   margin-right: 0;
-  letter-spacing: 3px;
+  color: rgb(88, 87, 87);
+  font-weight: bold;
+}
+
+.title {
+  color: rgb(0, 0, 0);
+  font-family: monospace;
   font-weight: bold;
 }
 </style>

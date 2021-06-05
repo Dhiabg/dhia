@@ -13,7 +13,7 @@
 
         <q-toolbar-title class="toolbar-title">
           <div>
-            Le Pressing
+            LE PRESSING
           </div>
         </q-toolbar-title>
         <!-- <q-btn
@@ -33,7 +33,7 @@
           dense
           round
           icon="shopping_bag"
-          class="iconitem2"
+          class="iconitem"
           size="17px"
         />
         <q-btn
@@ -91,13 +91,13 @@
               v-if="!this.userdata.imageUrl"
               src="https://png.pngtree.com/png-clipart/20190921/original/pngtree-no-photo-taking-photo-illustration-png-image_4698291.jpg"
             />
-            <img :src="this.userdata.imageUrl" />
+            <img style="width:290px" :src="this.userdata.imageUrl" />
           </q-avatar>
           <div class="text">{{ this.userdata.nom }}</div>
           <div class="text">{{ this.userdata.prenom }}</div>
           <div class="text">{{ this.userdata.email }}</div>
         </header>
-        <q-item to="/home" aria-label="" class="qtem">
+        <!-- <q-item to="/home" aria-label="" class="qtem">
           <template v-slot:>
             <div class="row items-center all-pointer-events">
               <q-icon
@@ -109,7 +109,7 @@
               Acceuil
             </div>
           </template>
-        </q-item>
+        </q-item> -->
         <!-- </q-img> -->
         <!-- <q-item-label header>
           <q-img src="~assets/logopressing.png" />
@@ -175,7 +175,7 @@ const linksData = [
     links: [
       {
         link: "/user",
-        title: "Utiliateurs",
+        title: "Gérants",
         caption: "",
         icon: "school"
       },
@@ -302,15 +302,17 @@ export default {
   color: #e0e0e0e7;
 }
 .butcol {
-  background-color: rgba(17, 24, 39, 1);
-  border: 1px solid red;
-  font-weight: bolder;
-  color: red;
-}
-.butcol:hover {
   background-color: red;
+  border: 1px solid white;
+  font-weight: bolder;
   color: white;
 }
+/* .butcol:hover {
+  background-color: black;
+  color: red;
+  border: 1px solid red;
+  font-weight: bolder;
+} */
 .qtem {
   color: rgb(180, 179, 179);
   font-size: 15px;
@@ -327,17 +329,11 @@ export default {
   color: white;
 }
 .iconitem:hover {
-  color: rgb(233, 174, 64);
+  background-color: #579c8f;
 }
 
 .ss {
   color: rgb(248, 242, 242);
   mix-blend-mode: lighten;
-}
-.iconitem2:hover {
-  color: rgb(233, 174, 64);
-}
-.iconitem2 {
-  color: rgb(255, 255, 255);
 }
 </style>

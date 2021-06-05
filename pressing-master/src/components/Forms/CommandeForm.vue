@@ -5,6 +5,12 @@
       <label class="title2">
         Finaliser la commande
       </label>
+      <q-separator style="width:450px;" color="black" />
+      <label class="title">
+        veuillez vous assurer que les informations de la commande<br />
+        sont exactes.
+      </label>
+      <br />
       <br />
       <br />
       <q-item>
@@ -13,6 +19,7 @@
         </q-item-section>
         <q-item-section>
           <q-select
+            dense
             style="width:250px;margin-left:-120px"
             label="Moyen de paiement"
             outlined
@@ -38,6 +45,7 @@
         <q-item-section>
           <q-input
             style="width:150px;"
+            dense
             v-model="avance"
             color="secondary"
             type="number"
@@ -66,6 +74,7 @@
             style="width:120px;"
             color="secondary"
             hint="Rest à payer"
+            dense
             v-model="commande.rest"
             :label="prixRest() + ' TND'"
           >
@@ -86,6 +95,7 @@
             readonly
             hint="Prix total"
             style="width:120px;"
+            dense
             v-model="commande.prixTotal"
             :label="this.prix + ' TND'"
           >
@@ -191,10 +201,9 @@
       <div align="center">
         <q-btn
           label="Confirmer"
-          outline
           style="margin-right: 15px"
-          rounded
           glossy
+          icon-right="check_circle_outline"
           @click="onAdd()"
           color="secondary"
         />
@@ -315,14 +324,14 @@ export default {
   font-size: large;
 }
 .mydialog {
-  width: 760px;
+  width: 530px;
   padding: 15px;
   height: 650px;
   background-color: white;
 }
 select {
-  width: 170px;
-  height: 50px;
+  width: 230px;
+  height: 35px;
   color: rgb(0, 0, 0);
   border: 1px solid #009688;
   border-radius: 0.25em;

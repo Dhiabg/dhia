@@ -7,6 +7,43 @@ const utilisateurs = require("../models/Utilisateur");
 const config = require("../routes/config");
 const route = express.Router();
 
+route.post("/", async (req, res) => {
+  const {
+    nom,
+    prenom,
+    genre,
+    date_naissance,
+    email,
+    rue,
+    ville,
+    code_postal,
+    telephone,
+    imageUrl,
+    etat,
+  } = req.body;
+  let date = new Date()
+    .toISOString()
+    .replace(/T/, " ") // replace T with a space
+    .replace(/\..+/, ""); // delete the dot and everything after
+  let Users = {};
+  Users.nom = nom;
+  Users.prenom = prenom;
+  Users.genre = genre;
+  Users.rue = rue;
+  Users.ville = ville;
+  Users.date_naissance = date_naissance;
+  Users.email = email;
+  Users.code_postal = code_postal;
+  Users.telephone = telephone;
+  Users.imageUrl = imageUrl;
+  Users.etat = etat;
+  Users.createdAt = date;
+
+  let UsersModel = new utilisateurs(Users);
+  await UsersModel.save();
+  res.json(UsersModel);
+});
+
 //Login
 route.post("/login", async (req, res) => {
   try {
@@ -102,6 +139,7 @@ route.post("/register", async (req, res) => {
       telephone,
       imageUrl,
       etat,
+      isAdmin,
     } = req.body;
     let date = new Date()
       .toISOString()
@@ -122,6 +160,7 @@ route.post("/register", async (req, res) => {
       Utilisateurs.imageUrl = imageUrl;
       Utilisateurs.etat = etat;
       Utilisateurs.createdAt = date;
+      Utilisateurs.isAdmin = isAdmin;
       let utilisateursModel = new utilisateurs(Utilisateurs);
       utilisateursModel.save();
       res.json(utilisateursModel);

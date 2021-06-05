@@ -8,6 +8,42 @@ const config = require("../routes/config");
 //const livreur = require("../Api/livreur");
 const route = express.Router();
 
+route.post("/", async (req, res) => {
+  const {
+    nom,
+    prenom,
+    genre,
+    date_naissance,
+    email,
+    rue,
+    ville,
+    code_postal,
+    telephone,
+    imageUrl,
+    etat,
+  } = req.body;
+  let datee = new Date()
+    .toISOString()
+    .replace(/T/, " ") // replace T with a space
+    .replace(/\..+/, ""); // delete the dot and everything after
+  let Livreurs = {};
+  Livreurs.nom = nom;
+  Livreurs.prenom = prenom;
+  Livreurs.genre = genre;
+  Livreurs.rue = rue;
+  Livreurs.ville = ville;
+  Livreurs.date_naissance = date_naissance;
+  Livreurs.email = email;
+  Livreurs.code_postal = code_postal;
+  Livreurs.telephone = telephone;
+  Livreurs.imageUrl = imageUrl;
+  Livreurs.etat = etat;
+  Livreurs.createdAt = datee;
+
+  let LivreursModel = new livreurs(Livreurs);
+  await LivreursModel.save();
+  res.json(LivreursModel);
+});
 // register livreur
 route.post("/register", async (req, res) => {
   try {
@@ -34,7 +70,7 @@ route.post("/register", async (req, res) => {
     let date = new Date()
       .toISOString()
       .replace(/T/, " ") // replace T with a space
-      .replace(/\..+/, ""); // delete the dot and everything after
+      .replace(/\..+/, "");
     await bcrypt.hash(password, 8).then((hashedPassword) => {
       const Livreurs = {};
       Livreurs.nom = nom;

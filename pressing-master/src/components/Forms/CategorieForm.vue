@@ -1,170 +1,157 @@
 <template>
   <q-card class="mydialog">
-    <q-form class="q-pa-md bg-dark text-white" ref="myForm">
-      <q-input
-        dark
-        rounded
-        outlined
-        color="secondary"
-        v-model="categorieCopy.imageUrl"
-        label="Image URL"
-        lazy-rules
-        :rules="[val => (val && val.length > 0) || 'Please type something']"
-      >
-        <template v-slot:prepend>
-          <div class="row items-center all-pointer-events">
-            <q-icon
-              class="q-mr-xs"
-              color="secondary"
-              size="20px"
-              name="image"
-            />
-          </div>
-        </template>
-      </q-input>
-      <q-input
-        dark
-        rounded
-        outlined
-        color="secondary"
-        v-model="categorieCopy.code"
-        label="Code"
-        lazy-rules
-        :rules="[val => (val && val.length > 0) || 'Please type something']"
-      >
-        <template v-slot:prepend>
-          <div class="row items-center all-pointer-events">
-            <q-icon class="q-mr-xs" color="secondary" size="20px" name="code" />
-          </div>
-        </template>
-      </q-input>
-      <q-input
-        dark
-        rounded
-        outlined
-        color="secondary"
-        v-model="categorieCopy.nom"
-        label="Nom"
-        lazy-rules
-        :rules="[val => (val && val.length > 0) || 'Please type something']"
-      >
-        <template v-slot:prepend>
-          <div class="row items-center all-pointer-events">
-            <q-icon
-              class="q-mr-xs"
-              color="secondary"
-              size="20px"
-              name="person"
-            />
-          </div>
-        </template>
-      </q-input>
-      <q-input
-        dark
-        rounded
-        outlined
-        color="secondary"
-        v-model="categorieCopy.description"
-        label="Description"
-        lazy-rules
-        :rules="[val => (val && val.length > 0) || 'Please type something']"
-      >
-        <template v-slot:prepend>
-          <div class="row items-center all-pointer-events">
-            <q-icon
-              class="q-mr-xs"
-              color="secondary"
-              size="20px"
-              name="description"
-            />
-          </div>
-        </template>
-      </q-input>
-      <q-select
-        dark
-        rounded
-        outlined
-        color="secondary"
-        v-model="categorieCopy.etat"
-        label="Etat"
-        :options="etatOptions"
-        lazy-rules
-        :rules="[val => (val && val.length > 0) || 'Please type something']"
-      >
-        <template v-slot:prepend>
-          <div class="row items-center all-pointer-events">
-            <q-icon
-              class="q-mr-xs"
-              color="secondary"
-              size="20px"
-              name="light"
-            />
-          </div>
-        </template>
-      </q-select>
-      <!-- <q-card
-    class="q-px-lg"
-    style="width: 700px ; height: 600px ; background: #EAF2F8"
-  >
-    <q-form @submit="onAdd" @reset="onCancel" class="q-gutter-md" ref="myForm">
-      <q-input
-        filled
-        v-model="categorieCopy.nom"
-        label="Nom"
-        lazy-rules
-        :rules="[val => (val && val.length > 0) || 'Please type something']"
-      />
+    <q-form class="q-pa-md bg-white text-black" @submit="onAdd()" ref="myForm">
+      <br />
+      <label class="title2">
+        Formulaire catégorie
+      </label>
+      <q-separator style="width:550px;" color="black" />
 
-      <q-input filled v-model="categorieCopy.description" label="description" />
-      <q-input filled v-model="categorieCopy.imageUrl" label="imageUrl" />
-
-      <q-input filled v-model="categorieCopy.code" label="Code" />
-
-      <q-select
-        label="Etat"
-        filled
-        v-model="categorieCopy.etat"
-        :options="etatOptions"
-      >
-      </q-select> -->
-
-      <!--  <q-select label="Categorie">
-        <option
-          v-for="categorie in categorie"
-          :key="categorie._id"
-          :value="categorie._id"
+      <br />
+      <br />
+      <q-item>
+        <label class="title"> Image URL du catégorie :</label>
+      </q-item>
+      <q-item>
+        <q-input
+          dense
+          outlined
+          style="width:500px"
+          color="secondary"
+          v-model="categorieCopy.imageUrl"
+          label="Image Url"
         >
-          {{ categorie.nom }}
-        </option>
-      </q-select>-->
+          <template v-slot:prepend>
+            <div class="row items-center all-pointer-events">
+              <q-icon
+                class="q-mr-xs"
+                color="secondary"
+                size="20px"
+                name="image"
+              />
+            </div>
+          </template>
+        </q-input>
+      </q-item>
+      <q-item>
+        <q-item-section>
+          <label class="title"> Code :</label>
+        </q-item-section>
+        <q-item-section>
+          <q-input
+            outlined
+            dense
+            style="margin-left:-105px;width:330px"
+            color="secondary"
+            label="Code"
+            v-model="categorieCopy.code"
+            lazy-rules
+            :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+          >
+            <template v-slot:prepend>
+              <div class="row items-center all-pointer-events">
+                <q-icon
+                  class="q-mr-xs"
+                  color="secondary"
+                  size="20px"
+                  name="code"
+                />
+              </div>
+            </template>
+          </q-input>
+        </q-item-section>
+      </q-item>
+      <!-- date -->
+      <q-item>
+        <q-item-section>
+          <label class="title"> Nom :</label>
+        </q-item-section>
+        <q-item-section>
+          <q-input
+            outlined
+            dense
+            style="margin-left:-105px;width:330px"
+            color="secondary"
+            label="Nom "
+            v-model="categorieCopy.nom"
+            lazy-rules
+            :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+          >
+            <template v-slot:prepend>
+              <div class="row items-center all-pointer-events">
+                <q-icon
+                  class="q-mr-xs"
+                  color="secondary"
+                  size="20px"
+                  name="drive_file_rename_outline"
+                />
+              </div>
+            </template>
+          </q-input>
+        </q-item-section>
+      </q-item>
+      <q-item>
+        <q-item-section>
+          <label class="title">Etat : </label>
+        </q-item-section>
+        <q-item-section>
+          <q-select
+            label="Etat"
+            outlined
+            dense
+            style="margin-left:-105px;width:330px"
+            color="secondary"
+            v-model="categorieCopy.etat"
+            :options="etatOptions"
+            lazy-rules
+            :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+          >
+            <template v-slot:prepend>
+              <div class="row items-center all-pointer-events">
+                <q-icon
+                  class="q-mr-xs"
+                  color="secondary"
+                  size="20px"
+                  name="published_with_changes"
+                />
+              </div>
+            </template>
+          </q-select>
+        </q-item-section>
+      </q-item>
 
-      <div>
+      <br />
+      <br />
+
+      <div align="center">
         <q-btn
           v-if="!this.categorie"
           label="Ajouter"
-          outline
+          type="submit"
+          icon-right="assignment_turned_in"
           style="margin-right: 15px"
-          rounded
-          @click="onAdd()"
-          color="blue"
+          glossy
+          color="blue-10"
         />
 
         <q-btn
           v-if="this.categorie"
           style="margin-right: 15px"
-          label="Modifier"
-          outline
-          rounded
+          label="confirmer la modification"
+          icon-right="assignment_turned_in"
+          glossy
+          type="submit"
           @click="onEdit()"
-          color="green"
+          color="secondary"
         />
 
         <q-btn
           @click="onCancel()"
           label="Annuler"
           style="margin-right: 15px"
-          outline
           rounded
+          icon-right="cancel_presentation"
+          glossy
           v-close-popup
           color="red"
         />
@@ -188,14 +175,21 @@ export default {
     async onAdd() {
       this.$refs.myForm.validate().then(async success => {
         if (success) {
-          let res = await this.$axios.post(`/categorie/`, {
-            ...this.categorieCopy
-          });
-          window.location.reload(true);
+          try {
+            let res = await this.$axios.post(`/categorie/`, {
+              ...this.categorieCopy
+            });
+            window.location.reload(true);
 
-          this.$emit("updated");
+            // this.$emit("updated");
 
-          await this.getAll();
+            // await this.getAll();
+          } catch {
+            return this.$q.notify({
+              color: "red",
+              message: "code deja utilisé"
+            });
+          }
         }
       });
     },
@@ -237,9 +231,20 @@ export default {
 </script>
 <style scoped>
 .mydialog {
-  width: 500px;
-  padding: 15px;
-  height: 480px;
-  background: rgb(32, 29, 29);
+  min-width: 600px;
+  padding: 20px;
+  height: 670px;
+  background: white;
+}
+.title2 {
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  font-size: 18px;
+
+  font-family: monospace;
+}
+.title {
+  color: rgb(0, 0, 0);
+  font-family: monospace;
 }
 </style>

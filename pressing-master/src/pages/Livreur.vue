@@ -1,65 +1,89 @@
 <template>
   <q-page class="q-pa-lg">
     <!-- <q-card-section class="bg-primary text-white">-->
-    <h4>Livreurs</h4>
+    <h4>Gestion des livreurs</h4>
     <!-- </q-card-section> -->
+    <q-separator style="margin-bottom:10px;" color="black" />
+    <br />
 
-    <div align="right">
-      <q-btn
-        align="right"
-        outline
-        rounded
-        v-close-popup
-        glossy
-        label="Modifier"
-        color="green"
-        @click="EditLivreur"
-        :disable="!selected.length || selected.length > 1"
-      ></q-btn>
-      <q-btn
-        align="right"
-        outline
-        glossy
-        rounded
-        v-close-popup
-        label="Supprimer"
-        color="red"
-        @click="deleteLivreur"
-        :disable="!selected.length"
-      ></q-btn>
+    <div>
+      <div>
+        <q-btn
+          glossy
+          v-if="userdata.isAdmin === true"
+          rounded
+          dense
+          :disable="selected.length > 0"
+          style="margin-left:30px;"
+          icon-right="person_add_alt"
+          icon="add_circle_outline"
+          @click="addLivreur()"
+          v-close-popup
+          label="Ajouter un livreur "
+          color="blue-10"
+        ></q-btn>
+      </div>
+      <div align="right">
+        <q-btn
+          align="right"
+          v-if="userdata.isAdmin === true"
+          style="margin-right:30px;background-color:#148F77;color:white"
+          size="13px"
+          glossy
+          icon-right="change_circle"
+          label="Modifier"
+          @click="EditLivreur()"
+          :disable="!selected.length || selected.length > 1"
+        ></q-btn>
+        <q-btn
+          align="right"
+          size="13px"
+          v-if="userdata.isAdmin === true"
+          glossy
+          rounded
+          icon="delete_forever"
+          v-close-popup
+          color="red"
+          @click="deleteLivreur()"
+          :disable="!selected.length"
+        ></q-btn>
+      </div>
     </div>
-
-    <!-- <q-separator /> -->
 
     <q-space />
     <br />
-    <div>
-      <q-input
-        class="searchy"
-        dense
-        v-model="filter"
-        placeholder="  Chercher...."
-      >
-        <template v-slot:append>
-          <q-icon name="search" />
-        </template>
-      </q-input>
-    </div>
+
     <br />
-    <template class="q-pa-md">
-      <q-table
-        :filter="filter"
-        separator="horizontal"
-        :data="livreurs"
-        :columns="columns"
-        row-key="_id"
-        selection="multiple"
-        :selected.sync="selected"
-        :pagination.sync="pagination"
-        hide-pagination
-        color="secondary"
-      >
-        <!-- <template v-slot:top-right>
+    <br />
+    <br />
+    <div v-if="userdata.isAdmin === true">
+      <template class="q-pa-md">
+        <q-table
+          title="Liste des Livreurs "
+          :filter="filter"
+          separator="cell"
+          :data="livreurs"
+          :columns="columns"
+          row-key="_id"
+          selection="multiple"
+          :selected.sync="selected"
+          :pagination.sync="pagination"
+          hide-pagination
+          color="secondary"
+        >
+          <template v-slot:top-right>
+            <q-input
+              class="searchy"
+              dense
+              v-model="filter"
+              placeholder="  Chercher...."
+            >
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </template>
+          <!-- <template v-slot:top-right>
           <q-input
             class="searchy"
             dense
@@ -71,16 +95,53 @@
             </template>
           </q-input>
         </template> -->
-      </q-table>
-      <div class="row justify-center q-mt-md">
-        <q-pagination
-          v-model="pagination.page"
+        </q-table>
+        <div class="row justify-center q-mt-md">
+          <q-pagination
+            v-model="pagination.page"
+            color="blue-10"
+            :max="pagesNumber"
+            size="sm"
+          />
+        </div>
+      </template>
+    </div>
+    <div v-else>
+      <template class="q-pa-md">
+        <q-table
+          title="Liste des Livreurs "
+          :filter="filter"
+          separator="cell"
+          :data="livreurs"
+          :columns="columns"
+          row-key="_id"
+          :pagination.sync="pagination"
+          hide-pagination
           color="secondary"
-          :max="pagesNumber"
-          size="sm"
-        />
-      </div>
-    </template>
+        >
+          <template v-slot:top-right>
+            <q-input
+              class="searchy"
+              dense
+              v-model="filter"
+              placeholder="  Chercher...."
+            >
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </template>
+        </q-table>
+        <div class="row justify-center q-mt-md">
+          <q-pagination
+            v-model="pagination.page"
+            color="blue-10"
+            :max="pagesNumber"
+            size="sm"
+          />
+        </div>
+      </template>
+    </div>
     <q-dialog v-model="editDialog" v-if="editDialog">
       <livreur-form :livreur="selected[0]" @updated="getAll" />
     </q-dialog>
@@ -88,6 +149,8 @@
 </template>
 
 <script>
+import VueJwtDecode from "vue-jwt-decode";
+
 import LivreurForm from "src/components/Forms/LivreurForm.vue";
 export default {
   components: { LivreurForm },
@@ -97,6 +160,8 @@ export default {
     return {
       addShow: false,
       editDialog: false,
+      user: [],
+
       pagination: {
         sortBy: "createdAt",
         page: 1,
@@ -106,6 +171,8 @@ export default {
       filter: "",
       livreurs: [],
       selected: [],
+      userdata: [],
+      userId: null,
       columns: [
         {
           name: "nom",
@@ -168,7 +235,7 @@ export default {
         },
         {
           name: "createdAt",
-          label: "Créer le",
+          label: "Date de création",
           align: "center",
           field: "createdAt"
         }
@@ -177,25 +244,33 @@ export default {
   },
 
   methods: {
+    async getUser() {
+      let token = localStorage.getItem("token");
+      let decoded = VueJwtDecode.decode(token);
+      this.user = decoded;
+      console.log(this.user);
+      this.userId = this.user._id;
+      console.log(this.userId);
+    },
+    async getUserData() {
+      let res = await this.$axios.get(`/utilisateur/${this.userId}`);
+      this.userdata = res.data;
+      console.log(this.userdata);
+    },
+    addLivreur() {
+      this.editDialog = true;
+    },
     async getAll() {
       let res = await this.$axios.get("/livreur");
       this.livreurs = res.data;
     },
 
     async deleteLivreur() {
-      if (!this.selected[0]._id) {
-        return this.$q.notify({
-          color: "warning",
-          message: "aucun Livreur selectionner"
-        });
-      }
-      this.selected.forEach(element => {
+      await this.selected.forEach(element => {
         this.$axios.delete(`/livreur/delete/${element._id}`);
       });
-      window.location.reload(true);
 
-      this.$emit("updated");
-      await this.getAll();
+      window.location.reload(true);
     },
     EditLivreur() {
       if (!this.selected[0]._id) {
@@ -213,22 +288,23 @@ export default {
     }
   },
   watch: {},
-  async mounted() {
+  async created() {
     await this.getAll();
+    await this.getUser();
+    await this.getUserData();
   }
 };
 </script>
 <style scoped>
 .searchy {
   max-width: 250px;
-  border: 1px solid black;
+  border: solid 1px rgb(224, 224, 224);
 }
 h4 {
-  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
-  font-size: 2.37em;
-  margin-top: 0.33em;
-  color: #1a037e;
-  margin-bottom: 1em;
+  font-family: monospace;
+  font-size: 2em;
+  margin-top: 0.5em;
+  margin-bottom: 0.15em;
   margin-left: 0;
   margin-right: 0;
   letter-spacing: 3px;
@@ -239,7 +315,7 @@ h4 {
 
 .q-table__top,
 thead tr:first-child th
-  background-color: darkblue,
-  color: #fff,
-  font: 100% Helvetica, sans-serif
+  font-size: 15px,
+  color: darkblue,
+  font: monospace
 </style>

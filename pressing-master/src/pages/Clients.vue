@@ -1,66 +1,56 @@
 <template>
   <q-page class="q-pa-lg">
     <!-- <q-card-section class="bg-primary text-white">-->
-    <h4>Clients</h4>
+    <h4>Gestion des clients</h4>
     <!-- </q-card-section> -->
     <q-separator style="margin-bottom:10px;" color="black" />
-
+    <br />
     <div>
-      <q-btn
-        align="left"
-        glossy
-        outline
-        v-close-popup
-        text-color="primary"
-        label="Ajouter un client"
-        @click="addClient"
-        :disable="selected.length > 0"
-      ></q-btn>
+      <div>
+        <q-btn
+          glossy
+          rounded
+          dense
+          :disable="selected.length > 0"
+          style="margin-left:30px;"
+          icon-right="person_add_alt"
+          icon="add_circle_outline"
+          @click="addClient()"
+          v-close-popup
+          label="Ajouter un client "
+          color="blue-10"
+        ></q-btn>
+      </div>
       <div align="right">
         <q-btn
           align="right"
-          outline
-          rounded
-          v-close-popup
-          style="margin-right:30px"
+          style="margin-right:30px;background-color:#148F77;color:white"
           size="13px"
           glossy
+          icon-right="change_circle"
           label="Modifier"
-          color="green"
-          @click="EditClient"
+          @click="EditClient()"
           :disable="!selected.length || selected.length > 1"
         ></q-btn>
         <q-btn
           align="right"
           size="13px"
-          outline
           glossy
           rounded
+          icon="delete_forever"
           v-close-popup
-          label="Supprimer"
           color="red"
-          @click="deleteClient"
+          @click="deleteClient()"
           :disable="!selected.length"
         ></q-btn>
       </div>
     </div>
 
-    <!-- <q-separator /> -->
-
     <q-space />
     <br />
-    <div align="right">
-      <q-input
-        class="searchy"
-        dense
-        v-model="filter"
-        placeholder="  Chercher...."
-      >
-        <template v-slot:append>
-          <q-icon name="search" />
-        </template>
-      </q-input>
-    </div>
+
+    <br />
+    <br />
     <br />
     <template class="q-pa-md">
       <q-table
@@ -76,14 +66,7 @@
         hide-pagination
         color="secondary"
       >
-        <!-- <template v-slot:no-data="{ icon, message, filter }">
-          <div class="full-width row flex-center text-accent q-gutter-sm">
-            <q-icon size="2em" name="sentiment_dissatisfied" />
-            <span> Well this is sad... {{ message }}</span>
-            <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
-          </div>
-        </template> -->
-        <!-- <template v-slot:top-right>
+        <template v-slot:top-right>
           <q-input
             class="searchy"
             dense
@@ -94,12 +77,29 @@
               <q-icon name="search" />
             </template>
           </q-input>
+        </template>
+        <!-- <template v-slot:no-data="{ icon, message, filter }">
+          <div class="full-width row flex-center text-accent q-gutter-sm">
+            <q-icon size="2em" name="sentiment_dissatisfied" />
+            <span> Well this is sad... {{ message }}</span>
+            <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
+          </div>
+        </template> -->
+
+        <!-- <template v-slot:top>
+          <q-btn
+            color="primary"
+            icon-right="download"
+            label=""
+            no-caps
+            @click="exportTable"
+          />
         </template> -->
       </q-table>
       <div class="row justify-center q-mt-md" style="margin-top:30px">
         <q-pagination
           v-model="pagination.page"
-          color="grey"
+          color="blue-10"
           :max="pagesNumber"
           size="sm"
         />
@@ -113,6 +113,26 @@
 
 <script>
 import ClientForm from "src/components/Forms/ClientForm.vue";
+import { exportFile } from "quasar";
+
+function wrapCsvValue(val, formatFn) {
+  let formatted = formatFn !== void 0 ? formatFn(val) : val;
+
+  formatted =
+    formatted === void 0 || formatted === null ? "" : String(formatted);
+
+  formatted = formatted
+    //.split('"').join('""');
+    /**
+     * Excel accepts \n and \r in strings, but some other CSV parsers do not
+     * Uncomment the next two lines to escape new lines
+     */
+    //.split('\n').join('\\n')
+    .split("\r")
+    .join("\\r");
+
+  return `"${formatted}"`;
+}
 export default {
   components: { ClientForm },
 
@@ -192,7 +212,7 @@ export default {
         },
         {
           name: "createdAt",
-          label: "Créer le",
+          label: "Date de création",
           align: "center",
           field: "createdAt"
         }
@@ -201,6 +221,36 @@ export default {
   },
 
   methods: {
+    exportTable() {
+      // naive encoding to csv format
+      const content = [this.columns.map(col => wrapCsvValue(col.label))]
+        .concat(
+          this.clients.map(row =>
+            this.columns
+              .map(col =>
+                wrapCsvValue(
+                  typeof col.field === "function"
+                    ? col.field(row)
+                    : row[col.field === void 0 ? col.name : col.field],
+                  col.format
+                )
+              )
+              .join(",")
+          )
+        )
+        .join("\r\n");
+
+      const status = exportFile("table-export.csv", content, "text/csv");
+
+      if (status !== true) {
+        this.$q.notify({
+          message: "Browser denied file download...",
+          color: "negative",
+          icon: "warning"
+        });
+      }
+    },
+
     async getAll() {
       let res = await this.$axios.get("/client");
       this.clients = res.data;
@@ -217,12 +267,6 @@ export default {
       }
     },
     async deleteClient() {
-      // if (!this.selected[0]._id) {
-      //   return this.$q.notify({
-      //     color: "warning",
-      //     message: "no client selected"
-      //   });
-      // }
       await this.selected.forEach(element => {
         this.$axios.delete(`/client/delete/${element._id}`);
       });
@@ -255,10 +299,10 @@ export default {
 <style scoped>
 .searchy {
   max-width: 250px;
-  border: 1px solid black;
+  border: solid 1px rgb(224, 224, 224);
 }
 h4 {
-  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  font-family: monospace;
   font-size: 2em;
   margin-top: 0.5em;
   margin-bottom: 0.15em;
