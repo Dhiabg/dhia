@@ -1,6 +1,11 @@
 <template>
   <q-card class="mydialog">
-    <q-form class="q-pa-md bg-white text-black" ref="myForm">
+    <q-form
+      class="q-pa-md bg-white text-black"
+      @submit.prevent="onAdd"
+      @submit="onEdit"
+      ref="myForm"
+    >
       <br />
       <label class="title2">
         Formulaire client
@@ -17,12 +22,7 @@
           Veuillez modifier les données du client suivant
         </label>
       </div>
-      <!-- <div align="right">
-        <label class="title">
-          Champ obligatoire *
-        </label>
-      </div> -->
-      <br />
+
       <br />
       <br />
       <q-item>
@@ -35,7 +35,7 @@
             dense
             style="width:160px"
             color="secondary"
-            v-model="clientCopy.nom"
+            v-model.trim="clientCopy.nom"
             label="Nom"
             lazy-rules
             :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
@@ -58,7 +58,7 @@
             color="secondary"
             dense
             style="width:160px;margin-left:-40px"
-            v-model="clientCopy.prenom"
+            v-model.trim="clientCopy.prenom"
             label="Prénom"
             lazy-rules
             :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
@@ -77,6 +77,51 @@
         </q-item-section>
       </q-item>
       <q-item>
+        <q-item-section>
+          <label class="title"> Date de naissance :</label>
+        </q-item-section>
+        <q-item-section>
+          <!-- <q-date v-model="clientCopy.date_naissance" :options="optionsFn" /> -->
+          <template>
+            <div class="q-pa-md" style="max-width: 360px;margin-left:-120px">
+              <q-input
+                dense
+                label="AAAA-MM-JJ"
+                outlined
+                color="secondary"
+                v-model="clientCopy.date_naissance"
+              >
+                <template v-slot:prepend>
+                  <q-icon color="secondary" name="event" class="cursor-pointer">
+                    <q-popup-proxy
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-date
+                        v-model="clientCopy.date_naissance"
+                        bordered
+                        color="deep-orange"
+                        mask="YYYY-MM-DD"
+                        :options="dateOption"
+                      >
+                        <div class="row items-center justify-end">
+                          <q-btn
+                            v-close-popup
+                            label="Close"
+                            color="deep-orange"
+                            flat
+                          />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+            </div>
+          </template>
+        </q-item-section>
+      </q-item>
+      <!-- <q-item>
         <q-item-section>
           <label class="title"> Date de naissance :</label>
         </q-item-section>
@@ -103,7 +148,7 @@
             </template>
           </q-input>
         </q-item-section>
-      </q-item>
+      </q-item> -->
       <!-- date -->
       <q-item>
         <q-item-section>
@@ -147,8 +192,8 @@
             dense
             type="email"
             lazy-rules
-            :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
-            v-model="clientCopy.email"
+            :rules="[val => !!val || 'Champ vide !!']"
+            v-model.trim="clientCopy.email"
             label=""
           >
             <template v-slot:label>
@@ -175,7 +220,7 @@
             color="secondary"
             style="width:160px"
             dense
-            v-model="clientCopy.rue"
+            v-model.trim="clientCopy.rue"
             label="Rue"
             lazy-rules
             :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
@@ -197,7 +242,7 @@
             outlined
             color="secondary"
             style="width:160px;margin-left:-40px"
-            v-model="clientCopy.code_postal"
+            v-model.trim="clientCopy.code_postal"
             label="Code postal"
             lazy-rules
             dense
@@ -220,7 +265,7 @@
         outlined
         style="margin-left:225px;width:330px"
         color="secondary"
-        v-model="clientCopy.ville"
+        v-model.trim="clientCopy.ville"
         label="Ville"
         dense
         lazy-rules
@@ -298,8 +343,7 @@
           v-if="!this.client"
           label="Ajouter"
           type="submit"
-          @click="onAdd()"
-          icon-right="assignment_turned_in"
+          icon-right="person_add"
           style="margin-right: 15px"
           glossy
           color="blue-10"
@@ -312,7 +356,6 @@
           icon-right="assignment_turned_in"
           glossy
           type="submit"
-          @click="onEdit()"
           color="secondary"
         />
 
@@ -343,36 +386,51 @@ export default {
   },
 
   methods: {
+    dateOption(date) {
+      return date >= "1920/01/01" && date <= "2018/01/01";
+    },
     async onAdd() {
-      this.$refs.myForm.validate().then(async success => {
-        if (success) {
-          let res = await this.$axios.post(`/client/`, {
-            ...this.clientCopy
-          });
-          window.location.reload(true);
+      let year = this.clientCopy.date_naissance;
+      let y = year.getYear();
+      console.log("year : ", y);
+      // this.$refs.myForm.validate().then(async success => {
+      //   if (success) {
+      //     try {
+      //       let res = await this.$axios.post(`/client/`, {
+      //         ...this.clientCopy
+      //       });
+      //       window.location.reload(true);
 
-          this.$emit("updated");
-          await this.getAll();
-        }
-      });
+      //       this.$emit("updated");
+      //       await this.getAll();
+      //     } catch {
+      //       return this.$q.notify({
+      //         color: "red",
+      //         message: "Email deja utilisé"
+      //       });
+      //     }
+      //   }
+      // });
     },
     async onEdit() {
       this.$refs.myForm.validate().then(async success => {
         if (success) {
-          let res = await this.$axios.patch(
-            `/client/update/${this.client._id}`,
-            {
-              ...this.clientCopy
-            }
-          );
-          window.location.reload(true);
+          try {
+            let res = await this.$axios.patch(
+              `/client/update/${this.client._id}`,
+              {
+                ...this.clientCopy
+              }
+            );
+            window.location.reload(true);
 
-          await this.$emit("updated");
-        } else {
-          return this.$q.notify({
-            color: "red",
-            message: "vérifier les données"
-          });
+            await this.$emit("updated");
+          } catch {
+            return this.$q.notify({
+              color: "red",
+              message: "Email deja utilisé"
+            });
+          }
         }
       });
     },

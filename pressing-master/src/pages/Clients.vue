@@ -11,6 +11,7 @@
           glossy
           rounded
           dense
+          class="shadowbutton"
           :disable="selected.length > 0"
           style="margin-left:30px;"
           icon-right="person_add_alt"
@@ -24,6 +25,7 @@
       <div align="right">
         <q-btn
           align="right"
+          class="transform"
           style="margin-right:30px;background-color:#148F77;color:white"
           size="13px"
           glossy
@@ -33,6 +35,7 @@
           :disable="!selected.length || selected.length > 1"
         ></q-btn>
         <q-btn
+          class="transform"
           align="right"
           size="13px"
           glossy
@@ -40,12 +43,48 @@
           icon="delete_forever"
           v-close-popup
           color="red"
-          @click="deleteClient()"
+          @click="confirm = true"
           :disable="!selected.length"
         ></q-btn>
       </div>
     </div>
+    <q-dialog v-model="confirm">
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar
+            icon="no_accounts"
+            size="70px"
+            color="white"
+            text-color="secondary"
+          />
 
+          <span class="q-ml-sm"
+            >êtes-vous sûr de vouloir supprimer les clients sélectionnées ?
+          </span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            dense
+            rounded
+            flat
+            label="Annuler"
+            color="red-4"
+            v-close-popup
+          />
+          <q-btn
+            glossy
+            dense
+            no-caps
+            icon-right="delete_forever"
+            @click="deleteClient()"
+            label="Supprimer"
+            color="red"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <q-space />
     <br />
 
@@ -64,12 +103,14 @@
         :selected.sync="selected"
         :pagination.sync="pagination"
         hide-pagination
+        hide-bottom
         color="secondary"
       >
         <template v-slot:top-right>
           <q-input
             class="searchy"
             dense
+            style="margin-right:25px"
             v-model="filter"
             placeholder="  Chercher...."
           >
@@ -77,16 +118,6 @@
               <q-icon name="search" />
             </template>
           </q-input>
-        </template>
-        <!-- <template v-slot:no-data="{ icon, message, filter }">
-          <div class="full-width row flex-center text-accent q-gutter-sm">
-            <q-icon size="2em" name="sentiment_dissatisfied" />
-            <span> Well this is sad... {{ message }}</span>
-            <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
-          </div>
-        </template> -->
-
-        <!-- <template v-slot:top>
           <q-btn
             color="primary"
             icon-right="download"
@@ -94,7 +125,24 @@
             no-caps
             @click="exportTable"
           />
-        </template> -->
+        </template>
+        <template v-slot:no-data="{ icon, message, filter }">
+          <div class="full-width row flex-center text-accent q-gutter-sm">
+            <q-icon size="2em" name="sentiment_dissatisfied" />
+            <span> Well this is sad... {{ message }}</span>
+            <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
+          </div>
+        </template>
+
+        <template>
+          <q-btn
+            color="primary"
+            icon-right="download"
+            label=""
+            no-caps
+            @click="exportTable"
+          />
+        </template>
       </q-table>
       <div class="row justify-center q-mt-md" style="margin-top:30px">
         <q-pagination
@@ -139,7 +187,7 @@ export default {
   name: "Clients",
   data() {
     return {
-      addShow: false,
+      //addShow: false,
       editDialog: false,
       pagination: {
         sortBy: "createdAt",
@@ -150,6 +198,7 @@ export default {
       filter: "",
       clients: [],
       selected: [],
+      confirm: false,
       columns: [
         {
           name: "nom",
@@ -204,12 +253,12 @@ export default {
           align: "center",
           field: "telephone"
         },
-        {
-          name: "etat",
-          label: "Etat",
-          align: "center",
-          field: "etat"
-        },
+        // {
+        //   name: "etat",
+        //   label: "Etat",
+        //   align: "center",
+        //   field: "etat"
+        // },
         {
           name: "createdAt",
           label: "Date de création",
@@ -310,6 +359,17 @@ h4 {
   margin-right: 0;
   letter-spacing: 3px;
   font-weight: bold;
+}
+.transform:hover {
+  transform: translateY(-3px);
+}
+.shadowbutton {
+  box-shadow: 0 9px #999;
+}
+.shadowbutton:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
 }
 </style>
 <style lang="sass">

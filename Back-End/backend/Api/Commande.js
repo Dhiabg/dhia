@@ -57,5 +57,17 @@ route.get("/", async (req, res) => {
   const Commandes = await commandes.find();
   res.json(Commandes);
 });
-
+route.patch("/update/:id", async (req, res) => {
+  try {
+    const _id = req.params.id;
+    const Commandes = await commandes.findByIdAndUpdate(_id, req.body);
+    res.send(Commandes);
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
+route.delete("/delete/:id", async (req, res) => {
+  const result = await commandes.findByIdAndDelete({ _id: req.params.id });
+  res.json(result);
+});
 module.exports = route;

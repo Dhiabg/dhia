@@ -20,9 +20,9 @@ route.post("/", async (req, res) => {
       Produit.description = req.body.description;
       Produit.imageUrl = req.body.imageUrl;
       Produit.etat = req.body.etat;
-      Produit.prix = req.body.prix;
+      // Produit.prix = req.body.prix;
       Produit.categorie = req.body.categorie;
-      Produit.service = req.body.service;
+      Produit.services = req.body.services;
 
       await Produit.save();
 
@@ -69,6 +69,12 @@ route.get("/:id", async (req, res) => {
 //});
 route.patch("/update/:id", async (req, res) => {
   try {
+    let sameCode = await produits.find({ code: req.body.code });
+    if (sameCode.length >= 1) {
+      return res.status(409).json({
+        message: "code déja utilisé",
+      });
+    }
     const _id = req.params.id;
     const prod = await produits.findByIdAndUpdate(_id, req.body);
     res.send(prod);

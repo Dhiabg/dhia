@@ -19,6 +19,7 @@
           icon="add_circle_outline"
           @click="addLivreur()"
           v-close-popup
+          class="shadowbutton"
           label="Ajouter un livreur "
           color="blue-10"
         ></q-btn>
@@ -30,6 +31,7 @@
           style="margin-right:30px;background-color:#148F77;color:white"
           size="13px"
           glossy
+          class="transform"
           icon-right="change_circle"
           label="Modifier"
           @click="EditLivreur()"
@@ -41,15 +43,52 @@
           v-if="userdata.isAdmin === true"
           glossy
           rounded
+          class="transform"
           icon="delete_forever"
           v-close-popup
           color="red"
-          @click="deleteLivreur()"
+          @click="confirm = true"
           :disable="!selected.length"
         ></q-btn>
       </div>
     </div>
+    <q-dialog v-model="confirm">
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar
+            size="70px"
+            icon="no_accounts"
+            color="white"
+            text-color="secondary"
+          />
 
+          <span class="q-ml-sm"
+            >êtes-vous sûr de vouloir supprimer les livreurs sélectionnées ?
+          </span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            dense
+            rounded
+            flat
+            label="Annuler"
+            color="red-4"
+            v-close-popup
+          />
+          <q-btn
+            glossy
+            dense
+            no-caps
+            icon-right="delete_forever"
+            @click="deleteLivreur()"
+            label="Supprimer"
+            color="red"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <q-space />
     <br />
 
@@ -69,6 +108,7 @@
           :selected.sync="selected"
           :pagination.sync="pagination"
           hide-pagination
+          hide-bottom
           color="secondary"
         >
           <template v-slot:top-right>
@@ -83,18 +123,14 @@
               </template>
             </q-input>
           </template>
-          <!-- <template v-slot:top-right>
-          <q-input
-            class="searchy"
-            dense
-            v-model="filter"
-            placeholder="  Chercher...."
-          >
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </template> -->
+          <q-btn
+            color="primary"
+            icon-right="download"
+            label=""
+            no-caps
+            style="margin-right:25px"
+            @click="exportTable"
+          />
         </q-table>
         <div class="row justify-center q-mt-md">
           <q-pagination
@@ -123,6 +159,7 @@
             <q-input
               class="searchy"
               dense
+              style="margin-right:25px"
               v-model="filter"
               placeholder="  Chercher...."
             >
@@ -130,6 +167,13 @@
                 <q-icon name="search" />
               </template>
             </q-input>
+            <q-btn
+              color="primary"
+              icon-right="download"
+              label=""
+              no-caps
+              @click="exportTable"
+            />
           </template>
         </q-table>
         <div class="row justify-center q-mt-md">
@@ -152,6 +196,26 @@
 import VueJwtDecode from "vue-jwt-decode";
 
 import LivreurForm from "src/components/Forms/LivreurForm.vue";
+import { exportFile } from "quasar";
+
+function wrapCsvValue(val, formatFn) {
+  let formatted = formatFn !== void 0 ? formatFn(val) : val;
+
+  formatted =
+    formatted === void 0 || formatted === null ? "" : String(formatted);
+
+  formatted = formatted
+    //.split('"').join('""');
+    /**
+     * Excel accepts \n and \r in strings, but some other CSV parsers do not
+     * Uncomment the next two lines to escape new lines
+     */
+    //.split('\n').join('\\n')
+    .split("\r")
+    .join("\\r");
+
+  return `"${formatted}"`;
+}
 export default {
   components: { LivreurForm },
 
@@ -161,6 +225,7 @@ export default {
       addShow: false,
       editDialog: false,
       user: [],
+      confirm: false,
 
       pagination: {
         sortBy: "createdAt",
@@ -227,12 +292,12 @@ export default {
           align: "center",
           field: "telephone"
         },
-        {
-          name: "etat",
-          label: "Etat",
-          align: "center",
-          field: "etat"
-        },
+        // {
+        //   name: "etat",
+        //   label: "Etat",
+        //   align: "center",
+        //   field: "etat"
+        // },
         {
           name: "createdAt",
           label: "Date de création",
@@ -244,6 +309,36 @@ export default {
   },
 
   methods: {
+    exportTable() {
+      // naive encoding to csv format
+      const content = [this.columns.map(col => wrapCsvValue(col.label))]
+        .concat(
+          this.livreurs.map(row =>
+            this.columns
+              .map(col =>
+                wrapCsvValue(
+                  typeof col.field === "function"
+                    ? col.field(row)
+                    : row[col.field === void 0 ? col.name : col.field],
+                  col.format
+                )
+              )
+              .join(",")
+          )
+        )
+        .join("\r\n");
+
+      const status = exportFile("table-export.csv", content, "text/csv");
+
+      if (status !== true) {
+        this.$q.notify({
+          message: "Browser denied file download...",
+          color: "negative",
+          icon: "warning"
+        });
+      }
+    },
+
     async getUser() {
       let token = localStorage.getItem("token");
       let decoded = VueJwtDecode.decode(token);
@@ -309,6 +404,17 @@ h4 {
   margin-right: 0;
   letter-spacing: 3px;
   font-weight: bold;
+}
+.shadowbutton {
+  box-shadow: 0 9px #999;
+}
+.shadowbutton:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+.transform:hover {
+  transform: translateY(-3px);
 }
 </style>
 <style lang="sass">

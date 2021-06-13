@@ -8,6 +8,7 @@
           round
           icon="menu"
           aria-label="Menu"
+          class="menu"
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
 
@@ -32,9 +33,9 @@
           flat
           dense
           round
-          icon="shopping_bag"
+          icon="shopping_cart"
           class="iconitem"
-          size="17px"
+          size="16px"
         />
         <q-btn
           to="/Profile"
@@ -44,6 +45,15 @@
           icon="account_circle"
           class="iconitem"
           size="17px"
+        />
+        <q-btn
+          @click="confirm = true"
+          flat
+          dense
+          round
+          icon="logout"
+          class="iconitem"
+          size="16px"
         />
         <!-- <q-img
             class="absolute-right"
@@ -69,17 +79,49 @@
         margin-top:20px"
         >
           <q-btn
-            @click="logUserOut()"
+            @click="confirm = true"
             class="butcol"
             glossy
             rounded
+            no-caps
             v-close-popup
-            style="width:125px"
+            style="width:115px"
             size="9px"
             icon-right="logout"
             label="Déconnecter"
           />
         </div>
+        <q-dialog v-model="confirm">
+          <q-card>
+            <q-card-section class="row items-center">
+              <q-avatar icon="logout" color="white" text-color="red" />
+
+              <span class="q-ml-sm"
+                >êtes-vous sûr de vouloir vous déconnecter ?
+              </span>
+            </q-card-section>
+
+            <q-card-actions align="right">
+              <q-btn
+                dense
+                rounded
+                flat
+                label="Annuler"
+                color="red"
+                v-close-popup
+              />
+              <q-btn
+                glossy
+                dense
+                icon-right="logout"
+                @click="logUserOut()"
+                label="Deconnecter"
+                color="red"
+                v-close-popup
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
         <!-- <q-img
           src="https://image.freepik.com/vecteurs-libre/papier-peint-abstrait-blanc_23-2148808302.jpg"
           style="height: 180px"
@@ -87,11 +129,12 @@
 
         <header class="align">
           <q-avatar size="60px" class="q-mb-sm">
-            <q-img
-              v-if="!this.userdata.imageUrl"
-              src="https://png.pngtree.com/png-clipart/20190921/original/pngtree-no-photo-taking-photo-illustration-png-image_4698291.jpg"
+            <img
+              v-if="this.userdata && this.userdata.imageUrl"
+              style="width:290px"
+              :src="this.userdata.imageUrl"
             />
-            <img style="width:290px" :src="this.userdata.imageUrl" />
+            <q-img v-else src="~assets/nopic.png" />
           </q-avatar>
           <div class="text">{{ this.userdata.nom }}</div>
           <div class="text">{{ this.userdata.prenom }}</div>
@@ -151,7 +194,21 @@
             </div>
           </template>
         </q-item>
+        <q-item to="/mes-commandes" aria-label="" class="qtem">
+          <template v-slot:>
+            <div class="row items-center all-pointer-events">
+              <q-icon
+                style="margin-right:31px"
+                class="q-mr-xs"
+                size="28px"
+                name="assignment"
+              />
+              Mes Commandes
+            </div>
+          </template>
+        </q-item>
       </q-list>
+
       <footer>
         <q-img class="alignimg" src="~assets/logopressing.png" />
       </footer>
@@ -225,6 +282,7 @@ export default {
   components: { EssentialLink },
   data() {
     return {
+      confirm: false,
       user: [],
       userdata: [],
       leftDrawerOpen: false,
@@ -269,6 +327,9 @@ export default {
 };
 </script>
 <style scoped>
+.menu:hover {
+  transform: translateX(-2px);
+}
 .alignbut {
   position: right;
 }
@@ -307,12 +368,13 @@ export default {
   font-weight: bolder;
   color: white;
 }
-/* .butcol:hover {
-  background-color: black;
+.butcol:hover {
+  /* background-color: black;
   color: red;
   border: 1px solid red;
-  font-weight: bolder;
-} */
+  font-weight: bolder; */
+  transform: translateY(-3px);
+}
 .qtem {
   color: rgb(180, 179, 179);
   font-size: 15px;

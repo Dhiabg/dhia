@@ -21,6 +21,7 @@
           v-close-popup
           label="Ajouter un service "
           color="blue-10"
+          class="shadowbutton"
         ></q-btn>
       </div>
       <div align="right">
@@ -32,22 +33,48 @@
           icon-right="change_circle"
           label="Modifier"
           @click="EditService()"
+          class="transform"
           :disable="!selected.length || selected.length > 1"
         ></q-btn>
         <q-btn
           align="right"
           size="13px"
           glossy
+          class="transform"
           rounded
           icon="delete_forever"
           v-close-popup
           color="red"
-          @click="deleteService()"
+          @click="confirm = true"
           :disable="!selected.length"
         ></q-btn>
       </div>
     </div>
+    <q-dialog v-model="confirm">
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="delete_outline" color="white" text-color="red" />
 
+          <span class="q-ml-sm"
+            >êtes-vous sûr de vouloir supprimer les services sélectionnées ?
+          </span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn dense rounded flat label="Annuler" color="red" v-close-popup />
+          <q-btn
+            glossy
+            dense
+            no-caps
+            icon-right="delete_forever"
+            @click="deleteService()"
+            label="Supprimer"
+            color="red"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <br />
     <br />
     <br />
@@ -100,11 +127,7 @@
                   class="mycard"
                   :src="props.row.imageUrl"
                 />
-                <img
-                  v-else
-                  class="mycard"
-                  src="https://www.radiobeton.com/www/wp-content/uploads/2017/01/arton17969.jpg"
-                />
+                <img v-else class="mycard" src="~assets/manquante.jpg" />
                 <q-separator horizontal />
 
                 <q-list>
@@ -233,6 +256,7 @@ export default {
       //categories: [],
       etatcss: true,
       expanded: false,
+      confirm: false,
       services: [],
       selected: [],
       // filter: "",
@@ -387,5 +411,16 @@ h4 {
 .pagin {
   margin-left: 750px;
   margin-bottom: 170px;
+}
+.shadowbutton {
+  box-shadow: 0 9px #999;
+}
+.shadowbutton:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+.transform:hover {
+  transform: translateY(-3px);
 }
 </style>

@@ -24,6 +24,7 @@
           style="margin-left:30px;padding-right:10px"
           icon="add_circle_outline"
           @click="addCategorie()"
+          class="shadowbutton"
           v-close-popup
           label="Ajouter une catégorie "
           color="blue-10"
@@ -35,6 +36,7 @@
           style="margin-right:30px;background-color:#148F77;color:white"
           size="13px"
           glossy
+          class="transform"
           icon-right="change_circle"
           label="Modifier"
           @click="EditCategorie()"
@@ -45,15 +47,40 @@
           size="13px"
           glossy
           rounded
+          class="transform"
           icon="delete_forever"
           v-close-popup
           color="red"
-          @click="deleteCategorie()"
+          @click="confirm = true"
           :disable="!selected.length"
         ></q-btn>
       </div>
     </div>
+    <q-dialog v-model="confirm">
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="delete_outline" color="white" text-color="red" />
 
+          <span class="q-ml-sm"
+            >êtes-vous sûr de vouloir supprimer les catégories sélectionnées ?
+          </span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn dense rounded flat label="Annuler" color="red" v-close-popup />
+          <q-btn
+            glossy
+            dense
+            no-caps
+            icon-right="delete_forever"
+            @click="deleteCategorie()"
+            label="Supprimer"
+            color="red"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <br />
     <br />
     <br />
@@ -104,11 +131,7 @@
                   class="mycard"
                   :src="props.row.imageUrl"
                 />
-                <img
-                  v-else
-                  class="mycard"
-                  src="https://www.radiobeton.com/www/wp-content/uploads/2017/01/arton17969.jpg"
-                />
+                <img v-else class="mycard" src="~assets/manquante.jpg" />
                 <q-separator horizontal />
 
                 <q-list>
@@ -222,6 +245,7 @@ export default {
       categories: [],
       filter: "",
       etatcss: true,
+      confirm: false,
       pagination: {
         rowsPerPage: 7,
         page: 1
@@ -285,8 +309,14 @@ export default {
       await this.selected.forEach(element => {
         this.$axios.delete(`/categorie/delete/${element._id}`);
       });
-      //await this.$emit("updated");
+      // if (res.status === 200) {
+      //   this.$q.notify({
+      //     color: "warning",
+      //     message: "Catégorie supprimée"
+      //   });
       window.location.reload(true);
+
+      //await this.$emit("updated");
       // window.location.reload(true);
 
       // let res = await this.$axios.delete(
@@ -373,5 +403,16 @@ h4 {
 .pagin {
   margin-left: 750px;
   margin-bottom: 170px;
+}
+.shadowbutton {
+  box-shadow: 0 9px #999;
+}
+.shadowbutton:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+.transform:hover {
+  transform: translateY(-3px);
 }
 </style>

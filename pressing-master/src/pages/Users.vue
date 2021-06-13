@@ -20,6 +20,7 @@
           v-close-popup
           label="Ajouter un gérant "
           color="blue-10"
+          class="shadowbutton"
         ></q-btn>
       </div>
       <div align="right">
@@ -32,23 +33,72 @@
           icon-right="change_circle"
           label="Modifier"
           @click="EditUser"
+          class="transform"
           :disable="!selected.length || selected.length > 1"
         ></q-btn>
+        <q-btn
+          v-if="this.userdata.isAdmin === true"
+          dense
+          glossy
+          class="transform"
+          style="margin-right:25px;"
+          label="Changer mot de passe"
+          icon-right="password"
+          color="yellow-9"
+          @click="passwordDialog = true"
+        />
         <q-btn
           v-if="userdata.isAdmin === true"
           align="right"
           size="13px"
           glossy
           rounded
+          class="transform"
           icon="delete_forever"
           v-close-popup
           color="red"
-          @click="deleteUser"
+          @click="confirm = true"
           :disable="!selected.length"
         ></q-btn>
       </div>
     </div>
+    <q-dialog v-model="confirm">
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar
+            size="70px"
+            icon="no_accounts"
+            color="white"
+            text-color="secondary"
+          />
 
+          <span class="q-ml-sm"
+            >êtes-vous sûr de vouloir supprimer les gérants sélectionnées ?
+          </span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            dense
+            rounded
+            flat
+            label="Annuler"
+            color="red-4"
+            v-close-popup
+          />
+          <q-btn
+            glossy
+            dense
+            no-caps
+            icon-right="delete_forever"
+            @click="deleteUser()"
+            label="Supprimer"
+            color="red"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <q-space />
     <br />
 
@@ -67,12 +117,14 @@
           :selected.sync="selected"
           :pagination.sync="pagination"
           hide-pagination
+          hide-bottom
           color="secondary"
         >
           <template v-slot:top-right>
             <q-input
               class="searchy"
               dense
+              style="margin-right:25px"
               v-model="filter"
               placeholder="  Chercher...."
             >
@@ -80,6 +132,13 @@
                 <q-icon name="search" />
               </template>
             </q-input>
+            <q-btn
+              color="primary"
+              icon-right="download"
+              label=""
+              no-caps
+              @click="exportTable"
+            />
           </template>
         </q-table>
         <div class="row justify-center q-mt-md">
@@ -111,6 +170,7 @@
             <q-input
               class="searchy"
               dense
+              style="margin-right:25px"
               v-model="filter"
               placeholder="  Chercher...."
             >
@@ -118,6 +178,13 @@
                 <q-icon name="search" />
               </template>
             </q-input>
+            <q-btn
+              color="primary"
+              icon-right="download"
+              label=""
+              no-caps
+              @click="exportTable"
+            />
           </template>
         </q-table>
         <div class="row justify-center q-mt-md">
@@ -134,6 +201,9 @@
     <q-dialog v-model="editDialog" v-if="editDialog">
       <user-form :user="selected[0]" @updated="getAll" />
     </q-dialog>
+    <q-dialog v-model="passwordDialog" v-if="passwordDialog">
+      <password-change :user="selected[0]" @updated="getAll" />
+    </q-dialog>
   </q-page>
 </template>
 
@@ -141,13 +211,36 @@
 import VueJwtDecode from "vue-jwt-decode";
 
 import UserForm from "src/components/Forms/UserForm.vue";
+import PasswordChange from "src/components/Forms/PasswordChange.vue";
+
+import { exportFile } from "quasar";
+
+function wrapCsvValue(val, formatFn) {
+  let formatted = formatFn !== void 0 ? formatFn(val) : val;
+
+  formatted =
+    formatted === void 0 || formatted === null ? "" : String(formatted);
+
+  formatted = formatted
+    //.split('"').join('""');
+    /**
+     * Excel accepts \n and \r in strings, but some other CSV parsers do not
+     * Uncomment the next two lines to escape new lines
+     */
+    //.split('\n').join('\\n')
+    .split("\r")
+    .join("\\r");
+
+  return `"${formatted}"`;
+}
 export default {
-  components: { UserForm },
+  components: { UserForm, PasswordChange },
 
   name: "Clients",
   data() {
     return {
       editDialog: false,
+      confirm: false,
       pagination: {
         sortBy: "createdAt",
         page: 1,
@@ -155,10 +248,12 @@ export default {
         rowsPerPage: 8
       },
       filter: "",
+
       utilisateurs: [],
       selected: [],
       user: [],
       userdata: [],
+      passwordDialog: false,
       userId: null,
       columns: [
         {
@@ -214,12 +309,12 @@ export default {
           align: "center",
           field: "telephone"
         },
-        {
-          name: "etat",
-          label: "Etat",
-          align: "center",
-          field: "etat"
-        },
+        // {
+        //   name: "etat",
+        //   label: "Etat",
+        //   align: "center",
+        //   field: "etat"
+        // },
         {
           name: "createdAt",
           label: "Date de création",
@@ -231,6 +326,36 @@ export default {
   },
 
   methods: {
+    exportTable() {
+      // naive encoding to csv format
+      const content = [this.columns.map(col => wrapCsvValue(col.label))]
+        .concat(
+          this.utilisateurs.map(row =>
+            this.columns
+              .map(col =>
+                wrapCsvValue(
+                  typeof col.field === "function"
+                    ? col.field(row)
+                    : row[col.field === void 0 ? col.name : col.field],
+                  col.format
+                )
+              )
+              .join(",")
+          )
+        )
+        .join("\r\n");
+
+      const status = exportFile("table-export.csv", content, "text/csv");
+
+      if (status !== true) {
+        this.$q.notify({
+          message: "Browser denied file download...",
+          color: "negative",
+          icon: "warning"
+        });
+      }
+    },
+
     async getUser() {
       let token = localStorage.getItem("token");
       let decoded = VueJwtDecode.decode(token);
@@ -303,6 +428,17 @@ h4 {
   margin-right: 0;
   letter-spacing: 3px;
   font-weight: bold;
+}
+.shadowbutton {
+  box-shadow: 0 9px #999;
+}
+.shadowbutton:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+.transform:hover {
+  transform: translateY(-3px);
 }
 </style>
 <style lang="sass">

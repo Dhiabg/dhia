@@ -2,46 +2,44 @@
   <q-page class="q-pa-lg">
     <q-item>
       <q-item-section>
-        <h4>Commander</h4>
+        <h4>Passer votre commande</h4>
       </q-item-section>
+
       <q-item-section>
         <div align="right">
-          <q-btn
-            to="/panier"
+          <q-input
+            class="searchy"
             dense
-            glossy
-            rounded
-            style="padding:2px;width:150px"
-            color="secondary"
-            icon-right="shopping_cart"
-            size="15px"
+            v-model="filter"
+            placeholder="  Chercher...."
           >
-            Panier
-          </q-btn>
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
         </div>
       </q-item-section>
     </q-item>
     <q-separator style="margin-bottom:10px;" color="black" />
+    <q-item-section>
+      <div align="right">
+        <q-btn
+          to="/panier"
+          dense
+          glossy
+          style="padding:2px;width:150px;height:35px;margin-right:25px"
+          color="secondary"
+          icon-right="shopping_cart"
+          size="15px"
+        >
+          Panier
+        </q-btn>
+      </div>
+    </q-item-section>
 
-    <br />
-    <br />
-
-    <!-- <div align="right">
-      <q-btn
-        to="/panier"
-        flat
-        dense
-        rounded
-        icon="shopping_cart"
-        class="shopicon"
-        size="20px"
-      >
-        Panier
-      </q-btn>
-    </div> -->
-
-    <!-- Categories -->
-
+    <label class="title">
+      Filtrer par Catégorie :
+    </label>
     <q-table
       :data="cat"
       row-key="_id"
@@ -74,75 +72,10 @@
         </div>
       </template>
     </q-table>
-
     <!-- Categories -->
     <br />
 
     <!-- Services -->
-
-    <!-- <q-table
-      :data="serv"
-      row-key="_id"
-      grid
-      selection="single"
-      :pagination.sync="paginationServ"
-      hide-pagination
-      hide-header
-    >
-      <template #item="props">
-        <div class="catservcard">
-          <q-card
-            @click="changeServName(props.row.nom)"
-            class="catservcard"
-            :class="props.row.nom === servName ? 'bg-grey-3' : ''"
-          >
-            <q-separator />
-            <q-list dense>
-              <q-list>
-                <q-card :class="props.row.nom === servName ? 'bg-grey-3' : ''">
-                  <q-img
-                    :class="props.row.nom === servName ? 'bg-grey-3' : ''"
-                    class="catservcard"
-                    :src="props.row.imageUrl"
-                  >
-                    <div class="absolute-bottom text-subtitle text-center">
-                      {{ props.row.nom }}
-                    </div>
-                  </q-img>
-                </q-card>
-              </q-list>
-            </q-list>
-          </q-card>
-        </div>
-        <div class="row absolute-bottom q-mt-md">
-          <q-pagination
-            v-model="paginationServ.page"
-            color="secondary"
-            class="pagin"
-            :max="pagesNumberServ"
-            size="sm"
-          />
-        </div>
-      </template>
-    </q-table> -->
-
-    <!-- Services -->
-    <br />
-    <q-space />
-
-    <div align="right">
-      <q-input
-        class="searchy"
-        dense
-        v-model="filter"
-        placeholder="  Chercher...."
-      >
-        <template v-slot:append>
-          <q-icon name="search" />
-        </template>
-      </q-input>
-    </div>
-    <br />
 
     <q-table
       :filter="filter"
@@ -157,141 +90,49 @@
     >
       <template #item="props">
         <div
-          class="mycard"
+          style="margin:15px"
           v-if="categories[props.row.categorie] === catName"
           :style="props.selected ? 'transform: scale(0.95);' : ''"
         >
           <q-card class="mycard" :class="props.selected ? 'bg-grey-3' : ''">
             <q-list dense>
               <q-card :class="props.selected ? 'bg-grey-3' : ''">
-                <!-- {{ props.row.imageUrl }} -->
                 <q-card-section horizontal>
-                  <img class="image" :src="props.row.imageUrl" />
-
-                  <q-separator vertical />
-                  <q-card-section class="image" horizontal>
-                    <q-list>
-                      <q-item>
-                        <q-item-section avatar>
-                          <q-item-label caption> Nom</q-item-label>
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label>{{ props.row.nom }}</q-item-label>
-                        </q-item-section>
-                      </q-item>
-                      <!-- <q-item>
-                        <q-item-section avatar>
-                          <q-item-label caption>Service</q-item-label>
-                        </q-item-section>
-
-                        <q-item-section
-                          v-for="item in props.row.service"
-                          :key="item._id"
-                          class="absolute-center"
-                        >
-                          <q-item-label>
-                            {{ services[item] }}
-                          </q-item-label>
-                        </q-item-section>
-                      </q-item>
-                      <q-separator horizontal /> -->
-
-                      <!--<q-separator horizontal />
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-item-label caption>Categorie</q-item-label>
-                    </q-item-section>
-
-                    <q-item-section class="absolute-center">
-                      <q-item-label>
-                        {{ categories[props.row.categorie] }}
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-separator horizontal />
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-item-label caption>Service</q-item-label>
-                    </q-item-section>
-
-                    <q-item-section class="absolute-center">
-                      <q-item-label>{{
-                        services[props.row.service]
-                      }}</q-item-label>
-                    </q-item-section>
-                  </q-item> -->
-                      <!-- <q-separator horizontal /> -->
-
-                      <q-item>
-                        <q-item-section avatar>
-                          <q-item-label caption>Prix</q-item-label>
-                        </q-item-section>
-
-                        <q-item-section class="absolute-center">
-                          <q-item-label
-                            >{{ props.row.prix }}
-                            <q-space></q-space> Dinars</q-item-label
-                          >
-                        </q-item-section>
-                      </q-item>
-                      <br />
-                      <q-item>
-                        <q-item-section avatar>
-                          <q-btn
-                            @click="ajoutPanier(props.row)"
-                            size="10px"
-                            glossy
-                            rounded
-                            color="green"
-                            label="Ajouter au panier"
-                          />
-                        </q-item-section>
-                      </q-item>
-                      <!-- <q-separator horizontal /> -->
-
-                      <!-- <q-item>
-                        <q-item-section avatar>
-                          <q-item-label caption>Etat</q-item-label>
-                        </q-item-section>
-
-                        <q-item-section class="absolute-center">
-                          <q-item-label
-                            ><q-badge
-                              :class="
-                                props.row.etat === 'Actif'
-                                  ? 'actifcss'
-                                  : 'inactifcss'
-                              "
-                              >{{ props.row.etat }}</q-badge
-                            ></q-item-label
-                          >
-                          <q-separator vertical />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label>
-                            <q-btn
-                              @click="ajoutPanier(props.row)"
-                              flat
-                              dense
-                              round
-                              icon="add_shopping_cart"
-                              style="margin-left:80px"
-                              class="iconitem"
-                            />
-                          </q-item-label>
-                        </q-item-section>
-                      </q-item> -->
-                      <!-- <q-separator horizontal /> -->
-                    </q-list>
-                  </q-card-section>
+                  <q-img
+                    v-if="props.row.imageUrl"
+                    class="image"
+                    :src="props.row.imageUrl"
+                  >
+                    <div class="absolute-bottom text-subtitle text-center">
+                      {{ props.row.nom }}
+                    </div>
+                  </q-img>
+                  <q-img v-else class="image" src="~assets/manquante.jpg">
+                    <div class="absolute-bottom text-subtitle text-center">
+                      {{ props.row.nom }}
+                    </div>
+                  </q-img>
                 </q-card-section>
+                <q-separator horizontal />
+                <q-btn
+                  @click="ajoutPanier(props.row)"
+                  size="10.99px"
+                  glossy
+                  style="width:100%;height:100%"
+                  icon-right="add_shopping_cart"
+                  color="green"
+                  label="Ajouter au panier"
+                />
               </q-card>
             </q-list>
           </q-card>
         </div>
       </template>
     </q-table>
-
+    <br />
+    <br />
+    <br />
+    <br />
     <div class="row absolute-bottom q-mt-md">
       <q-pagination
         v-model="pagination.page"
@@ -310,7 +151,7 @@ export default {
     return {
       expanded: false,
       pagination: {
-        rowsPerPage: 5,
+        rowsPerPage: 18,
         page: 1
       },
       paginationCat: {
@@ -326,56 +167,31 @@ export default {
       categories: [],
       services: [],
       selected: [],
-      catName: "Adulte",
-      servName: "Lavage",
+      catName: "Enfant",
+      //servName: "Lavage",
       cat: [],
-      ajoutTest: true,
       serv: [],
-      QteCmd: [],
       panier: [],
       editDialog: false
     };
   },
   methods: {
     ajoutPanier(element) {
-      if (localStorage.getItem("panier")) {
+      if (JSON.parse(localStorage.getItem("panier"))) {
         this.panier = JSON.parse(localStorage.getItem("panier"));
 
-        for (let i in this.panier) {
-          if (element._id === this.panier[i]._id) {
-            this.ajoutTest = false;
-          }
-        }
-      }
-      if (element.etat === "Actif" && this.ajoutTest) {
-        this.panier.push(element);
-        let Qtecmd = {};
-        this.panier.forEach(el => {
-          Qtecmd[el._id] = 1;
-        });
-        this.QteCmd = { ...Qtecmd };
-
-        // this.panier.forEach(el => {
-        //   this.QteCmd[el._id] = 1;
-        // });
-        localStorage.setItem("qtecmd", JSON.stringify(this.QteCmd));
-        console.log("qtecmd : ", this.QteCmd);
-        // console.log("aa", this.QteCmd);
-        // if (localStorage.getItem("qtecmd")) {
-        //   this.QteCmd = localStorage.getItem("qtecmd");
-        //   console.log(this.QteCmd);
+        // for (let i in this.panier) {
+        //   if (element._id === this.panier[i]._id) {
+        //     this.ajoutTest = false;
+        //   }
         // }
+      }
+      if (element.etat === "Actif") {
+        this.panier.push(element);
+        this.panier.forEach(el => {
+          el.quantity = 1;
+        });
 
-        //  this.QteCmd[element._id] = 1;
-
-        // this.panier.forEach(el => {
-        //   this.QteCmd[el._id] = 1;
-        // });
-        // console.log("qtecmd : ", this.QteCmd);
-        // localStorage.setItem("qtecmd", this.QteCmd);
-        //  localStorage.setItem("qtecmd", this.QteCmd);
-
-        //console.log(this.QteCmd);
         console.log(this.panier);
         localStorage.setItem("panier", JSON.stringify(this.panier));
         return this.$q.notify({
@@ -387,16 +203,16 @@ export default {
           color: "red",
           message: "Produit n'est pas actif pour le moment"
         });
-      } else if (this.ajoutTest === false) {
-        return this.$q.notify({
-          color: "red",
-          message: "Produit déja ajouté"
-        });
+        // } else if (this.ajoutTest === false) {
+        //   return this.$q.notify({
+        //     color: "red",
+        //     message: "Produit déja ajouté"
+        //   });
       }
     },
-    changeServName(y) {
-      this.servName = y;
-    },
+    // changeServName(y) {
+    //   this.servName = y;
+    // },
     changeCatName(x) {
       this.catName = x;
     },
@@ -431,39 +247,7 @@ export default {
       });
       this.services = { ...services };
     },
-    // addProduit() {
-    //   if (this.selected[0]) {
-    //     return this.$q.notify({
-    //       color: "warning",
-    //       message: "produit selected"
-    //     });
-    //   } else {
-    //     this.editDialog = true;
-    //   }
-    // },
-    async deleteFromPanier() {
-      this.selected.forEach(element => {
-        this.$axios.delete(`/produit/delete/${element._id}`);
-      });
-      await this.$emit("updated");
-      window.location.reload(true);
-    },
-    EditProduit() {
-      if (!this.selected[0]._id) {
-        return this.$q.notify({
-          color: "warning",
-          message: "no client selected"
-        });
-      }
-      this.editDialog = true;
-    },
-    // getQteCmd() {
-    //   if (localStorage.getItem("qtecmd")) {
-    //     this.QteCmd = localStorage.getItem("qtecmd");
-    //     console.log("qtecmd : ", this.QteCmd);
-    //   }
-    //   console.log("qtecmd : ", this.QteCmd);
-    // },
+
     getPanier() {
       if (JSON.parse(localStorage.getItem("panier"))) {
         this.panier = JSON.parse(localStorage.getItem("panier"));
@@ -495,29 +279,9 @@ export default {
     await this.getAllCategories();
     await this.getCategories();
     await this.getPanier();
-    //  await this.getQteCmd();
     await console.log("panier : ", this.panier);
   }
 };
-
-//  async asyncData() {
-//   try {
-//    let categories = await this.$axios.get("/categorie");
-//    let services = await this.$axios.get("/service");
-//   const { catResponse, servResponse } = await Promise.all([
-//    categories,
-//    services
-//  ]);
-//  console.log(catResponse);
-
-// return {
-//   categories: catResponse,
-//   services: servResponse
-//  };
-//  } catch (err) {
-//    console.log(err);
-//  }
-// },
 </script>
 <style scoped>
 .image {
@@ -529,19 +293,20 @@ export default {
   height: 200px;
 }
 .mycard {
-  width: 350px;
+  width: 200px;
   height: 180px;
   margin-right: 20px;
+  margin-top: 70px;
 }
 .catservcard {
-  width: 150px;
-  height: 110px;
+  width: 130px;
+  height: 100px;
   margin-right: 20px;
 }
 
 .catservcard:hover {
   font-weight: bold;
-  border: 1.5px solid #4082c0;
+  border: 3.5px solid #4082c0;
 }
 
 .actifcss {
@@ -555,7 +320,7 @@ export default {
 }
 .searchy {
   max-width: 200px;
-  border: 1px solid black;
+  border: solid 1px rgb(224, 224, 224);
 }
 h4 {
   font-family: monospace;
@@ -570,6 +335,10 @@ h4 {
 .pagin {
   margin-left: 750px;
   margin-bottom: 20px;
+}
+.title {
+  color: rgb(163, 160, 160);
+  font-family: monospace;
 }
 /* .iconitem {
   color: rgb(5, 100, 5);

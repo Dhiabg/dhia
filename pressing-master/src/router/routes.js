@@ -58,6 +58,13 @@ const routes = [
         }
       },
       {
+        path: "/mes-commandes",
+        component: () => import("src/pages/MesCommandes.vue"),
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
         path: "/produit",
         component: () => import("src/pages/Produits.vue"),
         meta: {

@@ -3,7 +3,7 @@
     <q-form
       class="q-pa-md bg-white text-black"
       @submit="creerGerant()"
-      @reset="onCancel"
+      @submit.prevent="onEdit()"
       ref="myForm"
     >
       <br />
@@ -12,6 +12,19 @@
       </label>
       <q-separator style="width:550px;" color="black" />
 
+      <div v-if="!this.user">
+        <label class="title">
+          Veuillez remplir le formulaire avec les coordonnées du gérant,<br />
+          veuillez vous assurer que les informations sont exactes.
+        </label>
+      </div>
+      <div v-if="this.user">
+        <label class="title">
+          Veuillez modifier les données du gérant suivant
+        </label>
+      </div>
+
+      <br />
       <br />
       <br />
       <q-item>
@@ -24,7 +37,7 @@
             dense
             style="width:160px"
             color="secondary"
-            v-model="userCopy.nom"
+            v-model.trim="userCopy.nom"
             label="Nom"
             lazy-rules
             :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
@@ -47,7 +60,7 @@
             dense
             color="secondary"
             style="width:160px;margin-left:-40px"
-            v-model="userCopy.prenom"
+            v-model.trim="userCopy.prenom"
             label="Prénom"
             lazy-rules
             :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
@@ -65,7 +78,7 @@
           </q-input>
         </q-item-section>
       </q-item>
-      <q-item>
+      <!-- <q-item>
         <q-item-section>
           <label class="title"> Date de naissance :</label>
         </q-item-section>
@@ -92,7 +105,53 @@
             </template>
           </q-input>
         </q-item-section>
+      </q-item> -->
+      <q-item>
+        <q-item-section>
+          <label class="title"> Date de naissance :</label>
+        </q-item-section>
+        <q-item-section>
+          <!-- <q-date v-model="clientCopy.date_naissance" :options="optionsFn" /> -->
+          <template>
+            <div class="q-pa-md" style="max-width: 360px;margin-left:-120px">
+              <q-input
+                dense
+                label="AAAA-MM-JJ"
+                outlined
+                color="secondary"
+                v-model="userCopy.date_naissance"
+              >
+                <template v-slot:prepend>
+                  <q-icon color="secondary" name="event" class="cursor-pointer">
+                    <q-popup-proxy
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-date
+                        v-model="userCopy.date_naissance"
+                        bordered
+                        color="deep-orange"
+                        mask="YYYY-MM-DD"
+                        :options="dateOption"
+                      >
+                        <div class="row items-center justify-end">
+                          <q-btn
+                            v-close-popup
+                            label="Close"
+                            color="deep-orange"
+                            flat
+                          />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+            </div>
+          </template>
+        </q-item-section>
       </q-item>
+
       <!-- date -->
       <q-item>
         <q-item-section>
@@ -137,7 +196,7 @@
             lazy-rules
             dense
             :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
-            v-model="userCopy.email"
+            v-model.trim="userCopy.email"
             label=""
           >
             <template v-slot:label>
@@ -154,7 +213,7 @@
           </q-input>
         </q-item-section>
       </q-item>
-      <q-item>
+      <!-- <q-item>
         <q-item-section>
           <label class="title"> Mot de passe :</label>
         </q-item-section>
@@ -167,7 +226,7 @@
             lazy-rules
             dense
             :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
-            v-model="userCopy.password"
+            v-model.trim="userCopy.password"
             label="****************************"
           >
             <template v-slot:append>
@@ -204,7 +263,7 @@
             lazy-rules
             dense
             :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
-            v-model="confirmPassword"
+            v-model.trim="confirmPassword"
             label="****************************"
           >
             <template v-slot:append>
@@ -226,7 +285,7 @@
             </template>
           </q-input>
         </q-item-section>
-      </q-item>
+      </q-item>-->
       <q-item>
         <q-item-section>
           <label class="title"> Adresse :</label>
@@ -237,7 +296,7 @@
             color="secondary"
             style="width:160px"
             dense
-            v-model="userCopy.rue"
+            v-model.trim="userCopy.rue"
             label="Rue"
             lazy-rules
             :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
@@ -260,7 +319,7 @@
             dense
             color="secondary"
             style="width:160px;margin-left:-40px"
-            v-model="userCopy.code_postal"
+            v-model.trim="userCopy.code_postal"
             label="Code postal"
             lazy-rules
             :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
@@ -283,7 +342,7 @@
         dense
         style="margin-left:225px;width:330px"
         color="secondary"
-        v-model="userCopy.ville"
+        v-model.trim="userCopy.ville"
         label="Ville"
         lazy-rules
         :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
@@ -325,7 +384,7 @@
           </q-input>
         </q-item-section>
       </q-item>
-      <q-item>
+      <!-- <q-item>
         <q-item-section>
           <label class="title">Etat gérant : </label>
         </q-item-section>
@@ -353,7 +412,7 @@
             </template>
           </q-select>
         </q-item-section>
-      </q-item>
+      </q-item> -->
       <br />
       <br />
 
@@ -362,7 +421,7 @@
           v-if="!this.user"
           label="Ajouter"
           type="submit"
-          icon-right="assignment_turned_in"
+          icon-right="person_add"
           style="margin-right: 15px"
           glossy
           color="blue-10"
@@ -375,7 +434,6 @@
           icon-right="assignment_turned_in"
           glossy
           type="submit"
-          @click="onEdit()"
           color="secondary"
         />
 
@@ -408,6 +466,9 @@ export default {
   },
 
   methods: {
+    dateOption(date) {
+      return date >= "1920/01/01" && date <= "2010/01/01";
+    },
     async creerGerant() {
       this.$refs.myForm.validate().then(async success => {
         if (success) {
@@ -459,14 +520,20 @@ export default {
       //} else {
       this.$refs.myForm.validate().then(async success => {
         if (success) {
-          let res = await this.$axios.post(`/utilisateur/`, {
-            ...this.userCopy
-          });
+          try {
+            let res = await this.$axios.post(`/utilisateur/`, {
+              ...this.userCopy
+            });
 
-          window.location.reload(true);
+            window.location.reload(true);
+          } catch {
+            return this.$q.notify({
+              color: "red",
+              message: "Email deja utilisé"
+            });
+          }
         }
       });
-      //  }
     },
     async onEdit() {
       //  this.$refs.myForm.validate().then(async success => {
@@ -480,15 +547,22 @@ export default {
       //} else {
       this.$refs.myForm.validate().then(async success => {
         if (success) {
-          let res = await this.$axios.patch(
-            `/utilisateur/update/${this.user._id}`,
-            {
-              ...this.userCopy
-            }
-          );
-          window.location.reload(true);
+          try {
+            let res = await this.$axios.patch(
+              `/utilisateur/update/${this.user._id}`,
+              {
+                ...this.userCopy
+              }
+            );
+            window.location.reload(true);
 
-          this.$emit("updated");
+            this.$emit("updated");
+          } catch {
+            return this.$q.notify({
+              color: "red",
+              message: "Email deja utilisé"
+            });
+          }
         }
       });
     },

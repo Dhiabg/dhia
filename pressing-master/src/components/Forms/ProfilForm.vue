@@ -9,7 +9,34 @@
 
       <br />
       <br />
-      <q-item>
+      <q-item v-if="userdataCopy.isAdmin === true">
+        <q-item-section>
+          <label class="title"> Email :</label>
+        </q-item-section>
+        <q-item-section>
+          <br />
+          <q-input
+            outlined
+            dense
+            style="margin-left:-105px;width:360px"
+            color="secondary"
+            type="email"
+            v-model="userdataCopy.email"
+          >
+            <template v-slot:prepend>
+              <div class="row items-center all-pointer-events">
+                <q-icon
+                  class="q-mr-xs"
+                  color="secondary"
+                  size="20px"
+                  name="mail"
+                />
+              </div>
+            </template>
+          </q-input>
+        </q-item-section>
+      </q-item>
+      <q-item v-else>
         <q-item-section>
           <label class="title"> Email :</label>
         </q-item-section>
@@ -109,7 +136,7 @@
           </q-input>
         </q-item-section>
       </q-item>
-      <q-item>
+      <!-- <q-item>
         <q-item-section>
           <label class="title"> Date de naissance :</label>
         </q-item-section>
@@ -136,7 +163,53 @@
             </template>
           </q-input>
         </q-item-section>
+      </q-item> -->
+      <q-item>
+        <q-item-section>
+          <label class="title"> Date de naissance :</label>
+        </q-item-section>
+        <q-item-section>
+          <!-- <q-date v-model="clientCopy.date_naissance" :options="optionsFn" /> -->
+          <template>
+            <div class="q-pa-md" style="max-width: 360px;margin-left:-120px">
+              <q-input
+                dense
+                label="AAAA-MM-JJ"
+                outlined
+                color="secondary"
+                v-model="userdataCopy.date_naissance"
+              >
+                <template v-slot:prepend>
+                  <q-icon color="secondary" name="event" class="cursor-pointer">
+                    <q-popup-proxy
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-date
+                        v-model="userdataCopy.date_naissance"
+                        bordered
+                        color="deep-orange"
+                        mask="YYYY-MM-DD"
+                        :options="dateOption"
+                      >
+                        <div class="row items-center justify-end">
+                          <q-btn
+                            v-close-popup
+                            label="Close"
+                            color="deep-orange"
+                            flat
+                          />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+            </div>
+          </template>
+        </q-item-section>
       </q-item>
+
       <!-- date -->
       <q-item>
         <q-item-section>
@@ -264,7 +337,7 @@
           </q-input>
         </q-item-section>
       </q-item>
-      <q-item>
+      <!-- <q-item>
         <q-item-section>
           <label class="title">Etat : </label>
         </q-item-section>
@@ -293,7 +366,7 @@
             </template>
           </q-input>
         </q-item-section>
-      </q-item>
+      </q-item> -->
       <br />
       <br />
       <div align="center">
@@ -332,6 +405,9 @@ export default {
   },
 
   methods: {
+    dateOption(date) {
+      return date >= "1920/01/01" && date <= "2010/01/01";
+    },
     async onEdit() {
       this.$refs.myForm.validate().then(async success => {
         if (success) {

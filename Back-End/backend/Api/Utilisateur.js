@@ -172,6 +172,7 @@ route.post("/register", async (req, res) => {
 
 route.get("/", async (req, res) => {
   const Utilisateurs = await utilisateurs.find();
+  console.log(Utilisateurs);
   res.json(Utilisateurs);
 });
 
@@ -188,6 +189,12 @@ route.delete("/delete/:id", async (req, res) => {
 
 route.patch("/update/:id", async (req, res) => {
   try {
+    // let sameEmail = await utilisateurs.find({ email: req.body.email });
+    // if (sameEmail.length >= 1) {
+    //   return res.status(409).json({
+    //     message: "email already in use",
+    //   });
+    // }
     const _id = req.params.id;
     const user = await utilisateurs.findByIdAndUpdate(_id, req.body);
     res.send(user);

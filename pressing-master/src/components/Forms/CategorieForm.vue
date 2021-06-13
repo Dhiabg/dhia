@@ -7,6 +7,18 @@
       </label>
       <q-separator style="width:550px;" color="black" />
 
+      <div v-if="!this.categorie">
+        <label class="title">
+          Veuillez remplir le formulaire avec les données du catégorie,<br />
+          veuillez vous assurer que les informations sont exactes.
+        </label>
+      </div>
+      <div v-if="this.categorie">
+        <label class="title">
+          Veuillez modifier les données du catégorie suivant
+        </label>
+      </div>
+
       <br />
       <br />
       <q-item>
@@ -18,7 +30,7 @@
           outlined
           style="width:500px"
           color="secondary"
-          v-model="categorieCopy.imageUrl"
+          v-model.trim="categorieCopy.imageUrl"
           label="Image Url"
         >
           <template v-slot:prepend>
@@ -44,7 +56,7 @@
             style="margin-left:-105px;width:330px"
             color="secondary"
             label="Code"
-            v-model="categorieCopy.code"
+            v-model.trim="categorieCopy.code"
             lazy-rules
             :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
           >
@@ -73,7 +85,7 @@
             style="margin-left:-105px;width:330px"
             color="secondary"
             label="Nom "
-            v-model="categorieCopy.nom"
+            v-model.trim="categorieCopy.nom"
             lazy-rules
             :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
           >
@@ -128,7 +140,7 @@
           v-if="!this.categorie"
           label="Ajouter"
           type="submit"
-          icon-right="assignment_turned_in"
+          icon-right="add_task"
           style="margin-right: 15px"
           glossy
           color="blue-10"
@@ -203,19 +215,27 @@ export default {
       //   }
       //});
       //} else {
+
       this.$refs.myForm.validate().then(async success => {
         if (success) {
-          let res = await this.$axios.patch(
-            `/categorie/update/${this.categorie._id}`,
-            {
-              ...this.categorieCopy
-            }
-          );
-          window.location.reload(true);
+          try {
+            let res = await this.$axios.patch(
+              `/categorie/update/${this.categorie._id}`,
+              {
+                ...this.categorieCopy
+              }
+            );
+            window.location.reload(true);
 
-          this.$emit("updated");
+            // this.$emit("updated");
 
-          await this.getAll();
+            await this.getAll();
+          } catch {
+            return this.$q.notify({
+              color: "red",
+              message: "code deja utilisé"
+            });
+          }
         }
       });
     },

@@ -1,24 +1,21 @@
 <template>
   <q-page vertical class="q-pa-lg">
     <br />
-    <q-btn label="click me" @click="price()" />
-    <h4 align="center">
-      Récapitulatif de mon panier
-    </h4>
+    <div align="center">
+      <h4>
+        RÉCAPITULATIF DE MON PANIER
+      </h4>
+    </div>
 
-    <br />
-    <br />
-
-    <div class="mydiv">
+    <div class="absolute-center">
       <q-scroll-area
         class="myscroll"
         :thumb-style="thumbStyle"
         :bar-style="barStyle"
       >
         <q-table
-          v-if="Panier.length > 0"
+          v-if="Panier && Panier.length > 0"
           :data="Panier"
-          :columns="columns"
           row-key="_id"
           grid
           selection="multiple"
@@ -32,36 +29,32 @@
               class="mycard"
               :style="props.selected ? 'transform: scale(0.95);' : ''"
             >
-              <!-- <q-card class="mycard" :class="props.selected ? 'bg-grey-3' : ''">
-            <q-card-section>
-              <q-checkbox
-                dense
-                v-model="props.selected"
-                :label="props.row.name"
-              />
-            </q-card-section>
-            <q-separator /> -->
               <q-card-section
                 horizontal
                 :class="props.selected ? 'bg-grey-3' : ''"
               >
-                <!-- <q-btn
-              flat
-              dense
-              round
-              icon="delete_forever"
-              @click="deleteFromPanier(props.row)"
-              class="iconitem"
-            /> -->
-                <!-- {{ props.row.imageUrl }} -->
-
-                <img class="myimg" :src="props.row.imageUrl" />
+                <img
+                  v-if="props.row.imageUrl"
+                  class="myimg"
+                  :src="props.row.imageUrl"
+                />
+                <img v-else class="myimg" src="~assets/manquante.jpg" />
                 <q-separator vertical />
 
                 <q-card-section horizontal>
                   <q-list dense class="mylist">
                     <q-item>
-                      <q-item-section>
+                      <q-item-section avatar>
+                        <q-item-label caption> Code</q-item-label>
+                      </q-item-section>
+                      <q-item-section class="absolute-center">
+                        <q-item-label>{{ props.row.code }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+
+                    <q-separator horizontal />
+                    <q-item>
+                      <q-item-section avatar>
                         <q-item-label caption> Nom</q-item-label>
                       </q-item-section>
                       <q-item-section class="absolute-center">
@@ -74,7 +67,6 @@
                       <q-item-section avatar>
                         <q-item-label caption>Categorie</q-item-label>
                       </q-item-section>
-
                       <q-item-section class="absolute-center">
                         <q-item-label>
                           {{ categories[props.row.categorie] }}
@@ -84,55 +76,107 @@
                     <q-separator horizontal />
                     <q-item>
                       <q-item-section avatar>
-                        <q-item-label caption>Service</q-item-label>
+                        <q-item-label caption></q-item-label>
                       </q-item-section>
 
                       <q-item-section class="absolute-center">
-                        <q-item-label>{{
-                          services[props.row.service]
-                        }}</q-item-label>
-                      </q-item-section>
-                    </q-item>
-                    <q-separator horizontal />
-
-                    <q-item>
-                      <q-item-section avatar>
-                        <q-item-label caption>Prix</q-item-label>
-                      </q-item-section>
-
-                      <q-item-section class="absolute-center">
-                        <q-item-label>{{ props.row.prix }} TND</q-item-label>
+                        <q-item-label
+                          ><q-badge
+                            :class="
+                              props.row.etat === 'Actif'
+                                ? 'actifcss'
+                                : 'inactifcss'
+                            "
+                            >{{ props.row.etat }}</q-badge
+                          ></q-item-label
+                        >
                       </q-item-section>
                     </q-item>
                   </q-list>
+                  <q-separator vertical />
+
+                  <q-item-section>
+                    <q-scroll-area
+                      class="myscroll2"
+                      :thumb-style="thumbStyle"
+                      :bar-style="barStyle"
+                    >
+                      <q-item-section avatar top>
+                        <q-item-label style="margin-left:43px" caption>
+                          Services</q-item-label
+                        >
+                      </q-item-section>
+                      <q-separator horizontal />
+                      <span v-for="item in props.row.services" :key="item._id">
+                        <q-checkbox
+                          :value="item.checked || false"
+                          @input="
+                            setServiceCheckedForService(
+                              item._id,
+                              props.row._id,
+                              !item.checked
+                            )
+                          "
+                        />
+                        <span> {{ services[item.service] }} </span>
+                        <span>
+                          <q-input
+                            dense
+                            readonly
+                            style="width:150px;"
+                            v-model="item.prix"
+                            type="number"
+                            outlined
+                            label="Prix (TND) "
+                          >
+                            <template v-slot:prepend>
+                              <div class="row items-center all-pointer-events">
+                                <q-icon
+                                  class="q-mr-xs"
+                                  color="secondary"
+                                  size="16px"
+                                  name="attach_money"
+                                />
+                              </div>
+                            </template>
+                          </q-input>
+                        </span>
+                      </span>
+                    </q-scroll-area>
+                  </q-item-section>
 
                   <q-separator vertical />
-                  <!-- <q-card-section vertical> -->
-                  <keep-alive>
-                    <q-item>
-                      <q-item-section avatar>
-                        <q-item-label caption>Quantité</q-item-label>
-                      </q-item-section>
+                  <q-item>
+                    <q-item-section avatar>
+                      <q-item-label caption>Quantité</q-item-label>
+                    </q-item-section>
+                    <q-item-section>
+                      <q-input
+                        type="number"
+                        min="0"
+                        v-model="Panier[props.pageIndex].quantity"
+                        style="width:80px;margin-top:20px"
+                        outlined
+                        dense
+                        color="secondary"
+                        lazy-rules
+                        :rules="[
+                          val => (val && val > 0) || 'Champ incorrect !!'
+                        ]"
+                      />
+                    </q-item-section>
+                  </q-item>
 
-                      <q-item-section>
-                        <q-input
-                          v-model="QteCmd[props.row._id]"
-                          type="number"
-                          class="inputQte"
-                          outlined
-                        />
-                      </q-item-section>
-                    </q-item>
-                  </keep-alive>
                   <q-item-section top side>
                     <div class="text-grey-8 q-gutter-xs">
                       <q-btn
                         size="12px"
                         flat
                         round
+                        style="margin-left:-27px"
                         icon="delete_forever"
                         @click="deleteFromPanier(props.row)"
-                        class="iconitem"
+                        color="red-6"
                       />
                     </div>
                   </q-item-section>
@@ -142,72 +186,41 @@
           </template>
         </q-table>
         <div v-else>
-          Panier vide
+          <div align="center">
+            <q-img
+              style="width:250px;height:250px"
+              src="https://png.pngtree.com/png-vector/20190703/ourmid/pngtree-shopping-bag-icon-in-trendy-style-isolated-background-png-image_1536177.jpg"
+            />
+          </div>
+          <div class="panierVide" align="center">
+            <label>
+              PANIER VIDE
+            </label>
+          </div>
+          <br />
+          <div align="center">
+            <q-btn
+              label="Continuer vos commandes"
+              glossy
+              icon-right="shopping_bag"
+              style="background-color:#F1C90F;color:white;width:320px"
+              to="/commander"
+            />
+          </div>
         </div>
       </q-scroll-area>
-    </div>
-
-    <div
-      class="fixed-top-right, absolute-top-right"
-      style="margin-top:200px; margin-right:200px;width:350px"
-    >
-      <q-list bordered align="center">
-        <q-item>
-          <!-- <q-item-section>
-            <q-icon color="primary" name="money" />
-          </q-item-section> -->
-
-          <q-item-section class="totalcss">Produits :</q-item-section>
-          <!-- <q-item-section class="totalcss"
-            >{{ this.ProductPrices }} TND</q-item-section
-          > -->
-          <q-item-section class="totalcss">{{ prixProd }} TND</q-item-section>
-        </q-item>
-
-        <q-item>
-          <q-item-section class="totalcss">Frais de livraison :</q-item-section>
-          <q-item-section class="totalcss"
-            >{{ this.frais_livraison }} TND</q-item-section
-          >
-        </q-item>
-        <q-separator />
-        <q-item>
-          <q-item-section avatar>
-            <q-icon color="green" name="attach_money" />
-          </q-item-section>
-          <q-item-section class="total">Prix Total :</q-item-section>
-          <q-item-section class="total">{{ prixTotal() }} TND</q-item-section>
-        </q-item>
-        <q-item>
-          <q-item-section>
-            <q-btn
-              style="width:230px;margin-left:50px"
-              rounded
-              glossy
-              icon-right="shopping_cart"
-              color="green"
-              @click="passerCommande()"
-              label="Valider la commande"
-            />
-          </q-item-section>
-        </q-item>
-      </q-list>
-      <!-- <q-card flat bordered align="center" class="priceCard">
-        <q-card-section>
-          <h5>
-            Prix Total :
-          </h5>
-        </q-card-section>
-
-        <q-card-section> {{ this.totalPrice }} Dinars</q-card-section>
-        <q-card-section>
-          <q-btn
-            @click="passerCommande()"
-            align="right"
-            label="Valider la commande"
-          />
-        </q-card-section>
-      </q-card> -->
+      <div v-if="Panier && Panier.length > 0" align="center">
+        <q-btn
+          glossy
+          class="valider"
+          size="15px"
+          style="width:350px;margin-bottom:-100px"
+          icon-right="shopping_cart"
+          color="green"
+          @click="ValiderCommande()"
+          label="Valider la commande"
+        />
+      </div>
     </div>
     <br />
 
@@ -220,7 +233,7 @@
       </h5>
     </div>
     <q-dialog v-model="editDialog" v-if="editDialog">
-      <commande-form :panier="Panier" :prix="this.totalPrice" />
+      <commande-form />
     </q-dialog>
   </q-page>
 </template>
@@ -255,98 +268,47 @@ export default {
       selected: [],
       editDialog: false,
       filter: "",
-      totalPrice: 0,
-      ProductPrices: 0,
-      frais_livraison: 7,
       categories: [],
-      prixProd: 0,
       services: [],
-      Panier: [],
-      QteCmd: [],
-      columns: [
-        {
-          name: "imageUrl",
-          label: "imageUrl",
-          align: "center",
-          field: "imageUrl"
-        },
-        {
-          name: "code",
-          label: "Code",
-          align: "center",
-          field: "code"
-        },
-        {
-          name: "nom",
-          label: "Nom",
-          align: "center",
-          field: "nom"
-        },
-        {
-          name: "categorie",
-          field: "categorie",
-          label: "Categorie",
-          align: "center"
-        },
-        {
-          name: "service",
-          label: "Service",
-          align: "center",
-          field: "service"
-        },
-
-        {
-          name: "prix",
-          align: "center",
-          label: "Prix en dinars",
-          field: "prix"
-        },
-        {
-          name: "quantite",
-          align: "center",
-          label: "Quantité",
-          field: "quantite"
-        }
-      ]
+      checkedServices: [],
+      Panier: []
     };
   },
 
   methods: {
-    async price() {
-      this.prixProd = 0;
-      for (let i in this.QteCmd) {
-        let res = await this.$axios.get(`/produit/${i}`);
-        let produ = res.data;
-        this.prixProd =
-          this.prixProd + parseFloat(produ.prix) * parseInt(this.QteCmd[i]);
+    setServiceCheckedForService(serviceId, productId, val) {
+      this.Panier = this.Panier.map(el => {
+        if (el._id === productId) {
+          el.services.map(service => {
+            if (service._id === serviceId) {
+              service.checked = val;
+            }
+          });
+        }
+        return el;
+      });
+    },
+
+    ValiderCommande() {
+      localStorage.setItem("panier", JSON.stringify(this.Panier));
+
+      let test = true;
+      this.Panier.forEach(element => {
+        element.services.forEach(el => {
+          if (!el.checked) {
+            return (test = false);
+          }
+        });
+      });
+      if (test === true) {
+        localStorage.setItem("panier", JSON.stringify(this.Panier));
+        this.editDialog = true;
+      } else {
+        return this.$q.notify({
+          color: "red",
+          message: "Aucun service sélectionner"
+        });
       }
-      // console.log("prix prod : ", this.prixProd);
-      return this.prixProd;
-    },
-    // for (let el in this.Panier) {
-    //   this.prixProd =
-    //     this.prixProd +
-    //     parseFloat(this.Panier[el].prix) *
-    //       parseFloat(this.QteCmd[this.Panier[el]._id]);
-    // }
-    // console.log(this.prixProd);
-    // return this.prixProd;
-    // },
-    // quantite() {
-    //   if (localStorage.getItem("panier")) {
-    //     this.Panier = JSON.parse(localStorage.getItem("panier"));
-    //     this.Panier.forEach(el => {
-    //       this.QteCmd[el._id] = 1;
-    //     });
-    //     console.log("qtecmd : ", this.QteCmd);
-    //   }
-    // },
-    prixTotal() {
-      return (this.totalPrice = this.prixProd + this.frais_livraison);
-    },
-    passerCommande() {
-      localStorage.setItem("qtecmd", JSON.stringify(this.QteCmd));
-      this.editDialog = true;
     },
     deleteFromPanier(_id) {
       //  console.log(_id);
@@ -371,51 +333,18 @@ export default {
       });
       this.services = { ...services };
     },
-    // getQteCmd() {
-    //   if (localStorage.getItem("qtecmd")) {
-    //     this.QteCmd = localStorage.getItem("qtecmd");
-    //     //   console.log("qtecmd : ", this.QteCmd);
-    //     //   this.panier.forEach(el => {
-    //     //     this.QteCmd[el._id] = 1;
-    //     //   });
-    //     //   console.log("qtecmd : ", this.QteCmd);
-    //   }
-    // },
 
     getPanier() {
       this.Panier = JSON.parse(localStorage.getItem("panier"));
       return console.log("Panier :", this.Panier);
     }
   },
-  // prixProduits() {
-  //   for (let elem in this.Panier) {
-  //     this.ProductPrices =
-  //       this.ProductPrices + parseFloat(this.Panier[elem].prix);
-  //     console.log(elem.prix);
-  //   }
-  //   return this.ProductPrices;
-  // }
-  computed() {
-    this.price();
-    this.prixTotal();
-  },
-  watch: {},
 
-  async created() {
-    //await this.getQteCmd();
-  },
   async mounted() {
-    //await console.log(this.QteCmd);
     await this.getPanier();
-    // await this.price();
-    //  await this.getQteCmd();
-    //await this.prixProduits();
-    // await this.prixTotal();
+
     await this.getAllCategories();
     await this.getAllServices();
-    this.QteCmd = JSON.parse(localStorage.getItem("qtecmd"));
-    await this.price();
-    await console.log("qtecmd : ", this.QteCmd);
   }
 };
 </script>
@@ -428,20 +357,17 @@ export default {
   max-width: 250px;
   border: 1px solid black;
 }
-.iconitem {
-  color: rgb(255, 0, 0);
-}
 
 h4 {
   font-family: monospace;
-  font-size: 2.37em;
-  margin-top: 0.33em;
-  color: #1a037e;
-  margin-bottom: 1em;
-  margin-left: 0;
-  margin-right: 0;
-  letter-spacing: 3px;
+  font-size: 2em;
+  color: darkblue;
+  align-self: center;
+  width: 600px;
+  padding: 5px;
+  letter-spacing: 2px;
   font-weight: bold;
+  border: solid 5px darkblue;
 }
 h5 {
   font-family: monospace;
@@ -459,16 +385,20 @@ h5 {
   width: 400px;
 }
 .mycard {
-  width: 600px;
-  box-shadow: 3 0px 10px rgba(199, 200, 204, 0.39);
+  width: 760px;
+  box-shadow: 3 0px 10px rgba(96, 96, 97, 0.39);
 
   height: 170px;
   margin-right: 20px;
   margin-left: 10px;
   margin-bottom: 20px;
 }
-.inputQte {
-  width: 60px;
+
+.actifcss {
+  background-color: green;
+  padding-right: 70px;
+  padding-left: 70px;
+  color: white;
 }
 .myimg {
   width: 150px;
@@ -482,10 +412,17 @@ h5 {
   margin-top: 20px;
 }
 .myscroll {
-  height: 370px;
-  width: 630px;
+  height: 390px;
+  width: 800px;
   border: 5px;
-  box-shadow: 0 0px 2px rgb(20, 2, 104);
+  box-shadow: 0 0px 8px rgb(105, 105, 105);
+  padding: 0.5rem;
+  background-color: #ffffff;
+}
+.myscroll2 {
+  height: 160px;
+  width: 170px;
+  border: 5px;
   padding: 0.5rem;
   background-color: #ffffff;
 }
@@ -497,5 +434,13 @@ h5 {
   font-family: "Times New Roman", Times, serif;
   font-size: small;
   color: gray;
+}
+.valider:hover {
+  transform: translateY(4px);
+}
+.panierVide {
+  font-weight: bold;
+  font-size: larger;
+  font-family: "Arial Narrow Bold", sans-serif;
 }
 </style>

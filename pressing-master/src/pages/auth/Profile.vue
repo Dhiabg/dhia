@@ -11,6 +11,7 @@
         glossy
         rounded
         dense
+        class="shadowbutton"
         style="margin-left:30px;margin-top:20px"
         icon="change_circle"
         icon-right="send"
@@ -287,7 +288,7 @@
               </q-input>
             </q-item-section>
           </q-item>
-          <q-item>
+          <!-- <q-item>
             <q-item-section>
               <label class="title">Etat : </label>
             </q-item-section>
@@ -316,7 +317,7 @@
                 </template>
               </q-input>
             </q-item-section>
-          </q-item>
+          </q-item> -->
         </q-card>
       </q-item-section>
     </q-item>
@@ -412,5 +413,13 @@ h4 {
   color: rgb(0, 0, 0);
   font-family: monospace;
   font-weight: bold;
+}
+.shadowbutton {
+  box-shadow: 0 9px #999;
+}
+.shadowbutton:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
 }
 </style>

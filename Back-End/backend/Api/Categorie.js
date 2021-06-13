@@ -46,6 +46,12 @@ route.delete("/delete/:id", async (req, res) => {
 
 route.patch("/update/:id", async (req, res) => {
   try {
+    let sameCode = await categories.find({ code: req.body.code });
+    if (sameCode.length >= 1) {
+      return res.status(409).json({
+        message: "code déja utilisé",
+      });
+    }
     const _id = req.params.id;
     const results = await categories.findByIdAndUpdate(_id, req.body);
     res.send(results);

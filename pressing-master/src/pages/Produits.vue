@@ -10,6 +10,7 @@
           glossy
           rounded
           dense
+          class="shadowbutton"
           :disable="selected.length > 0"
           style="margin-left:30px;padding-right:10px"
           icon="add_circle_outline"
@@ -27,6 +28,7 @@
           glossy
           icon-right="change_circle"
           label="Modifier"
+          class="transform"
           @click="EditProduit()"
           :disable="!selected.length || selected.length > 1"
         ></q-btn>
@@ -35,14 +37,40 @@
           size="13px"
           glossy
           rounded
+          class="transform"
           icon="delete_forever"
           v-close-popup
           color="red"
-          @click="deleteProduit()"
+          @click="confirm = true"
           :disable="!selected.length"
         ></q-btn>
       </div>
     </div>
+    <q-dialog v-model="confirm">
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="delete_outline" color="white" text-color="red" />
+
+          <span class="q-ml-sm"
+            >êtes-vous sûr de vouloir supprimer les produits sélectionnées ?
+          </span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn dense rounded flat label="Annuler" color="red" v-close-popup />
+          <q-btn
+            glossy
+            dense
+            no-caps
+            icon-right="delete_forever"
+            @click="deleteProduit()"
+            label="Supprimer"
+            color="red"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <br />
     <br />
     <div align="right">
@@ -73,6 +101,7 @@
     >
       <template #item="props">
         <div
+          style="margin-bottom:250px;margin-right:50px"
           class="mycard"
           :style="props.selected ? 'transform: scale(0.95);' : ''"
         >
@@ -93,29 +122,25 @@
                   class="mycard"
                   :src="props.row.imageUrl"
                 />
-                <img
-                  v-else
-                  class="mycard"
-                  src="https://www.radiobeton.com/www/wp-content/uploads/2017/01/arton17969.jpg"
-                />
+                <img v-else class="mycard" src="~assets/manquante.jpg" />
                 <q-separator horizontal />
 
-                <q-list>
+                <q-list dense>
                   <q-item>
-                    <q-item>
-                      <q-item-section>
-                        <q-item-label caption>Code</q-item-label>
-                      </q-item-section>
-
-                      <q-item-section>
-                        <q-item-label>{{ props.row.code }}</q-item-label>
-                      </q-item-section>
-                    </q-item>
-                    <q-separator vertical />
                     <q-item-section>
+                      <q-item-label caption>Code</q-item-label>
+                    </q-item-section>
+
+                    <q-item-section class="absolute-center">
+                      <q-item-label>{{ props.row.code }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-separator horizontal />
+                  <q-item>
+                    <q-item-section avatar>
                       <q-item-label caption> Nom</q-item-label>
                     </q-item-section>
-                    <q-item-section>
+                    <q-item-section class="absolute-center">
                       <q-item-label>{{ props.row.nom }}</q-item-label>
                     </q-item-section>
                   </q-item>
@@ -134,23 +159,31 @@
                   </q-item>
                   <q-separator horizontal />
                   <q-item>
-                    <q-item-section avatar>
-                      <q-item-label caption>Service</q-item-label>
-                    </q-item-section>
-
-                    <q-item-section
-                      v-for="item in props.row.service"
-                      :key="item._id"
-                      class="absolute-center"
+                    <q-scroll-area
+                      class="myscr"
+                      :thumb-style="thumbStyle"
+                      :bar-style="barStyle"
+                      :class="props.selected ? 'bg-grey-3' : ''"
                     >
-                      <q-item-label>
-                        {{ services[item] }}
-                      </q-item-label>
-                    </q-item-section>
+                      <q-item-section style="margin-bottom:-17px;" avatar>
+                        <q-item-label caption>Service</q-item-label>
+                      </q-item-section>
+
+                      <q-item-section
+                        style="margin-left:70px;"
+                        v-for="item in props.row.services"
+                        :key="item._id"
+                      >
+                        <span>
+                          <span> {{ services[item.service] }} : </span>
+                          <span> {{ item.prix }} TND </span>
+                        </span>
+                      </q-item-section>
+                    </q-scroll-area>
                   </q-item>
                   <q-separator horizontal />
 
-                  <q-item>
+                  <!-- <q-item>
                     <q-item-section avatar>
                       <q-item-label caption>Prix</q-item-label>
                     </q-item-section>
@@ -162,7 +195,7 @@
                       >
                     </q-item-section>
                   </q-item>
-                  <q-separator horizontal />
+                  <q-separator horizontal /> -->
 
                   <q-item>
                     <q-item-section avatar>
@@ -246,6 +279,9 @@
     <q-dialog v-model="editDialog" v-if="editDialog">
       <produit-form :produit="selected[0]" @updated="getAll" />
     </q-dialog>
+    <br />
+    <br />
+    <br />
     <div class="row absolute-bottom q-mt-md">
       <q-pagination
         v-model="pagination.page"
@@ -264,15 +300,31 @@ export default {
   name: "Produits",
   data() {
     return {
+      thumbStyle: {
+        right: "4px",
+        borderRadius: "5px",
+        backgroundColor: "#027be3",
+        width: "5px",
+        opacity: 0.75
+      },
+
+      barStyle: {
+        right: "2px",
+        borderRadius: "9px",
+        backgroundColor: "#027be3",
+        width: "9px",
+        opacity: 0.2
+      },
       expanded: false,
       pagination: {
-        rowsPerPage: 7,
+        rowsPerPage: 10,
         page: 1
       },
       filter: "",
       produits: [],
       categories: [],
       services: [],
+      confirm: false,
       selected: [],
       columns: [
         {
@@ -368,8 +420,8 @@ export default {
       }
     },
     async deleteProduit() {
-      await this.selected.forEach(element => {
-        this.$axios.delete(`/produit/delete/${element._id}`);
+      await this.selected.forEach(async element => {
+        await this.$axios.delete(`/produit/delete/${element._id}`);
       });
       //   this.$emit("updated");
       window.location.reload(true);
@@ -418,9 +470,8 @@ export default {
 </script>
 <style scoped>
 .mycard {
-  width: 200px;
-  height: 160px;
-  margin-right: 20px;
+  width: 252px;
+  height: 220px;
 }
 .actifcss {
   background-color: green;
@@ -447,6 +498,22 @@ h4 {
 }
 .pagin {
   margin-left: 750px;
-  margin-bottom: 100px;
+  margin-bottom: 30px;
+}
+.shadowbutton {
+  box-shadow: 0 9px #999;
+}
+.shadowbutton:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+.transform:hover {
+  transform: translateY(-3px);
+}
+.myscr {
+  height: 36px;
+  min-width: 235px;
+  background-color: #ffffff;
 }
 </style>

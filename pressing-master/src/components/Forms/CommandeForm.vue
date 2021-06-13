@@ -26,6 +26,8 @@
             color="secondary"
             v-model="commande.MoyenPaiement"
             :options="optionsPaiement"
+            lazy-rules
+            :rules="[val => (val && val.length > 0) || 'Champ vide ']"
           >
             <template v-slot:prepend>
               <div class="row items-center all-pointer-events">
@@ -52,7 +54,7 @@
             label="Prix d'avance (TND)"
             lazy-rules
             :rules="[
-              val => (val >= 0 && val <= this.prix) || 'Valeur incorrect'
+              val => (val >= 0 && val <= this.prixTotal) || 'Valeur incorrect'
             ]"
           >
             <template v-slot:prepend>
@@ -97,7 +99,7 @@
             style="width:120px;"
             dense
             v-model="commande.prixTotal"
-            :label="this.prix + ' TND'"
+            :label="this.prixTotal + ' TND'"
           >
             <template v-slot:prepend>
               <div class="row items-center all-pointer-events">
@@ -203,7 +205,7 @@
           label="Confirmer"
           style="margin-right: 15px"
           glossy
-          icon-right="check_circle_outline"
+          icon-right="add_task"
           @click="onAdd()"
           color="secondary"
         />
@@ -222,8 +224,6 @@
 </template>
 <script>
 export default {
-  props: ["panier", "prix"],
-
   data() {
     return {
       // genreOptions: ["Homme", "Femme"],
@@ -231,34 +231,74 @@ export default {
       // etatPaiement: ["Payée", "Non Payée"],
       livreurs: [],
       clients: [],
-      produitsID: [],
       optionsPaiement: ["Espéces", "Chéque Bancaire", "Carte Bancaire"],
-      prixTotal: null,
+      prixTotal: 0,
       commande: {},
       rest: 0,
       avance: 0,
+      prix: 0,
       produitPanier: {}
     };
   },
 
   methods: {
+    CalculPrix() {
+      let panier = JSON.parse(localStorage.getItem("panier"));
+      panier.forEach(element => {
+        element.services.forEach(el => {
+          if (el.checked) {
+            //  console.log("liste prix :", el.prix);
+            this.prix = this.prix + parseFloat(el.prix);
+          }
+        });
+        //console.log("liste quantité :", element.quantity);
+
+        this.prix = this.prix * parseInt(element.quantity);
+        //console.log("prix :", this.prix);
+        this.prixTotal = this.prixTotal + this.prix;
+        this.prix = 0;
+      });
+      //console.log("prix : ", this.prixTotal);
+      return this.prixTotal;
+    },
     prixRest() {
-      return (this.rest = this.prix - this.avance);
+      return (this.rest = this.prixTotal - this.avance);
     },
 
     ajoutProd() {
-      let com = {};
-      let QteCmd = JSON.parse(localStorage.getItem("qtecmd"));
-      for (let i in QteCmd) {
-        com.produit = i;
-        com.quantite = QteCmd[i];
-        this.produitsID.push(com);
-        com = {};
-      }
-      this.commande.produits = this.produitsID;
+      // let com = {};
+      // let QteCmd = JSON.parse(localStorage.getItem("qtecmd"));
+      // for (let i in QteCmd) {
+      //   com.produit = i;
+      //   com.quantite = QteCmd[i];
+      //   this.produitsID.push(com);
+      //   com = {};
+      // }
+      // this.commande.produits = this.produitsID;
+      let comm = [];
+      let prix = 0;
+      let panier = JSON.parse(localStorage.getItem("panier"));
+      panier.forEach(element => {
+        let produits = {};
+        let commandeServices = [];
+        produits.produit = element._id;
+        produits.quantite = element.quantity;
+        element.services.forEach(el => {
+          if (el && el.checked) {
+            prix = prix + parseFloat(el.prix);
+            commandeServices.push(el.service);
+          }
+        });
+        produits.prix = prix * parseInt(produits.quantite);
+        prix = 0;
+        produits.services = commandeServices;
+        comm.push(produits);
+      });
+      this.commande.produits = comm;
+
       this.commande.rest = this.rest;
       this.commande.avance = this.avance;
-      this.commande.prixTotal = this.prix;
+      this.commande.prixTotal = this.prixTotal;
       if (this.rest === 0) {
         this.commande.etatPaiement = "Payer";
       } else {
@@ -287,6 +327,7 @@ export default {
             ...this.commande
           });
           window.location.reload(true);
+          localStorage.removeItem("panier");
 
           //this.$emit("updated");
         }
@@ -301,14 +342,16 @@ export default {
     this.prixRest();
   },
   async mounted() {
-    this.produitPanier = { ...this.panier };
-    //  this.prixTotal = { ...this.prix };
-    await console.log("prix total :", this.prix);
-    await console.log("panier:", this.produitPanier);
+    // this.produitPanier = { ...this.panier };
+    //   this.prixTotal = { ...this.prix };
+    // await console.log("prix total :", this.prix);
+    // await console.log("panier:", this.produitPanier);
     await this.getAllClients();
     await this.getAllLivreurs();
-    let QteCmd = JSON.parse(localStorage.getItem("qtecmd"));
-    console.log("qtecmd :", QteCmd);
+    let panier = JSON.parse(localStorage.getItem("panier"));
+    await console.log("panier :", panier);
+    await this.CalculPrix();
+    console.log(this.prixTotal);
   }
 };
 </script>

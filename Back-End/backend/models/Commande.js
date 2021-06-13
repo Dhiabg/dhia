@@ -20,6 +20,13 @@ const commandes = new Schema({
         ref: "Produit",
       },
       quantite: { type: String },
+      services: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Service",
+        },
+      ],
+      prix: { type: String },
     },
   ],
 });

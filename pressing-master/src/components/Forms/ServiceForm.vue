@@ -7,6 +7,18 @@
       </label>
       <q-separator style="width:550px;" color="black" />
 
+      <div v-if="!this.service">
+        <label class="title">
+          Veuillez remplir le formulaire avec les données du service,<br />
+          veuillez vous assurer que les informations sont exactes.
+        </label>
+      </div>
+      <div v-if="this.service">
+        <label class="title">
+          Veuillez modifier les données du service suivant
+        </label>
+      </div>
+
       <br />
       <br />
       <q-item>
@@ -18,7 +30,7 @@
           style="width:500px"
           color="secondary"
           dense
-          v-model="serviceCopy.imageUrl"
+          v-model.trim="serviceCopy.imageUrl"
           label="Image Url"
         >
           <template v-slot:prepend>
@@ -44,7 +56,7 @@
             color="secondary"
             label="Code"
             dense
-            v-model="serviceCopy.code"
+            v-model.trim="serviceCopy.code"
             lazy-rules
             :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
           >
@@ -72,7 +84,7 @@
             color="secondary"
             label="Nom "
             dense
-            v-model="serviceCopy.nom"
+            v-model.trim="serviceCopy.nom"
             lazy-rules
             :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
           >
@@ -127,7 +139,7 @@
           v-if="!this.service"
           label="Ajouter"
           type="submit"
-          icon-right="assignment_turned_in"
+          icon-right="add_task"
           style="margin-right: 15px"
           glossy
           color="blue-10"
@@ -212,18 +224,25 @@ export default {
     async onEdit() {
       this.$refs.myForm.validate().then(async success => {
         if (success) {
-          console.log(this.service);
-          let res = await this.$axios.patch(
-            `/service/update/${this.service._id}`,
-            {
-              ...this.serviceCopy
-            }
-          );
-          window.location.reload(true);
+          try {
+            //console.log(this.service);
+            let res = await this.$axios.patch(
+              `/service/update/${this.service._id}`,
+              {
+                ...this.serviceCopy
+              }
+            );
+            window.location.reload(true);
 
-          this.$emit("updated");
+            // this.$emit("updated");
 
-          await this.getAll();
+            await this.getAll();
+          } catch {
+            return this.$q.notify({
+              color: "red",
+              message: "Code deja utilisé"
+            });
+          }
         }
       });
       //  }
