@@ -1,6 +1,6 @@
 <template>
   <q-card class="mydialog">
-    <q-form class="q-pa-md bg-white text-black" ref="myForm">
+    <q-form class="q-pa-md bg-white text-black" @submit="onAdd()" ref="myForm">
       <br />
       <label class="title2">
         Finaliser la commande
@@ -77,7 +77,6 @@
             color="secondary"
             hint="Rest à payer"
             dense
-            v-model="commande.rest"
             :label="prixRest() + ' TND'"
           >
             <template v-slot:prepend>
@@ -159,46 +158,6 @@
 
       <br />
 
-      <!-- <q-select
-        outlined
-        color="secondary"
-        label="etat Livraison"
-        v-model="commande.etatLivraison"
-        :options="etatLivraison"
-        lazy-rules
-        :rules="[val => (val && val.length > 0) || 'Please type something']"
-      >
-        <template v-slot:prepend>
-          <div class="row items-center all-pointer-events">
-            <q-icon
-              class="q-mr-xs"
-              color="secondary"
-              size="20px"
-              name="light"
-            />
-          </div>
-        </template>
-      </q-select>
-      <q-select
-        outlined
-        color="secondary"
-        label="etat Paiement"
-        v-model="commande.etatPaiement"
-        :options="etatPaiement"
-        lazy-rules
-        :rules="[val => (val && val.length > 0) || 'Please type something']"
-      >
-        <template v-slot:prepend>
-          <div class="row items-center all-pointer-events">
-            <q-icon
-              class="q-mr-xs"
-              color="secondary"
-              size="20px"
-              name="light"
-            />
-          </div>
-        </template>
-      </q-select> -->
       <br />
       <div align="center">
         <q-btn
@@ -206,7 +165,7 @@
           style="margin-right: 15px"
           glossy
           icon-right="add_task"
-          @click="onAdd()"
+          type="submit"
           color="secondary"
         />
 
@@ -320,18 +279,24 @@ export default {
     },
     async onAdd() {
       this.ajoutProd();
+      if (this.commande.client) {
+        this.$refs.myForm.validate().then(async success => {
+          if (success) {
+            let res = await this.$axios.post(`/commande`, {
+              ...this.commande
+            });
+            window.location.reload(true);
+            localStorage.removeItem("panier");
 
-      this.$refs.myForm.validate().then(async success => {
-        if (success) {
-          let res = await this.$axios.post(`/commande`, {
-            ...this.commande
-          });
-          window.location.reload(true);
-          localStorage.removeItem("panier");
-
-          //this.$emit("updated");
-        }
-      });
+            //this.$emit("updated");
+          }
+        });
+      } else {
+        return this.$q.notify({
+          color: "red",
+          message: "Veuillez choisir un client"
+        });
+      }
     },
 
     onCancel() {

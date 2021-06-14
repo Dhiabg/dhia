@@ -7,9 +7,15 @@
       </label>
       <q-separator style="width:550px;" color="black" />
 
-      <div>
+      <div v-if="this.user">
         <label class="title">
           Votre gérant à oublier son mot de passe ?<br />
+          Changer le ici !
+        </label>
+      </div>
+      <div v-if="this.livreur">
+        <label class="title">
+          Votre livreur à oublier son mot de passe ?<br />
           Changer le ici !
         </label>
       </div>
@@ -100,7 +106,16 @@
           label="confirmer la modification"
           icon-right="assignment_turned_in"
           glossy
-          @click="onEdit()"
+          @click="onEditGerant()"
+          color="secondary"
+        />
+        <q-btn
+          v-if="this.livreur"
+          style="margin-right: 15px"
+          label="confirmer la modification ll"
+          icon-right="assignment_turned_in"
+          glossy
+          @click="onEditLivreur()"
           color="secondary"
         />
 
@@ -122,7 +137,7 @@
 import bcrypt from "bcryptjs";
 
 export default {
-  props: ["user"],
+  props: ["user", "livreur"],
   data() {
     return {
       isPwd: true,
@@ -141,7 +156,11 @@ export default {
       console.log(this.encryptPassword(this.password));
       this.userCopy.password = this.encryptPassword(this.password);
     },
-    async onEdit() {
+    addLivreur() {
+      console.log(this.encryptPassword(this.password));
+      this.livreurCopy.password = this.encryptPassword(this.password);
+    },
+    async onEditGerant() {
       if (this.password != this.confirmPassword) {
         return this.$q.notify({
           color: "red",
@@ -153,9 +172,31 @@ export default {
         this.$refs.myForm.validate().then(async success => {
           if (success) {
             let res = await this.$axios.patch(
-              `/utilisateur/update/${this.user._id}`,
+              `/utilisateur/update-password/${this.user._id}`,
               {
                 ...this.userCopy
+              }
+            );
+            window.location.reload(true);
+          }
+        });
+      }
+    },
+    async onEditLivreur() {
+      if (this.password != this.confirmPassword) {
+        return this.$q.notify({
+          color: "red",
+          message: "Confirmer votre mot de passe"
+        });
+      } else {
+        this.addLivreur();
+
+        this.$refs.myForm.validate().then(async success => {
+          if (success) {
+            let res = await this.$axios.patch(
+              `/livreur/update-password/${this.livreur._id}`,
+              {
+                ...this.livreurCopy
               }
             );
             window.location.reload(true);
@@ -170,6 +211,7 @@ export default {
   },
   mounted() {
     this.userCopy = { ...this.user };
+    this.livreurCopy = { ...this.livreur };
   }
 };
 </script>

@@ -43,6 +43,7 @@
     <q-table
       :data="cat"
       row-key="_id"
+      id="toPrint"
       grid
       selection="single"
       :pagination.sync="paginationCat"

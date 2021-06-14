@@ -102,7 +102,10 @@
                       :bar-style="barStyle"
                     >
                       <q-item-section avatar top>
-                        <q-item-label style="margin-left:43px" caption>
+                        <q-item-label
+                          style="margin-left:53px;font-weight:bold"
+                          caption
+                        >
                           Services</q-item-label
                         >
                       </q-item-section>
@@ -112,8 +115,8 @@
                           :value="item.checked || false"
                           @input="
                             setServiceCheckedForService(
+                              props.pageIndex,
                               item._id,
-                              props.row._id,
                               !item.checked
                             )
                           "
@@ -228,7 +231,7 @@
       class="fixed-bottom-left, absolute-bottom-left"
       style="margin-bottom:50px; margin-left:40px"
     >
-      <h5>
+      <h5 v-if="Panier && Panier.length > 0">
         <router-link to="/commander">continuer mes commandes</router-link>
       </h5>
     </div>
@@ -276,37 +279,32 @@ export default {
   },
 
   methods: {
-    setServiceCheckedForService(serviceId, productId, val) {
-      this.Panier = this.Panier.map(el => {
-        if (el._id === productId) {
-          el.services.map(service => {
-            if (service._id === serviceId) {
-              service.checked = val;
-            }
-          });
+    setServiceCheckedForService(index, serviceId, val) {
+      this.Panier[index].services = this.Panier[index].services.map(service => {
+        if (service._id === serviceId) {
+          service.checked = val;
+          this.Panier[index].checked = val;
         }
-        return el;
+        return service;
       });
     },
 
     ValiderCommande() {
       localStorage.setItem("panier", JSON.stringify(this.Panier));
 
-      let test = true;
-      this.Panier.forEach(element => {
-        element.services.forEach(el => {
-          if (!el.checked) {
-            return (test = false);
-          }
-        });
+      let test = 0;
+      this.Panier.forEach(el => {
+        if (el.checked) {
+          test = test + 1;
+        }
       });
-      if (test === true) {
+      if (test >= this.Panier.length) {
         localStorage.setItem("panier", JSON.stringify(this.Panier));
         this.editDialog = true;
       } else {
         return this.$q.notify({
           color: "red",
-          message: "Aucun service sélectionner"
+          message: "Sélectionner au moins un service pour chaque produit"
         });
       }
     },

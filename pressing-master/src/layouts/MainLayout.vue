@@ -157,16 +157,6 @@
         <!-- <q-item-label header>
           <q-img src="~assets/logopressing.png" />
         </q-item-label> -->
-        <q-expansion-item
-          v-for="link in essentialLinks"
-          :key="link.title"
-          group="somegroup"
-          :icon="link.icon"
-          :label="link.title"
-          class="qtem"
-        >
-          <EssentialLink class="qtem" :links="link.links" />
-        </q-expansion-item>
         <q-item to="/profile" aria-label="" class="qtem">
           <template v-slot:>
             <div class="row items-center all-pointer-events">
@@ -180,8 +170,33 @@
             </div>
           </template>
         </q-item>
+        <q-item to="/client" aria-label="" class="qtem">
+          <template v-slot:>
+            <div class="row items-center all-pointer-events">
+              <q-icon
+                style="margin-right:31px"
+                class="q-mr-xs"
+                size="27px"
+                name="supervisor_account"
+              />
+              Gestion des Clients
+            </div>
+          </template>
+        </q-item>
         <q-separator />
-        <q-item to="/commander" aria-label="" class="qtem">
+        <q-expansion-item
+          v-for="link in essentialLinks"
+          :key="link.title"
+          group="somegroup"
+          :icon="link.icon"
+          :label="link.title"
+          class="qtem"
+        >
+          <EssentialLink class="qtem" :links="link.links" />
+        </q-expansion-item>
+
+        <q-separator />
+        <!-- <q-item to="/commander" aria-label="" class="qtem">
           <template v-slot:>
             <div class="row items-center all-pointer-events">
               <q-icon
@@ -193,7 +208,7 @@
               Commander
             </div>
           </template>
-        </q-item>
+        </q-item> -->
         <q-item to="/mes-commandes" aria-label="" class="qtem">
           <template v-slot:>
             <div class="row items-center all-pointer-events">
@@ -203,7 +218,7 @@
                 size="28px"
                 name="assignment"
               />
-              Mes Commandes
+              Liste des Commandes
             </div>
           </template>
         </q-item>
@@ -226,7 +241,7 @@ import VueJwtDecode from "vue-jwt-decode";
 
 const linksData = [
   {
-    title: "Utilisateurs",
+    title: "Les employés",
     caption: "",
     icon: "supervised_user_circle",
     links: [
@@ -234,24 +249,24 @@ const linksData = [
         link: "/user",
         title: "Gérants",
         caption: "",
-        icon: "school"
+        icon: "account_box"
       },
       {
         link: "/livreur",
         title: "Livreurs",
         caption: "",
         icon: "delivery_dining"
-      },
-      {
-        link: "/client",
-        title: "Clients",
-        caption: "",
-        icon: "person"
       }
+      // {
+      //   link: "/client",
+      //   title: "Clients",
+      //   caption: "",
+      //   icon: "person"
+      // }
     ]
   },
   {
-    title: "Parametres",
+    title: "Paramètres",
     caption: "",
     icon: "settings",
     links: [

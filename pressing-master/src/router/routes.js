@@ -29,6 +29,7 @@ const routes = [
           requiresAuth: true
         }
       },
+
       {
         path: "/livreur",
         component: () => import("src/pages/Livreur.vue"),

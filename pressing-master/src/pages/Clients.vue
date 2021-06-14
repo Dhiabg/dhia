@@ -3,7 +3,7 @@
     <!-- <q-card-section class="bg-primary text-white">-->
     <h4>Gestion des clients</h4>
     <!-- </q-card-section> -->
-    <q-separator style="margin-bottom:10px;" color="black" />
+    <q-separator style="margin-bottom:10px" color="black" />
     <br />
     <div>
       <div>

@@ -1,10 +1,7 @@
 <template>
   <div>
     <h4>Bienvenue {{ this.userdata.prenom }}</h4>
-    <q-separator
-      style="margin-bottom:10px;width:1340px;margin-left:30px"
-      color="black"
-    />
+    <q-separator style="margin-bottom:10px;margin-left:30px" color="black" />
 
     <div>
       <q-btn
@@ -378,7 +375,7 @@ export default {
 </script>
 <style scoped>
 .move {
-  margin-right: 170px;
+  margin-right: 150px;
 }
 .profilcard {
   max-width: 40rem;

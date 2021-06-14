@@ -24,7 +24,7 @@
               :src="produitImage[props.row.produit]"
             />
             <img v-else class="myimg" src="~assets/manquante.jpg" />
-
+            <q-separator color="white" vertical />
             <q-card-section horizontal>
               <q-list dense class="mylist">
                 <!-- <q-item>
@@ -90,6 +90,8 @@
                       Services</q-item-label
                     >
                   </q-item-section>
+                  <q-separator horizontal style="margin-left:-120px" />
+
                   <br />
                   <span v-for="item in props.row.services" :key="item._id">
                     <div align="center">
@@ -266,7 +268,7 @@ export default {
 .mydialog {
   min-width: 600px;
   padding: 20px;
-  height: 500px;
+  height: 600px;
   background: white;
 }
 .mydiv {

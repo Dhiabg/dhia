@@ -10,8 +10,9 @@
         glossy
         rounded
         dense
-        style="margin-left:30px;padding-right:10px"
-        icon="add_circle_outline"
+        icon-right="send"
+        style="margin-left:30px;padding-left:6px"
+        icon="reorder"
         to="/commander"
         class="shadowbutton"
         v-close-popup
@@ -68,63 +69,44 @@
             }}</q-td>
             <q-td key="produits" :props="props"
               ><q-btn
-                @click="show_dialog = true"
+                @click="
+                  show_dialog = true;
+                  productToShow = props.row.produits;
+                "
                 color="blue"
                 label="voir les produits"
                 size="sm"
                 no-caps
               >
-                <q-dialog v-model="show_dialog" v-if="show_dialog">
-                  <produits-commande :produit="props.row.produits" />
-                </q-dialog>
               </q-btn>
             </q-td>
             <q-td key="facture" :props="props"
-              ><q-btn color="blue" label="imprimer facture" size="sm" no-caps
-            /></q-td>
+              ><q-btn
+                color="blue"
+                label="imprimer facture"
+                size="sm"
+                no-caps
+                @click="PrintElem(props.row._id)"
+              />
+            </q-td>
             <q-td key="Action" :props="props"
               ><q-btn
-                @click="confirm = true"
+                @click="
+                  delete_dialog = true;
+                  productToDelete = props.row._id;
+                "
                 color="red"
                 icon-right="delete_forever"
                 size="sm"
-                no-caps/>
-              <q-dialog v-model="confirm">
-                <q-card>
-                  <q-card-section class="row items-center">
-                    <q-avatar
-                      icon="delete_outline"
-                      color="white"
-                      text-color="red"
-                    />
-
-                    <span class="q-ml-sm"
-                      >êtes-vous sûr de vouloir supprimer la commande ?
-                    </span>
-                  </q-card-section>
-
-                  <q-card-actions align="right">
-                    <q-btn
-                      dense
-                      rounded
-                      flat
-                      label="Annuler"
-                      color="red"
-                      v-close-popup
-                    />
-                    <q-btn
-                      glossy
-                      dense
-                      no-caps
-                      icon-right="delete_forever"
-                      @click="deleteCommande(props.row._id)"
-                      label="Supprimer"
-                      color="red"
-                      v-close-popup
-                    />
-                  </q-card-actions>
-                </q-card> </q-dialog
-            ></q-td>
+                no-caps
+              />
+            </q-td>
+            <to-print
+              :toPrint="props.row"
+              class="print-only"
+              :id="props.row._id"
+              :key="props.row._id"
+            />
             <!-- <q-td key="actions" :props="props">
               <q-btn
                 color="blue"
@@ -191,6 +173,49 @@
         />
       </div>
     </template>
+    <q-dialog v-model="show_dialog">
+      <produits-commande
+        :produit="productToShow"
+        @closeDialog="show_dialog = false"
+      />
+    </q-dialog>
+    <q-dialog v-model="delete_dialog">
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar
+            icon="reorder"
+            size="70px"
+            color="white"
+            text-color="secondary"
+          />
+
+          <span class="q-ml-sm"
+            >êtes-vous sûr de vouloir supprimer la commande ?
+          </span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            dense
+            rounded
+            flat
+            label="Annuler"
+            color="red-4"
+            v-close-popup
+          />
+          <q-btn
+            glossy
+            dense
+            no-caps
+            icon-right="delete_forever"
+            @click="deleteCommande(productToDelete)"
+            label="Supprimer"
+            color="red"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -198,6 +223,7 @@
 import ProduitsCommande from "src/components/ProduitsCommande.vue";
 
 import { exportFile } from "quasar";
+import ToPrint from "src/components/ToPrint.vue";
 
 function wrapCsvValue(val, formatFn) {
   let formatted = formatFn !== void 0 ? formatFn(val) : val;
@@ -219,13 +245,16 @@ function wrapCsvValue(val, formatFn) {
 }
 export default {
   name: "Commandes",
-  components: { ProduitsCommande },
-
+  components: { ProduitsCommande, ToPrint },
   data() {
     return {
       //addShow: false,
-      editDialog: false,
-
+      delete_dialog: false,
+      // Preview Modal
+      productToShow: null,
+      productToDelete: null,
+      show_dialog: false,
+      //
       pagination: {
         sortBy: "createdAt",
         page: 1,
@@ -240,7 +269,6 @@ export default {
       NomLivreurs: [],
       PrenomLivreurs: [],
 
-      show_dialog: false,
       confirm: false,
       columns: [
         {
@@ -327,6 +355,38 @@ export default {
   },
 
   methods: {
+    PrintElem(id) {
+      var mywindow = window.open("Print", "PRINT", "height=700,width=1300");
+
+      mywindow.document.write(
+        "<html><head><title>" + document.title + "</title>"
+      );
+      mywindow.document.write("</head><body > <br/> <br/>");
+
+      mywindow.document.write(
+        "<h1 align='center'>" + "LE PRESSING.TN" + "</h1>"
+      );
+
+      mywindow.document.write(
+        "<h4 align='center'>" +
+          "05, Rue du Huron les Berges du Lac" +
+          "<br/>" +
+          "Tél : 24568974 Fax: 71954681" +
+          "<br/>" +
+          "Email : lepressingtn@gmail.com" +
+          "</h4>"
+      );
+      mywindow.document.write(document.getElementById(id).innerHTML);
+      mywindow.document.write("</body></html>");
+
+      mywindow.document.close(); // necessary for IE >= 10
+      mywindow.focus(); // necessary for IE >= 10*/
+
+      mywindow.print();
+      mywindow.close();
+
+      return true;
+    },
     exportTable() {
       // naive encoding to csv format
       const content = [this.columns.map(col => wrapCsvValue(col.label))]

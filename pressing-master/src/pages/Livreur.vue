@@ -38,6 +38,17 @@
           :disable="!selected.length || selected.length > 1"
         ></q-btn>
         <q-btn
+          v-if="this.userdata.isAdmin === true"
+          dense
+          glossy
+          class="transform"
+          style="margin-right:25px;"
+          label="Changer mot de passe"
+          icon-right="password"
+          color="yellow-9"
+          @click="passwordDialog = true"
+        />
+        <q-btn
           align="right"
           size="13px"
           v-if="userdata.isAdmin === true"
@@ -189,11 +200,15 @@
     <q-dialog v-model="editDialog" v-if="editDialog">
       <livreur-form :livreur="selected[0]" @updated="getAll" />
     </q-dialog>
+    <q-dialog v-model="passwordDialog" v-if="passwordDialog">
+      <password-change :livreur="selected[0]" @updated="getAll" />
+    </q-dialog>
   </q-page>
 </template>
 
 <script>
 import VueJwtDecode from "vue-jwt-decode";
+import PasswordChange from "src/components/Forms/PasswordChange.vue";
 
 import LivreurForm from "src/components/Forms/LivreurForm.vue";
 import { exportFile } from "quasar";
@@ -217,12 +232,13 @@ function wrapCsvValue(val, formatFn) {
   return `"${formatted}"`;
 }
 export default {
-  components: { LivreurForm },
+  components: { LivreurForm, PasswordChange },
 
   name: "Livreurs",
   data() {
     return {
       addShow: false,
+      passwordDialog: false,
       editDialog: false,
       user: [],
       confirm: false,
