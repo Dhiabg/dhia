@@ -1,5 +1,3 @@
-import router from ".";
-
 const routes = [
   {
     path: "/home",
@@ -93,7 +91,7 @@ const routes = [
   // but you can also remove it
   {
     path: "*",
-    redirect: "/home",
+    redirect: "/profil",
     meta: {
       requiresAuth: true
     }

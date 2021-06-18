@@ -25,7 +25,7 @@
       <br />
       <q-item>
         <q-item-section>
-          <label class="title"> Mot de passe :</label>
+          <label class="title"> Nouveau mot de passe :</label>
         </q-item-section>
         <q-item-section>
           <q-input

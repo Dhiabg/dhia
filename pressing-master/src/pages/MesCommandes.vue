@@ -479,9 +479,9 @@ export default {
     }
   },
   watch: {},
-  async mounted() {
+  async created() {
     await this.getAll();
-    console.log(this.commandes);
+    //console.log(this.commandes);
 
     await this.getAllNomClients();
     await this.getAllNomLivreurs();

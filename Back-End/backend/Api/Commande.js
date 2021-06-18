@@ -15,15 +15,13 @@ route.post("/", async (req, res) => {
     etatLivraison,
     MoyenPaiement,
     produits,
+    dateLivraison,
   } = req.body;
   let date = new Date()
     .toISOString()
     .replace(/T/, " ") // replace T with a space
     .replace(/\..+/, ""); // delete the dot and everything after
-  var someDate = new Date();
 
-  var numberOfDaysToAdd = 2;
-  someDate.setDate(someDate.getDate() + numberOfDaysToAdd);
   // var produits = {
   //   produit: req.body.produit,
   //   quantite: req.body.quantite,
@@ -43,7 +41,7 @@ route.post("/", async (req, res) => {
   Commandes.produits = produits;
   Commandes.MoyenPaiement = MoyenPaiement;
   Commandes.createdAt = date;
-  Commandes.dateLivraison = someDate;
+  Commandes.dateLivraison = dateLivraison;
   // .toISOString()
   // .replace(/T/, " ") // replace T with a space
   // .replace(/\..+/, "");

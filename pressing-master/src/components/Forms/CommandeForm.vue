@@ -144,6 +144,13 @@
       <br />
       <div>
         <label class="title">
+          cochez si la commande est avec livraison
+        </label>
+        <q-checkbox v-model="liv_checked" />
+      </div>
+      <br />
+      <div v-if="liv_checked">
+        <label class="title">
           Choisir le livreur :
         </label>
         <select v-model="commande.livrer_par">
@@ -152,6 +159,11 @@
           </option>
         </select>
         <br />
+        <br />
+        <label class="title">
+          Livraison express à domicile et gratuite<br />
+          La durée du livraison : 2 jours
+        </label>
         <br />
         <br />
       </div>
@@ -196,11 +208,19 @@ export default {
       rest: 0,
       avance: 0,
       prix: 0,
-      produitPanier: {}
+      liv_checked: false,
+      produitPanier: {},
+      dateLiv: null
     };
   },
 
   methods: {
+    editDate() {
+      const current = new Date();
+      this.dateLiv = `${current.getFullYear()}-${current.getMonth() +
+        1}-${current.getDate() + 2} `;
+      return this.dateLiv;
+    },
     CalculPrix() {
       let panier = JSON.parse(localStorage.getItem("panier"));
       panier.forEach(element => {
@@ -225,15 +245,6 @@ export default {
     },
 
     ajoutProd() {
-      // let com = {};
-      // let QteCmd = JSON.parse(localStorage.getItem("qtecmd"));
-      // for (let i in QteCmd) {
-      //   com.produit = i;
-      //   com.quantite = QteCmd[i];
-      //   this.produitsID.push(com);
-      //   com = {};
-      // }
-      // this.commande.produits = this.produitsID;
       let comm = [];
       let prix = 0;
       let panier = JSON.parse(localStorage.getItem("panier"));
@@ -258,16 +269,15 @@ export default {
       this.commande.rest = this.rest;
       this.commande.avance = this.avance;
       this.commande.prixTotal = this.prixTotal;
+      this.commande.dateLivraison = this.dateLiv;
       if (this.rest === 0) {
         this.commande.etatPaiement = "Payer";
       } else {
         this.commande.etatPaiement = "Non Payer";
       }
-      this.commande.etatLivraison = "Non Livrer";
-      //   for (let el in this.produitPanier) {
-      //     this.produitsID.push(this.produitPanier[el]._id);
-      //   }
-      //   this.commande.produits = this.produitsID;
+      if (this.commande.livrer_par) {
+        this.commande.etatLivraison = "Non Livrer";
+      }
     },
     async getAllClients() {
       let res = await this.$axios.get("/client");
@@ -279,7 +289,7 @@ export default {
     },
     async onAdd() {
       this.ajoutProd();
-      if (this.commande.client) {
+      if (this.commande.client && this.commande.livrer_par) {
         this.$refs.myForm.validate().then(async success => {
           if (success) {
             let res = await this.$axios.post(`/commande`, {
@@ -294,7 +304,7 @@ export default {
       } else {
         return this.$q.notify({
           color: "red",
-          message: "Veuillez choisir un client"
+          message: "Veuillez remplir tous les champs"
         });
       }
     },
@@ -311,6 +321,7 @@ export default {
     //   this.prixTotal = { ...this.prix };
     // await console.log("prix total :", this.prix);
     // await console.log("panier:", this.produitPanier);
+    await this.editDate();
     await this.getAllClients();
     await this.getAllLivreurs();
     let panier = JSON.parse(localStorage.getItem("panier"));

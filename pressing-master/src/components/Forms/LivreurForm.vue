@@ -570,7 +570,7 @@ export default {
 .mydialog {
   min-width: 740px;
   padding: 20px;
-  height: 780px;
+  height: 910px;
   background: white;
 }
 .title2 {

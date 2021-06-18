@@ -45,6 +45,7 @@
           label="Changer mot de passe"
           icon-right="password"
           color="yellow-9"
+          :disable="!selected.length || selected.length > 1"
           @click="passwordDialog = true"
         />
         <q-btn

@@ -45,6 +45,7 @@
           style="margin-right:25px;"
           label="Changer mot de passe"
           icon-right="password"
+          :disable="!selected.length || selected.length > 1"
           color="yellow-9"
           @click="passwordDialog = true"
         />

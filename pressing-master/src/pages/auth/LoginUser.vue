@@ -21,10 +21,12 @@
           </div>
           <br />
           <br />
+
           <div class="form-control">
             <q-input
               outlined
-              color="secondary"
+              filled
+              color="blue"
               type="email"
               v-model="login.email"
               label="Email"
@@ -38,7 +40,7 @@
           </div>
           <div class="form-control">
             <q-input
-              color="secondary"
+              color="blue"
               outlined
               :type="isPwd ? 'password' : 'text'"
               v-model="login.password"
@@ -187,7 +189,6 @@ form {
   height: 609px;
   border-radius: 7.5px;
   box-shadow: 0 0 5px 2px rgb(184, 183, 183);
-  /* padding: 1.5rem; */
   background-color: #ffffff;
 }
 .form-control {

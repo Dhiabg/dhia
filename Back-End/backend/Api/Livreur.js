@@ -147,6 +147,15 @@ route.patch("/update/:id", async (req, res) => {
     res.status(400).send(err);
   }
 });
+route.patch("/update-profil/:id", async (req, res) => {
+  try {
+    const _id = req.params.id;
+    const Livreurs = await livreurs.findByIdAndUpdate(_id, req.body);
+    res.send(Livreurs);
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
 
 route.patch("/update-password/:id", async (req, res) => {
   try {

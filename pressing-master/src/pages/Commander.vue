@@ -91,7 +91,7 @@
     >
       <template #item="props">
         <div
-          style="margin:15px"
+          style="margin:50px;margin-left:30px"
           v-if="categories[props.row.categorie] === catName"
           :style="props.selected ? 'transform: scale(0.95);' : ''"
         >
@@ -130,6 +130,7 @@
         </div>
       </template>
     </q-table>
+
     <br />
     <br />
     <br />
@@ -152,11 +153,11 @@ export default {
     return {
       expanded: false,
       pagination: {
-        rowsPerPage: 18,
+        rowsPerPage: 10,
         page: 1
       },
       paginationCat: {
-        rowsPerPage: 3,
+        rowsPerPage: 5,
         page: 1
       },
       // paginationServ: {

@@ -78,34 +78,7 @@
           </q-input>
         </q-item-section>
       </q-item>
-      <!-- <q-item>
-        <q-item-section>
-          <label class="title"> Date de naissance :</label>
-        </q-item-section>
-        <q-item-section>
-          <q-input
-            outlined
-            dense
-            style="margin-left:-105px;width:330px"
-            color="secondary"
-            v-model="userCopy.date_naissance"
-            type="date"
-            lazy-rules
-            :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
-          >
-            <template v-slot:prepend>
-              <div class="row items-center all-pointer-events">
-                <q-icon
-                  class="q-mr-xs"
-                  color="secondary"
-                  size="20px"
-                  name="today"
-                />
-              </div>
-            </template>
-          </q-input>
-        </q-item-section>
-      </q-item> -->
+
       <q-item>
         <q-item-section>
           <label class="title"> Date de naissance :</label>
@@ -213,7 +186,7 @@
           </q-input>
         </q-item-section>
       </q-item>
-      <!-- <q-item>
+      <q-item v-if="!this.user">
         <q-item-section>
           <label class="title"> Mot de passe :</label>
         </q-item-section>
@@ -249,7 +222,7 @@
           </q-input>
         </q-item-section>
       </q-item>
-      <q-item>
+      <q-item v-if="!this.user">
         <q-item-section>
           <label class="title"> Confirmer mot de passe :</label>
         </q-item-section>
@@ -285,7 +258,7 @@
             </template>
           </q-input>
         </q-item-section>
-      </q-item>-->
+      </q-item>
       <q-item>
         <q-item-section>
           <label class="title"> Adresse :</label>
@@ -580,7 +553,7 @@ export default {
 .mydialog {
   min-width: 740px;
   padding: 20px;
-  height: 780px;
+  height: 880px;
   background: white;
 }
 .title2 {

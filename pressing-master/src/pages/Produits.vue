@@ -101,7 +101,7 @@
     >
       <template #item="props">
         <div
-          style="margin-bottom:250px;margin-right:50px"
+          style="margin-bottom:250px;margin-left:70px"
           class="mycard"
           :style="props.selected ? 'transform: scale(0.95);' : ''"
         >
@@ -317,7 +317,7 @@ export default {
       },
       expanded: false,
       pagination: {
-        rowsPerPage: 10,
+        rowsPerPage: 5,
         page: 1
       },
       filter: "",

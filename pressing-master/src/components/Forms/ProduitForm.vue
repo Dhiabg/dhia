@@ -457,7 +457,7 @@ label {
 .mydialog {
   min-width: 620px;
   padding: 20px;
-  height: 670px;
+  height: 870px;
   background: white;
 }
 .title2 {

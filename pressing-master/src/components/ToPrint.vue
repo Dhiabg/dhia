@@ -78,7 +78,7 @@ export default {
       categorie: [],
       date: null,
       produit: [],
-      client: null,
+      client: [],
       MailClients: [],
       PrenomLivreurs: [],
       columns: [
@@ -120,30 +120,30 @@ export default {
       let res = await this.$axios.get(`/client/${this.toPrint.client}`);
       this.client = res.data;
     },
-    async getAllMailClients() {
-      let res = await this.$axios.get("/client");
-      let MailClients = {};
-      res.data.forEach(el => {
-        MailClients[el._id] = el.email;
-      });
-      this.MailClients = { ...MailClients };
-    },
-    async getAllVilleClients() {
-      let res = await this.$axios.get("/client");
-      let VilleClients = {};
-      res.data.forEach(el => {
-        VilleClients[el._id] = el.ville;
-      });
-      this.VilleClients = { ...VilleClients };
-    },
-    async getAllNomClients() {
-      let res = await this.$axios.get("/client");
-      let NomClients = {};
-      res.data.forEach(el => {
-        NomClients[el._id] = el.nom;
-      });
-      this.NomClients = { ...NomClients };
-    },
+    // async getAllMailClients() {
+    //   let res = await this.$axios.get("/client");
+    //   let MailClients = {};
+    //   res.data.forEach(el => {
+    //     MailClients[el._id] = el.email;
+    //   });
+    //   this.MailClients = { ...MailClients };
+    // },
+    // async getAllVilleClients() {
+    //   let res = await this.$axios.get("/client");
+    //   let VilleClients = {};
+    //   res.data.forEach(el => {
+    //     VilleClients[el._id] = el.ville;
+    //   });
+    //   this.VilleClients = { ...VilleClients };
+    // },
+    // async getAllNomClients() {
+    //   let res = await this.$axios.get("/client");
+    //   let NomClients = {};
+    //   res.data.forEach(el => {
+    //     NomClients[el._id] = el.nom;
+    //   });
+    //   this.NomClients = { ...NomClients };
+    // },
 
     async getAllNomLivreurs() {
       let res = await this.$axios.get("/livreur");
@@ -153,14 +153,14 @@ export default {
       });
       this.NomLivreurs = { ...NomLivreurs };
     },
-    async getAllPrenomClients() {
-      let res = await this.$axios.get("/client");
-      let PrenomClients = {};
-      res.data.forEach(el => {
-        PrenomClients[el._id] = el.prenom;
-      });
-      this.PrenomClients = { ...PrenomClients };
-    },
+    // async getAllPrenomClients() {
+    //   let res = await this.$axios.get("/client");
+    //   let PrenomClients = {};
+    //   res.data.forEach(el => {
+    //     PrenomClients[el._id] = el.prenom;
+    //   });
+    //   this.PrenomClients = { ...PrenomClients };
+    // },
 
     async getAllPrenomLivreurs() {
       let res = await this.$axios.get("/livreur");
@@ -195,17 +195,17 @@ export default {
       this.produit = { ...produit };
     }
   },
-  mounted() {
-    this.getClientData();
-    this.getAllNomClients();
-    this.getAllNomLivreurs();
-    this.getAllPrenomClients();
-    this.getAllPrenomLivreurs();
-    this.getAllVilleClients();
-    this.getAllMailClients();
-    this.getAllCategorieProduct();
-    this.getAllCategorie();
-    this.getAllProducts();
+  async mounted() {
+    await this.getClientData();
+    // this.getAllNomClients();
+    await this.getAllNomLivreurs();
+    // this.getAllPrenomClients();
+    await this.getAllPrenomLivreurs();
+    // this.getAllVilleClients();
+    // this.getAllMailClients();
+    await this.getAllCategorieProduct();
+    await this.getAllCategorie();
+    await this.getAllProducts();
   }
 };
 </script>

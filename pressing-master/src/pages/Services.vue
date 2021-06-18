@@ -106,6 +106,7 @@
     >
       <template #item="props">
         <div
+          style="margin-left:50px"
           class="mycard"
           :style="props.selected ? 'transform: scale(0.95);' : ''"
         >
@@ -249,7 +250,7 @@ export default {
   data() {
     return {
       pagination: {
-        rowsPerPage: 7,
+        rowsPerPage: 6,
         page: 1
       },
       filter: "",

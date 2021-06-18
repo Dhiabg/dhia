@@ -111,6 +111,7 @@
     >
       <template #item="props">
         <div
+          style="margin-left:50px"
           class="mycard"
           :style="props.selected ? 'transform: scale(0.95);' : ''"
         >
