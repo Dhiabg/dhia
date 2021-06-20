@@ -1,15 +1,5 @@
 <template>
   <q-page class="q-pa-lg">
-    <!-- <q-table
-      title="Categories"
-      :data="categories"
-      :columns="columns"
-      row-key="_id"
-      selection="single"
-      :selected.sync="selected"
-    > -->
-    <!-- <q-card class="my-card">
-      <q-card-section class="bg-primary text-white"> -->
     <h4>Gestion des categories</h4>
     <q-separator style="margin-bottom:10px;" color="black" />
     <br />
@@ -62,7 +52,7 @@
           <q-avatar icon="delete_outline" color="white" text-color="red" />
 
           <span class="q-ml-sm"
-            >êtes-vous sûr de vouloir supprimer les catégories sélectionnées ?
+            >êtes-vous sûr de vouloir supprimer la catégorie sélectionnée ?
           </span>
         </q-card-section>
 
@@ -103,15 +93,16 @@
       :columns="columns"
       row-key="_id"
       grid
-      selection="multiple"
+      selection="single"
       :pagination.sync="pagination"
       :selected.sync="selected"
       hide-pagination
+      hide-bottom
       hide-header
     >
       <template #item="props">
         <div
-          style="margin-left:50px"
+          style="margin-bottom:250px;margin-left:70px"
           class="mycard"
           :style="props.selected ? 'transform: scale(0.95);' : ''"
         >
@@ -176,43 +167,6 @@
                     </q-item-section>
                   </q-item>
                   <q-separator horizontal />
-                  <!-- <q-item>
-                    <q-item-section avatar>
-                      <q-item-label caption>Description</q-item-label>
-                    </q-item-section>
-                    <q-separator vertical />
-                    <q-item-section>
-                      <q-item-label class="absolute-center">
-                        {{ props.row.description }}</q-item-label
-                      >
-                    </q-item-section>
-                  </q-item> -->
-                  <!-- description list -->
-                  <!-- <q-card-actions>
-                    <label caption>
-                      Description
-                    </label>
-
-                    <q-space />
-
-                    <q-btn
-                      color="grey"
-                      round
-                      flat
-                      dense
-                      :icon="
-                        expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
-                      "
-                      @click="expanded = !expanded"
-                    />
-                  </q-card-actions>
-                  <q-slide-transition>
-                    <div v-show="expanded">
-                      <q-card-section class="text-subitle2">
-                        {{ props.row.description }}
-                      </q-card-section>
-                    </div>
-                  </q-slide-transition> -->
                 </q-list>
               </q-card>
             </q-list>
@@ -222,7 +176,11 @@
     </q-table>
 
     <q-dialog v-model="editDialog" v-if="editDialog">
-      <categorie-form :categorie="selected[0]" @updated="getAll" />
+      <categorie-form
+        :categorie="selected[0]"
+        @updated="getAll"
+        @closeDialog="editDialog = false"
+      />
     </q-dialog>
     <div class=" absolute-bottom q-mt-md">
       <q-pagination
@@ -242,13 +200,12 @@ export default {
   name: "Categories",
   data() {
     return {
-      expanded: false,
       categories: [],
       filter: "",
       etatcss: true,
       confirm: false,
       pagination: {
-        rowsPerPage: 7,
+        rowsPerPage: 5,
         page: 1
       },
       selected: [],
@@ -289,9 +246,6 @@ export default {
     };
   },
   methods: {
-    reverse() {
-      return !this.expanded;
-    },
     async getAll() {
       let res = await this.$axios.get("/categorie");
       this.categories = res.data;
@@ -307,31 +261,22 @@ export default {
       }
     },
     async deleteCategorie() {
-      await this.selected.forEach(element => {
-        this.$axios.delete(`/categorie/delete/${element._id}`);
-      });
-      // if (res.status === 200) {
-      //   this.$q.notify({
-      //     color: "warning",
-      //     message: "Catégorie supprimée"
-      //   });
-      window.location.reload(true);
-
-      //await this.$emit("updated");
-      // window.location.reload(true);
-
-      // let res = await this.$axios.delete(
-      //   `/categorie/delete/${this.selected[0]._id}`
-      // );
-      // if (res.status === 200) {
-      //   return (
-      //     this.$q.notify({
-      //       color: "red",
-      //       message: "Categorie deleted"
-      //     }),
-      // );
-      //  }
+      // await this.selected.forEach(element => {
+      //   this.$axios.delete(`/categorie/delete/${element._id}`);
+      // });
+      let res = await this.$axios.delete(
+        `/categorie/delete/${this.selected[0]._id}`
+      );
+      return (
+        this.$q.notify({
+          color: "red",
+          message: "Categorie supprimée"
+        }),
+        await this.getAll(),
+        (this.selected = [])
+      );
     },
+
     EditCategorie() {
       if (!this.selected[0]._id) {
         return this.$q.notify({

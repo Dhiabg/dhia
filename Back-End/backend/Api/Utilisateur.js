@@ -72,51 +72,6 @@ route.post("/login", async (req, res) => {
   // }
 });
 
-//   const token = await generateAuthToken();
-//   res.status(201).json({ user, token });
-// } catch (err) {
-//   res.status(400).json({ err: err });
-// }
-// try {
-//   const user = await utilisateurs.findByCredentials(
-//     req.body.email,
-//     req.body.password
-//   );
-//   var token = jwt.sign({ id: user._id }, config.secret, {
-//     expiresIn: 86400, // expires in 24 hours
-//   });
-//   res.send({ user, token });
-// } catch (error) {
-//   res.status(400).send({
-//     error: { message: "You have entered an invalid email or password" },
-//   });
-// }
-
-//Register
-// route.post("/register", function (req, res) {
-//   var hashedPassword = bcrypt.hashSync(req.body.password, 8);
-
-//   utilisateurs.create(
-//     {
-//       nom: req.body.nom,
-//       prenom: req.body.prenom,
-//       email: req.body.email,
-//       password: hashedPassword,
-//     },
-//     function (err, user) {
-//       if (err)
-//         return res
-//           .status(500)
-//           .send("There was a problem registering the user.");
-//       // create a token
-//       var token = jwt.sign({ id: user._id }, config.secret, {
-//         expiresIn: 86400, // expires in 24 hours
-//       });
-//       res.status(200).send({ auth: true, token: token });
-//     }
-//   );
-// });
-
 route.post("/register", async (req, res) => {
   try {
     let sameEmail = await utilisateurs.find({ email: req.body.email });
@@ -188,19 +143,16 @@ route.delete("/delete/:id", async (req, res) => {
 });
 
 route.patch("/update/:id", async (req, res) => {
+  // let sameEmail = await utilisateurs.find({ email: req.body.code });
+  // if (sameEmail.length >= 2) {
   try {
-    let sameEmail = await utilisateurs.find({ email: req.body.email });
-    if (sameEmail.length >= 1) {
-      return res.status(409).json({
-        message: "email already in use",
-      });
-    }
     const _id = req.params.id;
-    const user = await utilisateurs.findByIdAndUpdate(_id, req.body);
-    res.send(user);
+    const results = await utilisateurs.findByIdAndUpdate(_id, req.body);
+    res.send(results);
   } catch (err) {
     res.status(400).send(err);
   }
+  // }
 });
 route.patch("/update-password/:id", async (req, res) => {
   try {
@@ -212,39 +164,4 @@ route.patch("/update-password/:id", async (req, res) => {
   }
 });
 
-// route.get("/userdata", (req, res) => {
-//   // try {
-//   //     await res.json(req.userData);
-//   //   } catch (err) {
-//   //     console.log(err);
-//   //   }
-//   try {
-//     const token = req.headers.authorization.replace("Bearer ", "");
-//     console.log(token);
-//     const decoded = jwt.verify(token, config.secret);
-//     req.userData = decoded;
-//     console.log(req.userData);
-//     next();
-//     //  await res.json(req.userData);
-//   } catch (err) {
-//     return res.status(401).json({
-//       message: "Authentification Failed",
-//     });
-//   }
-// });
-// route.get("/userdata", async (req, res) => {
-//   // await res.json(req.userData);
-//   try {
-//     const token = await req.headers.authorization.replace("Bearer ", "");
-//     console.log(token);
-//     // const decoded = jwt.verify(token, config.secret);
-//     // req.userData = decoded;
-//     // console.log(req.userData);
-//     next();
-//   } catch (err) {
-//     return res.status(401).json({
-//       message: "Authentification Failed",
-//     });
-//   }
-// });
 module.exports = route;

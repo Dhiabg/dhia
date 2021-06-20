@@ -2,8 +2,7 @@
   <q-card class="mydialog">
     <q-form
       class="q-pa-md bg-white text-black"
-      @submit.prevent="onEdit()"
-      @submit="creerLivreur()"
+      @submit="livreur ? onEdit() : creerLivreur()"
       ref="myForm"
     >
       <br />
@@ -212,79 +211,81 @@
           </q-input>
         </q-item-section>
       </q-item>
-      <q-item>
-        <q-item-section>
-          <label class="title"> Mot de passe :</label>
-        </q-item-section>
-        <q-item-section>
-          <q-input
-            outlined
-            dense
-            style="margin-left:-105px;width:330px"
-            color="secondary"
-            :type="isPwd ? 'password' : 'text'"
-            lazy-rules
-            :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
-            v-model.trim="livreurCopy.password"
-            label="****************************"
-          >
-            <template v-slot:append>
-              <q-icon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isPwd = !isPwd"
-              />
-            </template>
-            <template v-slot:prepend>
-              <div class="row items-center all-pointer-events">
+      <div v-if="!livreur">
+        <q-item>
+          <q-item-section>
+            <label class="title"> Mot de passe :</label>
+          </q-item-section>
+          <q-item-section>
+            <q-input
+              outlined
+              dense
+              style="margin-left:-105px;width:330px"
+              color="secondary"
+              :type="isPwd ? 'password' : 'text'"
+              lazy-rules
+              :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+              v-model.trim="livreurCopy.password"
+              label="****************************"
+            >
+              <template v-slot:append>
                 <q-icon
-                  class="q-mr-xs"
-                  color="secondary"
-                  size="20px"
-                  name="edit"
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
                 />
-              </div>
-            </template>
-          </q-input>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section>
-          <label class="title"> Confirmer mot de passe :</label>
-        </q-item-section>
-        <q-item-section>
-          <br />
-          <q-input
-            outlined
-            dense
-            style="margin-left:-105px;width:330px"
-            color="secondary"
-            :type="isPwd ? 'password' : 'text'"
-            lazy-rules
-            :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
-            v-model.trim="confirmPassword"
-            label="****************************"
-          >
-            <template v-slot:append>
-              <q-icon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isPwd = !isPwd"
-              />
-            </template>
-            <template v-slot:prepend>
-              <div class="row items-center all-pointer-events">
+              </template>
+              <template v-slot:prepend>
+                <div class="row items-center all-pointer-events">
+                  <q-icon
+                    class="q-mr-xs"
+                    color="secondary"
+                    size="20px"
+                    name="edit"
+                  />
+                </div>
+              </template>
+            </q-input>
+          </q-item-section>
+        </q-item>
+        <q-item>
+          <q-item-section>
+            <label class="title"> Confirmer mot de passe :</label>
+          </q-item-section>
+          <q-item-section>
+            <br />
+            <q-input
+              outlined
+              dense
+              style="margin-left:-105px;width:330px"
+              color="secondary"
+              :type="isPwd ? 'password' : 'text'"
+              lazy-rules
+              :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+              v-model.trim="confirmPassword"
+              label="****************************"
+            >
+              <template v-slot:append>
                 <q-icon
-                  class="q-mr-xs"
-                  color="secondary"
-                  size="20px"
-                  name="edit"
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
                 />
-              </div>
-            </template>
-          </q-input>
-        </q-item-section>
-      </q-item>
+              </template>
+              <template v-slot:prepend>
+                <div class="row items-center all-pointer-events">
+                  <q-icon
+                    class="q-mr-xs"
+                    color="secondary"
+                    size="20px"
+                    name="edit"
+                  />
+                </div>
+              </template>
+            </q-input>
+          </q-item-section>
+        </q-item>
+      </div>
       <q-item>
         <q-item-section>
           <label class="title"> Adresse :</label>
@@ -320,8 +321,9 @@
             style="width:160px;margin-left:-40px"
             v-model.trim="livreurCopy.code_postal"
             label="Code postal"
+            mask="####"
             lazy-rules
-            :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+            :rules="[val => (val && val.length === 4) || 'Champ incorrect !!']"
           >
             <template v-slot:prepend>
               <div class="row items-center all-pointer-events">
@@ -367,7 +369,7 @@
             v-model.trim="livreurCopy.telephone"
             label=""
             lazy-rules
-            :rules="[val => (val && val.length === 8) || 'Champ vide !!']"
+            :rules="[val => (val && val.length === 8) || 'Champ incorrect !!']"
           >
             <template v-slot:label>
               <div class="row items-center all-pointer-events">
@@ -460,15 +462,22 @@ export default {
       livreurCopy: {},
       isPwd: true,
       confirmPassword: null,
-      selectedCopy: {}
+      selectedCopy: {},
+      livreurs: []
     };
   },
 
   methods: {
+    async getAll() {
+      let res = await this.$axios.get("/livreur");
+      this.livreurs = res.data;
+    },
     dateOption(date) {
       return date >= "1910/01/01" && date <= "2010/01/01";
     },
     async creerLivreur() {
+      this.livreurCopy.email = this.livreurCopy.email.toLowerCase();
+
       this.$refs.myForm.validate().then(async success => {
         if (success) {
           if (this.livreurCopy.password != this.confirmPassword) {
@@ -483,17 +492,15 @@ export default {
                 this.livreurCopy
               );
               console.log(response);
-              // let token = response.data.token;
-              // if (token) {
-              //   localStorage.setItem("jwt", token);
-              //this.$router.push("/");
-              console.log("succes");
+
               return (
                 this.$q.notify({
-                  color: "warning",
+                  color: "green",
                   message: "succes, livreur créer"
                 }),
-                // this.$router.push("/login")
+                // this.$emit("updated"),
+                // await this.getAll(),
+                // await this.onCancel()
                 window.location.reload(true)
               );
             } catch {
@@ -506,49 +513,42 @@ export default {
         }
       });
     },
-    async onAdd() {
-      this.$refs.myForm.validate().then(async success => {
-        if (success) {
-          try {
-            let res = await this.$axios.post(`/livreur/register`, {
-              ...this.livreurCopy
-            });
-            window.location.reload(true);
-
-            this.$emit("updated");
-            await this.getAll();
-          } catch {
-            return this.$q.notify({
-              color: "red",
-              message: "Email deja utilisé"
-            });
-          }
-        }
-      });
-    },
     async onEdit() {
-      //  this.$refs.myForm.validate().then(async success => {
-      ////    if (success) {
-      ////    let res = await this.$axios.post(`/client/`, {
-      //...this.clientCopy
-      //  });
-      //  console.log(res);
-      //   }
-      //});
-      //} else {
+      this.livreurCopy.email = this.livreurCopy.email.toLowerCase();
+
+      let test = 0;
       this.$refs.myForm.validate().then(async success => {
         if (success) {
-          try {
+          // try {
+          this.livreurs.forEach(el => {
+            if (
+              el._id != this.livreurCopy._id &&
+              el.email === this.livreurCopy.email
+            ) {
+              test = test + 1;
+            }
+          });
+          //  console.log(test);
+          if (test === 0) {
             let res = await this.$axios.patch(
               `/livreur/update/${this.livreur._id}`,
               {
                 ...this.livreurCopy
               }
             );
+
+            // return (
+            //   this.$q.notify({
+            //     color: "green",
+            //     message: "Modification avec succées"
+            //   }),
+            // this.$emit("updated"),
             window.location.reload(true);
 
-            this.$emit("updated");
-          } catch {
+            //  await this.getAll(),
+            //  this.onCancel()
+            // );
+          } else {
             return this.$q.notify({
               color: "red",
               message: "Email deja utilisé"
@@ -557,12 +557,14 @@ export default {
         }
       });
     },
+
     onCancel() {
       this.$emit("closeDialog");
     }
   },
-  mounted() {
+  async mounted() {
     this.livreurCopy = { ...this.livreur };
+    await this.getAll();
   }
 };
 </script>

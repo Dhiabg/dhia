@@ -1,6 +1,10 @@
 <template>
   <q-card class="mydialog">
-    <q-form class="q-pa-md bg-white text-black" @submit="onAdd()" ref="myForm">
+    <q-form
+      class="q-pa-md bg-white text-black"
+      @submit="categorie ? onEdit() : onAdd()"
+      ref="myForm"
+    >
       <br />
       <label class="title2">
         Formulaire catégorie
@@ -28,6 +32,7 @@
         <q-input
           dense
           outlined
+          type="url"
           style="width:500px"
           color="secondary"
           v-model.trim="categorieCopy.imageUrl"
@@ -148,12 +153,11 @@
 
         <q-btn
           v-if="this.categorie"
+          type="submit"
           style="margin-right: 15px"
           label="confirmer la modification"
           icon-right="assignment_turned_in"
           glossy
-          type="submit"
-          @click="onEdit()"
           color="secondary"
         />
 
@@ -179,11 +183,16 @@ export default {
       // genreOptions: ["Homme", "Femme"],
       etatOptions: ["Actif", "Inactif"],
 
-      categorieCopy: {}
+      categorieCopy: {},
+      categories: {}
     };
   },
 
   methods: {
+    async getAll() {
+      let res = await this.$axios.get("/categorie");
+      this.categories = res.data;
+    },
     async onAdd() {
       this.$refs.myForm.validate().then(async success => {
         if (success) {
@@ -191,11 +200,7 @@ export default {
             let res = await this.$axios.post(`/categorie/`, {
               ...this.categorieCopy
             });
-            window.location.reload(true);
-
-            // this.$emit("updated");
-
-            // await this.getAll();
+            this.$emit("updated"), await this.getAll(), await this.onCancel();
           } catch {
             return this.$q.notify({
               color: "red",
@@ -206,46 +211,47 @@ export default {
       });
     },
     async onEdit() {
-      //  this.$refs.myForm.validate().then(async success => {
-      ////    if (success) {
-      ////    let res = await this.$axios.post(`/client/`, {
-      //...this.clientCopy
-      //  });
-      //  console.log(res);
-      //   }
-      //});
-      //} else {
-
+      let test = 0;
       this.$refs.myForm.validate().then(async success => {
         if (success) {
-          try {
+          // try {
+          this.categories.forEach(el => {
+            if (
+              el._id != this.categorieCopy._id &&
+              el.code === this.categorieCopy.code
+            ) {
+              test = test + 1;
+            }
+          });
+          //  console.log(test);
+          if (test === 0) {
             let res = await this.$axios.patch(
               `/categorie/update/${this.categorie._id}`,
               {
                 ...this.categorieCopy
               }
             );
-            window.location.reload(true);
-
-            // this.$emit("updated");
+            this.$emit("updated");
+            //window.location.reload(true);
 
             await this.getAll();
-          } catch {
+            this.onCancel();
+          } else {
             return this.$q.notify({
               color: "red",
-              message: "code deja utilisé"
+              message: "Code deja utilisé"
             });
           }
         }
       });
     },
-
     onCancel() {
       this.$emit("closeDialog");
     }
   },
   mounted() {
     this.categorieCopy = { ...this.categorie };
+    this.getAll();
   }
 };
 </script>

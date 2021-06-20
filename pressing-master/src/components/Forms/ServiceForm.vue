@@ -1,6 +1,10 @@
 <template>
   <q-card class="mydialog">
-    <q-form class="q-pa-md bg-white text-black" @submit="onAdd()" ref="myForm">
+    <q-form
+      class="q-pa-md bg-white text-black"
+      @submit="service ? onEdit() : onAdd()"
+      ref="myForm"
+    >
       <br />
       <label class="title2">
         Formulaire service
@@ -27,6 +31,7 @@
       <q-item>
         <q-input
           outlined
+          type="url"
           style="width:500px"
           color="secondary"
           dense
@@ -152,7 +157,6 @@
           icon-right="assignment_turned_in"
           glossy
           type="submit"
-          @click="onEdit()"
           color="secondary"
         />
 
@@ -177,26 +181,13 @@ export default {
     return {
       // genreOptions: ["Homme", "Femme"],
       etatOptions: ["Actif", "Inactif"],
-
-      serviceCopy: {}
+      services: {},
+      serviceCopy: {},
+      servicesCode: []
     };
   },
 
   methods: {
-    //  async onSubmit() {
-    //   this.$refs.myForm.validate().then(async success => {
-    //   if (success) {
-    //   let res = await this.$axios.post(`/service/`, {
-    //   ...this.serviceCopy
-    ////  });
-
-    // if (res.status === "200") {
-    //   await this.getAll();
-    //  }
-    //  }
-    // });
-    //  }
-    // },
     async onAdd() {
       this.$refs.myForm.validate().then(async success => {
         if (success) {
@@ -204,14 +195,16 @@ export default {
             let res = await this.$axios.post(`/service/`, {
               ...this.serviceCopy
             });
-            window.location.reload(true);
-            return this.$q.notify({
-              color: "green",
-              message: "Service ajouté avec succées"
-            });
-            // this.$emit("updated");
-
-            // await this.getAll();
+            //  window.location.reload(true);
+            return (
+              this.$q.notify({
+                color: "green",
+                message: "Service ajouté avec succées"
+              }),
+              this.$emit("updated"),
+              await this.getAll(),
+              await this.onCancel()
+            );
           } catch {
             return this.$q.notify({
               color: "red",
@@ -222,22 +215,33 @@ export default {
       });
     },
     async onEdit() {
+      let test = 0;
       this.$refs.myForm.validate().then(async success => {
         if (success) {
-          try {
-            //console.log(this.service);
-            let res = await this.$axios.patch(
+          // try {
+          this.services.forEach(el => {
+            if (
+              el._id != this.serviceCopy._id &&
+              el.code === this.serviceCopy.code
+            ) {
+              test = test + 1;
+            }
+          });
+          console.log(test);
+          if (test === 0) {
+            let res = await this.$axios.put(
               `/service/update/${this.service._id}`,
               {
                 ...this.serviceCopy
               }
             );
-            window.location.reload(true);
-
-            // this.$emit("updated");
+            this.$emit("updated");
+            //window.location.reload(true);
 
             await this.getAll();
-          } catch {
+
+            this.onCancel();
+          } else {
             return this.$q.notify({
               color: "red",
               message: "Code deja utilisé"
@@ -245,7 +249,10 @@ export default {
           }
         }
       });
-      //  }
+    },
+    async getAll() {
+      let res = await this.$axios.get("/service");
+      this.services = res.data;
     },
 
     onCancel() {
@@ -254,6 +261,7 @@ export default {
   },
   mounted() {
     this.serviceCopy = { ...this.service };
+    this.getAll();
   }
 };
 </script>

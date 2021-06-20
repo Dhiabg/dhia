@@ -59,7 +59,7 @@
           />
 
           <span class="q-ml-sm"
-            >êtes-vous sûr de vouloir supprimer les clients sélectionnées ?
+            >êtes-vous sûr de vouloir supprimer le client sélectionné ?
           </span>
         </q-card-section>
 
@@ -99,7 +99,7 @@
         :data="clients"
         :columns="columns"
         row-key="_id"
-        selection="multiple"
+        selection="single"
         :selected.sync="selected"
         :pagination.sync="pagination"
         hide-pagination
@@ -154,7 +154,11 @@
       </div>
     </template>
     <q-dialog v-model="editDialog" v-if="editDialog">
-      <client-form :client="selected[0]" @updated="getAll" />
+      <client-form
+        :client="selected[0]"
+        @updated="getAll"
+        @closeDialog="editDialog = false"
+      />
     </q-dialog>
   </q-page>
 </template>
@@ -316,13 +320,17 @@ export default {
       }
     },
     async deleteClient() {
-      await this.selected.forEach(element => {
-        this.$axios.delete(`/client/delete/${element._id}`);
-      });
-
-      window.location.reload(true);
-
-      // await this.getAll();
+      let res = await this.$axios.delete(
+        `/client/delete/${this.selected[0]._id}`
+      );
+      return (
+        this.$q.notify({
+          color: "red",
+          message: "Client supprimé"
+        }),
+        await this.getAll(),
+        (this.selected = [])
+      );
     },
     EditClient() {
       if (!this.selected[0]._id) {

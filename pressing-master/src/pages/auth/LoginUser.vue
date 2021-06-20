@@ -114,20 +114,12 @@ export default {
 
   methods: {
     async Login() {
-      // if (login.email === null || login.password === null) {
-      //   return (
-      //     this.$q.notify({
-      //       color: "red",
-      //       message: "Veuillez remplir tout les champs"
-      //     }),
-      //     this.$router.push("/register")
-      //   );
-      // } else {
       try {
+        this.login.email = this.login.email.toLowerCase();
+
         let res = await this.$axios.post(`/utilisateur/login`, this.login);
         let token = res.data.token;
         localStorage.setItem("token", token);
-        // localStorage.setItem("panier", JSON.stringify(this.panier));
 
         if (token) {
           console.log("acces, token: ", token);

@@ -106,6 +106,7 @@
                 dense
                 rounded
                 flat
+                no-caps
                 label="Annuler"
                 color="red"
                 v-close-popup
@@ -113,6 +114,7 @@
               <q-btn
                 glossy
                 dense
+                no-caps
                 icon-right="logout"
                 @click="logUserOut()"
                 label="Deconnecter"

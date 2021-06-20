@@ -111,38 +111,43 @@
                       </q-item-section>
                       <q-separator horizontal />
                       <span v-for="item in props.row.services" :key="item._id">
-                        <q-checkbox
-                          :value="item.checked || false"
-                          @input="
-                            setServiceCheckedForService(
-                              props.pageIndex,
-                              item._id,
-                              !item.checked
-                            )
-                          "
-                        />
-                        <span> {{ services[item.service] }} </span>
-                        <span>
-                          <q-input
-                            dense
-                            readonly
-                            style="width:150px;"
-                            v-model="item.prix"
-                            type="number"
-                            outlined
-                            label="Prix (TND) "
-                          >
-                            <template v-slot:prepend>
-                              <div class="row items-center all-pointer-events">
-                                <q-icon
-                                  class="q-mr-xs"
-                                  color="secondary"
-                                  size="16px"
-                                  name="attach_money"
-                                />
-                              </div>
-                            </template>
-                          </q-input>
+                        <span v-if="services[item.service]">
+                          <q-checkbox
+                            :value="item.checked || false"
+                            @input="
+                              setServiceCheckedForService(
+                                props.pageIndex,
+                                item._id,
+                                !item.checked
+                              )
+                            "
+                          />
+
+                          <span> {{ services[item.service] }} </span>
+                          <span>
+                            <q-input
+                              dense
+                              readonly
+                              style="width:150px;"
+                              v-model="item.prix"
+                              type="number"
+                              outlined
+                              label="Prix (TND) "
+                            >
+                              <template v-slot:prepend>
+                                <div
+                                  class="row items-center all-pointer-events"
+                                >
+                                  <q-icon
+                                    class="q-mr-xs"
+                                    color="secondary"
+                                    size="16px"
+                                    name="attach_money"
+                                  />
+                                </div>
+                              </template>
+                            </q-input>
+                          </span>
                         </span>
                       </span>
                     </q-scroll-area>

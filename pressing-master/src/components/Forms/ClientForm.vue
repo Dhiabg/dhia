@@ -2,8 +2,7 @@
   <q-card class="mydialog">
     <q-form
       class="q-pa-md bg-white text-black"
-      @submit.prevent="onAdd"
-      @submit="onEdit"
+      @submit="client ? onEdit() : onAdd()"
       ref="myForm"
     >
       <br />
@@ -244,9 +243,10 @@
             style="width:160px;margin-left:-40px"
             v-model.trim="clientCopy.code_postal"
             label="Code postal"
-            lazy-rules
             dense
-            :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+            mask="####"
+            lazy-rules
+            :rules="[val => (val && val.length === 4) || 'Champ incorrect !!']"
           >
             <template v-slot:prepend>
               <div class="row items-center all-pointer-events">
@@ -292,7 +292,7 @@
             v-model="clientCopy.telephone"
             label=""
             lazy-rules
-            :rules="[val => (val && val.length === 8) || 'Champ vide !!']"
+            :rules="[val => (val && val.length === 8) || 'Champ incorrect !!']"
           >
             <template v-slot:label>
               <div class="row items-center all-pointer-events">
@@ -381,51 +381,81 @@ export default {
       genreOptions: ["Homme", "Femme"],
       etatOptions: ["Actif", "Inactif"],
       clientCopy: {},
+      clients: [],
       selectedCopy: {}
     };
   },
 
   methods: {
     dateOption(date) {
-      return date >= "1920/01/01" && date <= "2018/01/01";
+      return date >= "1920/01/01" && date <= "2010/01/01";
     },
     async onAdd() {
-      let year = this.clientCopy.date_naissance;
-      let y = year.getYear();
-      console.log("year : ", y);
-      // this.$refs.myForm.validate().then(async success => {
-      //   if (success) {
-      //     try {
-      //       let res = await this.$axios.post(`/client/`, {
-      //         ...this.clientCopy
-      //       });
-      //       window.location.reload(true);
-
-      //       this.$emit("updated");
-      //       await this.getAll();
-      //     } catch {
-      //       return this.$q.notify({
-      //         color: "red",
-      //         message: "Email deja utilisé"
-      //       });
-      //     }
-      //   }
-      // });
-    },
-    async onEdit() {
       this.$refs.myForm.validate().then(async success => {
         if (success) {
           try {
+            this.clientCopy.email = this.clientCopy.email.toLowerCase();
+
+            let res = await this.$axios.post(`/client/`, {
+              ...this.clientCopy
+            });
+            //  window.location.reload(true);
+            return (
+              this.$q.notify({
+                color: "green",
+                message: "Client ajouté avec succées"
+              }),
+              this.$emit("updated"),
+              await this.getAll(),
+              await this.onCancel()
+            );
+          } catch {
+            return this.$q.notify({
+              color: "red",
+              message: "Email deja utilisé"
+            });
+          }
+        }
+      });
+    },
+    async getAll() {
+      let res = await this.$axios.get("/client");
+      this.clients = res.data;
+    },
+    async onEdit() {
+      this.clientCopy.email = this.clientCopy.email.toLowerCase();
+
+      let test = 0;
+      this.$refs.myForm.validate().then(async success => {
+        if (success) {
+          // try {
+          this.clients.forEach(el => {
+            if (
+              el._id != this.clientCopy._id &&
+              el.email === this.clientCopy.email
+            ) {
+              test = test + 1;
+            }
+          });
+          if (test === 0) {
             let res = await this.$axios.patch(
               `/client/update/${this.client._id}`,
               {
                 ...this.clientCopy
               }
             );
-            window.location.reload(true);
+            return (
+              this.$q.notify({
+                color: "green",
+                message: "Modification avec succées"
+              }),
+              this.$emit("updated"),
+              //window.location.reload(true);
 
-            await this.$emit("updated");
-          } catch {
+              await this.getAll(),
+              this.onCancel()
+            );
+          } else {
             return this.$q.notify({
               color: "red",
               message: "Email deja utilisé"
@@ -438,8 +468,9 @@ export default {
       this.$emit("closeDialog");
     }
   },
-  mounted() {
+  async mounted() {
     this.clientCopy = { ...this.client };
+    await this.getAll();
   }
 };
 </script>

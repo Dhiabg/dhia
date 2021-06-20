@@ -1,7 +1,5 @@
 <template>
   <q-page class="q-pa-lg">
-    <!-- <q-card> -->
-    <!-- <q-card-section class="bg-primary text-white"> -->
     <div>
       <h4>Gestion des services</h4>
     </div>
@@ -56,7 +54,7 @@
           <q-avatar icon="delete_outline" color="white" text-color="red" />
 
           <span class="q-ml-sm"
-            >êtes-vous sûr de vouloir supprimer les services sélectionnées ?
+            >êtes-vous sûr de vouloir supprimer le service sélectionné ?
           </span>
         </q-card-section>
 
@@ -98,15 +96,16 @@
       :columns="columns"
       row-key="_id"
       grid
-      selection="multiple"
+      selection="single"
       :selected.sync="selected"
       :pagination.sync="pagination"
       hide-pagination
+      hide-bottom
       hide-header
     >
       <template #item="props">
         <div
-          style="margin-left:50px"
+          style="margin-bottom:250px;margin-left:70px"
           class="mycard"
           :style="props.selected ? 'transform: scale(0.95);' : ''"
         >
@@ -172,43 +171,6 @@
                     </q-item-section>
                   </q-item>
                   <q-separator horizontal />
-                  <!-- <q-item>
-                    <q-item-section avatar>
-                      <q-item-label caption>Description</q-item-label>
-                    </q-item-section>
-                    <q-separator vertical />
-                    <q-item-section>
-                      <q-item-label class="absolute-center">
-                        {{ props.row.description }}</q-item-label
-                      >
-                    </q-item-section>
-                  </q-item> -->
-                  <!-- description list -->
-                  <!-- <q-card-actions>
-                    <label caption>
-                      Description
-                    </label>
-
-                    <q-space />
-
-                    <q-btn
-                      color="grey"
-                      round
-                      flat
-                      dense
-                      :icon="
-                        expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
-                      "
-                      @click="expanded = !expanded"
-                    />
-                  </q-card-actions>
-                  <q-slide-transition>
-                    <div v-show="expanded">
-                      <q-card-section class="text-subitle2">
-                        {{ props.row.description }}
-                      </q-card-section>
-                    </div>
-                  </q-slide-transition> -->
                 </q-list>
               </q-card>
             </q-list>
@@ -217,19 +179,14 @@
       </template>
     </q-table>
 
-    <!--  Carte   -->
-
-    <!--<q-data-table
-      selection="single"
-      :data="services"
-      row-key="_id"
-      :columns="columns"
-      :selected.sync="selected"
-    > -->
     <div class="q-pa-md row items-start q-gutter-md"></div>
 
     <q-dialog v-model="editDialog" v-if="editDialog">
-      <service-form :service="selected[0]" @updated="getAll" />
+      <service-form
+        :service="selected[0]"
+        @updated="getAll"
+        @closeDialog="editDialog = false"
+      />
     </q-dialog>
     <div class="absolute-bottom q-mt-md">
       <q-pagination
@@ -250,7 +207,7 @@ export default {
   data() {
     return {
       pagination: {
-        rowsPerPage: 6,
+        rowsPerPage: 5,
         page: 1
       },
       filter: "",
@@ -320,26 +277,22 @@ export default {
       }
     },
     async deleteService() {
-      await this.selected.forEach(element => {
-        this.$axios.delete(`/service/delete/${element._id}`);
-      });
-      //  window.location.reload(true);
-
-      // let res = await this.$axios.delete(
-      //   `/service/delete/${this.selected[0]._id}`
-      // );
-      // if (res.status === 204) {
-      //   return (
-      //     this.$q.notify({
-      //       color: "red",
-      //       message: "Service Supprimé"
-      //     }),
-      // this.$emit("updated");
-      window.location.reload(true);
-
-      // );
-      // }
+      // await this.selected.forEach(element => {
+      //   this.$axios.delete(`/categorie/delete/${element._id}`);
+      // });
+      let res = await this.$axios.delete(
+        `/service/delete/${this.selected[0]._id}`
+      );
+      return (
+        this.$q.notify({
+          color: "red",
+          message: "Service supprimée"
+        }),
+        await this.getAll(),
+        (this.selected = [])
+      );
     },
+
     EditService() {
       console.log(this.selected);
       if (!this.selected[0]._id) {

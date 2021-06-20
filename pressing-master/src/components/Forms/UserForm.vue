@@ -2,8 +2,7 @@
   <q-card class="mydialog">
     <q-form
       class="q-pa-md bg-white text-black"
-      @submit="creerGerant()"
-      @submit.prevent="onEdit()"
+      @submit="user ? onEdit() : creerGerant()"
       ref="myForm"
     >
       <br />
@@ -294,8 +293,9 @@
             style="width:160px;margin-left:-40px"
             v-model.trim="userCopy.code_postal"
             label="Code postal"
+            mask="####"
             lazy-rules
-            :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+            :rules="[val => (val && val.length === 4) || 'Champ incorrect !!']"
           >
             <template v-slot:prepend>
               <div class="row items-center all-pointer-events">
@@ -341,7 +341,7 @@
             v-model="userCopy.telephone"
             label=""
             lazy-rules
-            :rules="[val => (val && val.length === 8) || 'Champ vide !!']"
+            :rules="[val => (val && val.length === 8) || 'Champ incorrect !!']"
           >
             <template v-slot:label>
               <div class="row items-center all-pointer-events">
@@ -434,15 +434,30 @@ export default {
       name: "",
       isPwd: true,
       userCopy: {},
-      confirmPassword: null
+      confirmPassword: null,
+      utilisateurs: [],
+      gerants: []
     };
   },
 
   methods: {
+    async getAll() {
+      let res = await this.$axios.get("/utilisateur");
+      this.utilisateurs = res.data;
+      this.utilisateurs.forEach(element => {
+        if (element.email != "administrateur@admin.com") {
+          this.gerants.push(element);
+        }
+      });
+      this.utilisateurs = this.gerants;
+    },
+
     dateOption(date) {
       return date >= "1920/01/01" && date <= "2010/01/01";
     },
     async creerGerant() {
+      this.userCopy.email = this.userCopy.email.toLowerCase();
+
       this.$refs.myForm.validate().then(async success => {
         if (success) {
           if (this.userCopy.password != this.confirmPassword) {
@@ -458,17 +473,15 @@ export default {
                 this.userCopy
               );
               console.log(response);
-              // let token = response.data.token;
-              // if (token) {
-              //   localStorage.setItem("jwt", token);
-              //this.$router.push("/");
-              console.log("succes");
+
               return (
                 this.$q.notify({
-                  color: "warning",
+                  color: "green",
                   message: "succes, gérant créer"
                 }),
-                // this.$router.push("/login")
+                // this.$emit("updated"),
+                // await this.getAll(),
+                // await this.onCancel()
                 window.location.reload(true)
               );
             } catch {
@@ -481,56 +494,43 @@ export default {
         }
       });
     },
-    async onAdd() {
-      //  this.$refs.myForm.validate().then(async success => {
-      ////    if (success) {
-      ////    let res = await this.$axios.post(`/client/`, {
-      //...this.clientCopy
-      //  });
-      //  console.log(res);
-      //   }
-      //});
-      //} else {
-      this.$refs.myForm.validate().then(async success => {
-        if (success) {
-          try {
-            let res = await this.$axios.post(`/utilisateur/`, {
-              ...this.userCopy
-            });
 
-            window.location.reload(true);
-          } catch {
-            return this.$q.notify({
-              color: "red",
-              message: "Email deja utilisé"
-            });
-          }
-        }
-      });
-    },
     async onEdit() {
-      //  this.$refs.myForm.validate().then(async success => {
-      ////    if (success) {
-      ////    let res = await this.$axios.post(`/client/`, {
-      //...this.clientCopy
-      //  });
-      //  console.log(res);
-      //   }
-      //});
-      //} else {
+      this.userCopy.email = this.userCopy.email.toLowerCase();
+
+      let test = 0;
       this.$refs.myForm.validate().then(async success => {
         if (success) {
-          try {
+          // try {
+          this.utilisateurs.forEach(el => {
+            if (
+              el._id != this.userCopy._id &&
+              el.email === this.userCopy.email
+            ) {
+              test = test + 1;
+            }
+          });
+          //  console.log(test);
+          if (test === 0) {
             let res = await this.$axios.patch(
-              `/utilisateur/update/${this.user._id}`,
+              `/utilisateur/update/${this.userCopy._id}`,
               {
                 ...this.userCopy
               }
             );
+
+            // return (
+            //   this.$q.notify({
+            //     color: "green",
+            //     message: "Modification avec succées"
+            //   }),
+            // this.$emit("updated"),
             window.location.reload(true);
 
-            this.$emit("updated");
-          } catch {
+            //  await this.getAll(),
+            //  this.onCancel()
+            // );
+          } else {
             return this.$q.notify({
               color: "red",
               message: "Email deja utilisé"
@@ -544,8 +544,9 @@ export default {
       this.$emit("closeDialog");
     }
   },
-  mounted() {
+  async mounted() {
     this.userCopy = { ...this.user };
+    await this.getAll();
   }
 };
 </script>

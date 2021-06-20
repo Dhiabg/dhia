@@ -1,6 +1,10 @@
 <template>
   <q-card class="mydialog">
-    <q-form class="q-pa-md bg-white text-black" @submit="onAdd()" ref="myForm">
+    <q-form
+      class="q-pa-md bg-white text-black"
+      @submit="produit ? onEdit() : onAdd()"
+      ref="myForm"
+    >
       <br />
       <label class="title2">
         Formulaire produit
@@ -29,6 +33,7 @@
           style="width:500px"
           outlined
           dense
+          type="url"
           color="secondary"
           v-model.trim="produitCopy.imageUrl"
           label="Image URL"
@@ -115,7 +120,7 @@
               :key="categ._id"
               :value="categ._id"
             >
-              <h4 v-if="categ.etat === 'Actif'">{{ categ.nom }}</h4>
+              <span v-if="categ.etat === 'Actif'">{{ categ.nom }}</span>
             </option>
           </select>
         </q-item-section>
@@ -138,7 +143,7 @@
         </q-item-section>
       </q-item> -->
       <br />
-      <q-item>
+      <q-item v-if="!this.produit">
         <q-item-section>
           <label class="title"> Service(s) :</label>
         </q-item-section>
@@ -165,59 +170,49 @@
             </span>
           </span>
         </q-item-section>
-        <!-- <q-item-section>
-          <q-input
-            v-model="h"
-            type="number"
-            class="inputQte"
-            outlined
-            label="Prix "
-          />
-        </q-item-section> -->
       </q-item>
-      <!-- <q-item>
-        <q-item-section>
-          <label class="title"> Service :</label>
-        </q-item-section>
-        <q-item-section>
-          <select v-model="produitCopy.service">
-            <option v-for="serv in services" :key="serv._id" :value="serv._id">
-              {{ serv.nom }}
-            </option>
-          </select>
-        </q-item-section>
-      </q-item> -->
+      <!------------------------------------->
+      <q-item v-if="this.produit">
+        <div>
+          <label class="title">
+            cochez si vous voulez rechoisir <br />
+            le(s) service(s) de ce produit :
+          </label>
+          <q-checkbox v-model="serv_checked" />
+        </div>
+        <br />
+        <div v-if="serv_checked">
+          <!-- <q-item-section>
+            <label class="title"> choisir le(s) Service(s) :</label>
+          </q-item-section> -->
+          <q-item-section>
+            <span v-for="item in services" :key="item._id">
+              <input
+                v-if="item.etat === 'Actif'"
+                type="checkbox"
+                :value="item._id"
+                v-model="checkedServices"
+              />
+              <span v-if="item.etat === 'Actif'"> {{ item.nom }} </span>
+              <span>
+                <q-input
+                  dense
+                  min="0"
+                  step="0.5"
+                  style="width:100px;"
+                  v-model="checking[item._id]"
+                  type="number"
+                  outlined
+                  label="Prix "
+                />
+              </span>
+            </span>
+          </q-item-section>
+        </div>
+      </q-item>
+      <!---------------------------->
       <br />
 
-      <!-- <q-item>
-        <q-item-section>
-          <label class="title"> Prix :</label>
-        </q-item-section>
-        <q-item-section>
-          <q-input
-            outlined
-            dense
-            color="secondary"
-            type="number"
-            style="margin-left:-105px;width:330px"
-            v-model="produitCopy.prix"
-            label="Prix (TND)"
-            lazy-rules
-            :rules="[val => (val && val.length > 0) || 'Please type something']"
-          >
-            <template v-slot:prepend>
-              <div class="row items-center all-pointer-events">
-                <q-icon
-                  class="q-mr-xs"
-                  color="secondary"
-                  size="20px"
-                  name="price_change"
-                />
-              </div>
-            </template>
-          </q-input>
-        </q-item-section>
-      </q-item> -->
       <q-item>
         <q-item-section>
           <label class="title">Etat : </label>
@@ -266,7 +261,7 @@
           label="confirmer la modification"
           icon-right="assignment_turned_in"
           glossy
-          @click="onEdit()"
+          type="submit"
           color="secondary"
         />
 
@@ -297,7 +292,9 @@ export default {
       produitCopy: {},
       checkedServices: [],
       checking: [],
-      ServProd: []
+      ServProd: [],
+      serv_checked: false
+      // tableServices: []
     };
   },
 
@@ -339,11 +336,9 @@ export default {
               let res = await this.$axios.post(`/produit/`, {
                 ...this.produitCopy
               });
-              window.location.reload(true);
+              //window.location.reload(true);
 
-              // this.$emit("updated");
-
-              // await this.getAll();
+              this.$emit("updated"), await this.getAll(), await this.onCancel();
             } catch {
               return this.$q.notify({
                 color: "red",
@@ -369,62 +364,53 @@ export default {
       this.services = res.data;
       // console.log(this.services);
     },
-    // async onSubmit() {
-    //   this.$refs.myForm.validate().then(async success => {
-    //     if (success) {
-    //       let res = await this.$axios.post(`/products/`, {
-    //         ...this.produitCopy
-    //       });
-    //       console.log(res);
-    //     }
-    // });
-    //} else {
-    // this.$refs.myForm.validate().then(async success => {
-    //   if (success) {
-    //     let res = await this.$axios.patch(
-    //       `/produit/update/${this.produit._id}`,
-    //       {
-    //         ...this.produitCopy
-    //       }
-    //     );
-    //     this.$emit("updated");
-
-    //     if (res.status === "200") {
-    //       await this.getAll();
-    //     }
-    //   }
-    // });
-    //  }
+    async getAll() {
+      let res = await this.$axios.get("/produit");
+      this.produits = res.data;
+      //console.log(this.produits);
+    },
     async onEdit() {
-      let com = {};
-      let servprod = [];
-      for (let i in this.checking) {
-        com.service = i;
-        com.prix = this.checking[i];
-        servprod.push(com);
-        com = {};
+      if (this.serv_checked) {
+        let com = {};
+        let servprod = [];
+        for (let i in this.checking) {
+          com.service = i;
+          com.prix = this.checking[i];
+          servprod.push(com);
+          com = {};
+        }
+        // console.log("servprod :", servprod);
+        this.produitCopy.services = servprod;
       }
-      // console.log("servprod :", servprod);
-      this.produitCopy.services = servprod;
+      let test = 0;
 
       this.$refs.myForm.validate().then(async success => {
         if (success) {
-          try {
+          //try {
+          this.produits.forEach(el => {
+            if (
+              el._id != this.produitCopy._id &&
+              el.code === this.produitCopy.code
+            ) {
+              test = test + 1;
+            }
+          });
+          if (test === 0) {
             let res = await this.$axios.patch(
               `/produit/update/${this.produit._id}`,
               {
                 ...this.produitCopy
               }
             );
-            window.location.reload(true);
-
             this.$emit("updated");
+            //window.location.reload(true);
 
             await this.getAll();
-          } catch {
+            this.onCancel();
+          } else {
             return this.$q.notify({
               color: "red",
-              message: "code deja utilisé"
+              message: "Code deja utilisé"
             });
           }
         }
@@ -447,6 +433,19 @@ export default {
     this.produitCopy = { ...this.produit };
     await this.getCat();
     await this.getServ();
+    await this.getAll();
+    // if (this.produit) {
+    //   this.produitCopy.forEach(element => {
+    //     element.services.array.forEach(el => {
+    //       this.tableServices[el.service] = el.prix;
+    //     });
+    //   });
+    //   return this.tableServices;
+    // }
+  },
+  created() {
+    // if (this.produit) {
+    // }
   }
 };
 </script>

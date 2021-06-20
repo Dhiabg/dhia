@@ -319,7 +319,11 @@
       </q-item-section>
     </q-item>
     <q-dialog v-model="editDialog" v-if="editDialog">
-      <profil-form :userdata="userdata" />
+      <profil-form
+        :userdata="userdata"
+        @updated="getUserData"
+        @closeDialog="editDialog = false"
+      />
     </q-dialog>
   </div>
 </template>
@@ -347,7 +351,7 @@ export default {
     async getUserData() {
       let res = await this.$axios.get(`/utilisateur/${this.userId}`);
       this.userdata = res.data;
-      console.log(this.userdata);
+      //console.log(this.userdata);
     },
     logUserOut() {
       localStorage.removeItem("token");
@@ -366,9 +370,9 @@ export default {
       let token = localStorage.getItem("token");
       let decoded = VueJwtDecode.decode(token);
       this.user = decoded;
-      console.log(this.user);
+      //console.log(this.user);
       this.userId = this.user._id;
-      console.log(this.userId);
+      // console.log(this.userId);
     }
   }
 };

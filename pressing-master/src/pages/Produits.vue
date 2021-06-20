@@ -52,7 +52,7 @@
           <q-avatar icon="delete_outline" color="white" text-color="red" />
 
           <span class="q-ml-sm"
-            >êtes-vous sûr de vouloir supprimer les produits sélectionnées ?
+            >êtes-vous sûr de vouloir supprimer le produit sélectionné ?
           </span>
         </q-card-section>
 
@@ -93,10 +93,11 @@
       :columns="columns"
       row-key="_id"
       grid
-      selection="multiple"
+      selection="single"
       :selected.sync="selected"
       :pagination.sync="pagination"
       hide-header
+      hide-bottom
       hide-pagination
     >
       <template #item="props">
@@ -174,7 +175,7 @@
                         v-for="item in props.row.services"
                         :key="item._id"
                       >
-                        <span>
+                        <span v-if="services[item.service]">
                           <span> {{ services[item.service] }} : </span>
                           <span> {{ item.prix }} TND </span>
                         </span>
@@ -249,35 +250,13 @@
         </div>
       </template>
     </q-table>
-    <!-- </q-page> -->
-    <!-- <q-table
-      :data="produits"
-      :columns="columns"
-      row-key="_id"
-      selection="single"
-      :selected.sync="selected"
-    >
-    </q-table>
-    <template>
-      <q-btn
-        flat
-        label="Delete"
-        color="red"
-        @click="deleteProduit"
-        :disable="!selected.length"
-      ></q-btn>
-      <q-btn
-        flat
-        label="Edit"
-        color="green"
-        @click="EditProduit"
-        :disable="!selected.length"
-      ></q-btn>
-      <q-btn flat label="Add" color="primary" @click="addProduit"></q-btn>
-    </template>-->
 
     <q-dialog v-model="editDialog" v-if="editDialog">
-      <produit-form :produit="selected[0]" @updated="getAll" />
+      <produit-form
+        :produit="selected[0]"
+        @updated="getAll"
+        @closeDialog="editDialog = false"
+      />
     </q-dialog>
     <br />
     <br />
@@ -399,7 +378,7 @@ export default {
     async getAll() {
       let res = await this.$axios.get("/produit");
       this.produits = res.data;
-      console.log(this.produits);
+      //console.log(this.produits);
     },
     async getAllServices() {
       let res = await this.$axios.get("/service");
@@ -420,11 +399,20 @@ export default {
       }
     },
     async deleteProduit() {
-      await this.selected.forEach(async element => {
-        await this.$axios.delete(`/produit/delete/${element._id}`);
-      });
-      //   this.$emit("updated");
-      window.location.reload(true);
+      // await this.selected.forEach(element => {
+      //   this.$axios.delete(`/produit/delete/${element._id}`);
+      // });
+      let res = await this.$axios.delete(
+        `/produit/delete/${this.selected[0]._id}`
+      );
+      return (
+        this.$q.notify({
+          color: "red",
+          message: "Produit supprimé"
+        }),
+        await this.getAll(),
+        (this.selected = [])
+      );
     },
     EditProduit() {
       if (!this.selected[0]._id) {

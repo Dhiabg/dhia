@@ -289,15 +289,19 @@ export default {
     },
     async onAdd() {
       this.ajoutProd();
-      if (this.commande.client && this.commande.livrer_par) {
+      if (this.commande.client) {
         this.$refs.myForm.validate().then(async success => {
           if (success) {
             let res = await this.$axios.post(`/commande`, {
               ...this.commande
             });
-            window.location.reload(true);
+            // window.location.reload(true);
             localStorage.removeItem("panier");
-
+            this.$router.push("/mes-commandes");
+            return this.$q.notify({
+              color: "green",
+              message: "Commande enregistrée avec succées"
+            });
             //this.$emit("updated");
           }
         });
@@ -325,9 +329,9 @@ export default {
     await this.getAllClients();
     await this.getAllLivreurs();
     let panier = JSON.parse(localStorage.getItem("panier"));
-    await console.log("panier :", panier);
+    // await console.log("panier :", panier);
     await this.CalculPrix();
-    console.log(this.prixTotal);
+    //  console.log(this.prixTotal);
   }
 };
 </script>

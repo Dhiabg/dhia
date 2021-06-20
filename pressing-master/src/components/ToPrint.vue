@@ -52,6 +52,10 @@
         v-for="([key, val], i) in Object.entries(toPrint)"
         :key="i"
       >
+        <td v-if="key === 'MoyenPaiement'">
+          Moyen de paiement : {{ val }} TND
+        </td>
+
         <td v-if="key === 'avance'">Prix d'avance : {{ val }} TND</td>
         <td v-if="key === 'rest'">Rest à payer : {{ val }} TND</td>
         <td v-if="key === 'prixTotal'">

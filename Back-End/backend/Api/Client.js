@@ -67,18 +67,15 @@ route.delete("/delete/:id", async (req, res) => {
 });
 
 route.patch("/update/:id", async (req, res) => {
+  // let sameEmail = await clients.find({ email: req.body.code });
+  // if (sameEmail.length >= 2) {
   try {
-    let sameEmail = await clients.find({ email: req.body.email });
-    if (sameEmail.length >= 1) {
-      return res.status(409).json({
-        message: "email already in use",
-      });
-    }
     const _id = req.params.id;
     const results = await clients.findByIdAndUpdate(_id, req.body);
     res.send(results);
   } catch (err) {
     res.status(400).send(err);
   }
+  // }
 });
 module.exports = route;

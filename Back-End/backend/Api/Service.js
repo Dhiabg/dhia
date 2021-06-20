@@ -44,14 +44,14 @@ route.delete("/delete/:id", async (req, res) => {
   res.json(result);
 });
 
-route.patch("/update/:id", async (req, res) => {
+route.put("/update/:id", async (req, res) => {
   try {
-    let sameCode = await services.find({ code: req.body.code });
-    if (sameCode.length >= 1) {
-      return res.status(409).json({
-        message: "code déja utilisé",
-      });
-    }
+    // let sameCode = await services.find({ code: req.body.code });
+    // if (sameCode.length + 1 > 2) {
+    //   return res.status(409).json({
+    //     message: "code déja utilisé",
+    //   });
+    // } else {
     const _id = req.params.id;
     const results = await services.findByIdAndUpdate(_id, req.body);
     res.send(results);

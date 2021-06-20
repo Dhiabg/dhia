@@ -133,19 +133,16 @@ route.delete("/delete/:id", async (req, res) => {
 
 //update livreur
 route.patch("/update/:id", async (req, res) => {
+  // let sameEmail = await livreurs.find({ email: req.body.code });
+  // if (sameEmail.length >= 2) {
   try {
-    let sameEmail = await livreurs.find({ email: req.body.email });
-    if (sameEmail.length >= 1) {
-      return res.status(409).json({
-        message: "email already in use",
-      });
-    }
     const _id = req.params.id;
-    const Livreurs = await livreurs.findByIdAndUpdate(_id, req.body);
-    res.send(Livreurs);
+    const results = await livreurs.findByIdAndUpdate(_id, req.body);
+    res.send(results);
   } catch (err) {
     res.status(400).send(err);
   }
+  // }
 });
 route.patch("/update-profil/:id", async (req, res) => {
   try {

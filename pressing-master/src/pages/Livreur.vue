@@ -75,7 +75,7 @@
           />
 
           <span class="q-ml-sm"
-            >êtes-vous sûr de vouloir supprimer les livreurs sélectionnées ?
+            >êtes-vous sûr de vouloir supprimer le livreur sélectionné ?
           </span>
         </q-card-section>
 
@@ -199,10 +199,18 @@
       </template>
     </div>
     <q-dialog v-model="editDialog" v-if="editDialog">
-      <livreur-form :livreur="selected[0]" @updated="getAll" />
+      <livreur-form
+        :livreur="selected[0]"
+        @updated="getAll"
+        @closeDialog="editDialog = false"
+      />
     </q-dialog>
     <q-dialog v-model="passwordDialog" v-if="passwordDialog">
-      <password-change :livreur="selected[0]" @updated="getAll" />
+      <password-change
+        :livreur="selected[0]"
+        @updated="getAll"
+        @closeDialog="editDialog = false"
+      />
     </q-dialog>
   </q-page>
 </template>
@@ -378,11 +386,16 @@ export default {
     },
 
     async deleteLivreur() {
-      await this.selected.forEach(element => {
-        this.$axios.delete(`/livreur/delete/${element._id}`);
-      });
-
-      window.location.reload(true);
+      let res = await this.$axios.delete(
+        `/livreur/delete/${this.selected[0]._id}`
+      );
+      return (
+        this.$q.notify({
+          color: "red",
+          message: "Livreur supprimé"
+        }),
+        window.location.reload(true)
+      );
     },
     EditLivreur() {
       if (!this.selected[0]._id) {

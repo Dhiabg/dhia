@@ -9,34 +9,8 @@
 
       <br />
       <br />
-      <q-item v-if="userdataCopy.isAdmin === true">
-        <q-item-section>
-          <label class="title"> Email :</label>
-        </q-item-section>
-        <q-item-section>
-          <br />
-          <q-input
-            outlined
-            dense
-            style="margin-left:-105px;width:360px"
-            color="secondary"
-            type="email"
-            v-model="userdataCopy.email"
-          >
-            <template v-slot:prepend>
-              <div class="row items-center all-pointer-events">
-                <q-icon
-                  class="q-mr-xs"
-                  color="secondary"
-                  size="20px"
-                  name="mail"
-                />
-              </div>
-            </template>
-          </q-input>
-        </q-item-section>
-      </q-item>
-      <q-item v-else>
+
+      <q-item>
         <q-item-section>
           <label class="title"> Email :</label>
         </q-item-section>
@@ -70,6 +44,7 @@
             style="margin-left:-105px;width:360px;"
             outlined
             color="secondary"
+            type="url"
             v-model="userdataCopy.imageUrl"
           >
             <template v-slot:prepend>
@@ -276,8 +251,9 @@
             dense
             v-model="userdataCopy.code_postal"
             label="Code postal"
+            mask="####"
             lazy-rules
-            :rules="[val => (val && val.length > 0) || 'Champ vide !!']"
+            :rules="[val => (val && val.length === 4) || 'Champ incorrect !!']"
           >
             <template v-slot:prepend>
               <div class="row items-center all-pointer-events">
@@ -322,7 +298,7 @@
             style="margin-left:-105px;width:360px"
             v-model="userdataCopy.telephone"
             lazy-rules
-            :rules="[val => (val && val.length === 8) || 'Champ vide !!']"
+            :rules="[val => (val && val.length === 8) || 'Champ incorrect !!']"
           >
             <template v-slot:prepend>
               <div class="row items-center all-pointer-events">
@@ -411,17 +387,15 @@ export default {
     async onEdit() {
       this.$refs.myForm.validate().then(async success => {
         if (success) {
+          this.userdataCopy.email = this.userdataCopy.email.toLowerCase();
+
           let res = await this.$axios.patch(
             `/utilisateur/update/${this.userdata._id}`,
             {
               ...this.userdataCopy
             }
           );
-          window.location.reload(true);
-
-          this.$emit("updated");
-
-          //this.getAll();
+          this.$emit("updated"), await this.getAll(), await this.onCancel();
         }
       });
     },

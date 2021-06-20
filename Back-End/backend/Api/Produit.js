@@ -69,48 +69,18 @@ route.get("/:id", async (req, res) => {
 //});
 route.patch("/update/:id", async (req, res) => {
   try {
-    let sameCode = await produits.find({ code: req.body.code });
-    if (sameCode.length >= 1) {
-      return res.status(409).json({
-        message: "code déja utilisé",
-      });
-    }
+    // let sameCode = await produits.find({ code: req.body.code });
+    // if (sameCode.length >= 1) {
+    //   return res.status(409).json({
+    //     message: "code déja utilisé",
+    //   });
+    // } else {
     const _id = req.params.id;
-    const prod = await produits.findByIdAndUpdate(_id, req.body);
-    res.send(prod);
+    const results = await produits.findByIdAndUpdate(_id, req.body);
+    res.send(results);
   } catch (err) {
     res.status(400).send(err);
   }
 });
-
-// route.put("/put/:id", async (req, res) => {
-//   try {
-//     let produit = await produits.findByIdAndUpdate(
-//       { _id: req.params.id },
-//       {
-//         $set: {
-//           code: req.body.code,
-//           nom: req.body.nom,
-//           description: req.body.description,
-//           imageUrl: req.body.imageUrl,
-//           etat: req.body.etat,
-//           prix: req.body.prix,
-//           categorie: req.body.categorieID,
-//           service: req.body.serviceID,
-//         },
-//       },
-//       { upsert: true }
-//     );
-//     res.json({
-//       success: true,
-//       updatedProduit: produit,
-//     });
-//   } catch (err) {
-//     res.status(500).json({
-//       success: false,
-//       message: err.message,
-//     });
-//   }
-// });
 
 module.exports = route;

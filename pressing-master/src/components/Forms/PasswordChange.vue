@@ -177,11 +177,21 @@ export default {
                 ...this.userCopy
               }
             );
-            window.location.reload(true);
+            return (
+              this.$q.notify({
+                color: "positive",
+                message: "Changement de Mot de passe avec succées"
+              }),
+              // this.$emit("updated"),
+              // await this.getAll(),
+              // await this.onCancel()
+              window.location.reload(true)
+            );
           }
         });
       }
     },
+
     async onEditLivreur() {
       if (this.password != this.confirmPassword) {
         return this.$q.notify({
@@ -199,7 +209,13 @@ export default {
                 ...this.livreurCopy
               }
             );
-            window.location.reload(true);
+            return (
+              this.$q.notify({
+                color: "positive",
+                message: "Changement de Mot de passe avec succées"
+              }),
+              window.location.reload(true)
+            );
           }
         });
       }

@@ -100,6 +100,17 @@
                 size="sm"
                 no-caps
               />
+              <q-btn
+                @click="
+                  update_dialog = true;
+                  productToUpdate = props.row;
+                "
+                style="margin-left:5px"
+                color="green"
+                icon="check"
+                size="sm"
+                no-caps
+              />
             </q-td>
             <to-print
               :toPrint="props.row"
@@ -107,22 +118,6 @@
               :id="props.row._id"
               :key="props.row._id"
             />
-            <!-- <q-td key="actions" :props="props">
-              <q-btn
-                color="blue"
-                label="Update"
-                @click="editItem(props.row)"
-                size="sm"
-                no-caps
-              ></q-btn>
-              <q-btn
-                color="red"
-                label="Delete"
-                @click="deleteItem(props.row)"
-                size="sm"
-                no-caps
-              ></q-btn>
-            </q-td> -->
           </q-tr>
         </template>
         <template v-slot:top-right>
@@ -178,6 +173,44 @@
         :produit="productToShow"
         @closeDialog="show_dialog = false"
       />
+    </q-dialog>
+    <q-dialog v-model="update_dialog">
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar
+            icon="reorder"
+            size="70px"
+            color="white"
+            text-color="secondary"
+          />
+
+          <span class="q-ml-sm"
+            >êtes-vous sûr que le client a pris son commande en payant le prix
+            total ?
+          </span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            dense
+            rounded
+            flat
+            label="Annuler"
+            color="red-4"
+            v-close-popup
+          />
+          <q-btn
+            glossy
+            dense
+            no-caps
+            icon-right="check"
+            @click="updateCommande(productToUpdate)"
+            label="Confirmer"
+            color="green"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
     </q-dialog>
     <q-dialog v-model="delete_dialog">
       <q-card>
@@ -253,6 +286,7 @@ export default {
       // Preview Modal
       productToShow: null,
       productToDelete: null,
+      productToUpdate: null,
       show_dialog: false,
       //
       pagination: {
@@ -268,7 +302,7 @@ export default {
       PrenomClients: [],
       NomLivreurs: [],
       PrenomLivreurs: [],
-
+      update_dialog: false,
       confirm: false,
       columns: [
         {
@@ -465,12 +499,32 @@ export default {
       if (res.status === 200) {
         return (
           this.$q.notify({
-            color: "warning",
+            color: "red",
             message: "Commande Supprimé"
           }),
-          window.location.reload(true)
+          await this.getAll()
+
+          // window.location.reload(true)
         );
       }
+    },
+    async updateCommande(Commandedata) {
+      Commandedata.etatLivraison = "Livrée";
+      Commandedata.etatPaiement = "Payée";
+      let res = await this.$axios.patch(
+        `/commande/update/${Commandedata._id}`,
+        {
+          ...Commandedata
+        }
+      );
+      return (
+        this.$q.notify({
+          color: "green",
+          message: "Commande confirmer"
+        }),
+        this.getAll()
+        //window.location.reload(true)
+      );
     }
   },
   computed: {

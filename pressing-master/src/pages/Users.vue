@@ -74,7 +74,7 @@
           />
 
           <span class="q-ml-sm"
-            >êtes-vous sûr de vouloir supprimer les gérants sélectionnées ?
+            >êtes-vous sûr de vouloir supprimer le gérant sélectionné ?
           </span>
         </q-card-section>
 
@@ -114,7 +114,7 @@
           :data="utilisateurs"
           :columns="columns"
           row-key="_id"
-          selection="multiple"
+          selection="single"
           :selected.sync="selected"
           :pagination.sync="pagination"
           hide-pagination
@@ -200,10 +200,14 @@
     </div>
 
     <q-dialog v-model="editDialog" v-if="editDialog">
-      <user-form :user="selected[0]" @updated="getAll" />
+      <user-form
+        :user="selected[0]"
+        @updated="getAll()"
+        @closeDialog="editDialog = false"
+      />
     </q-dialog>
     <q-dialog v-model="passwordDialog" v-if="passwordDialog">
-      <password-change :user="selected[0]" @updated="getAll" />
+      <password-change :user="selected[0]" @closeDialog="editDialog = false" />
     </q-dialog>
   </q-page>
 </template>
@@ -254,6 +258,7 @@ export default {
       selected: [],
       user: [],
       userdata: [],
+      gerants: [],
       passwordDialog: false,
       userId: null,
       columns: [
@@ -373,6 +378,12 @@ export default {
     async getAll() {
       let res = await this.$axios.get("/utilisateur");
       this.utilisateurs = res.data;
+      this.utilisateurs.forEach(element => {
+        if (element.email != "administrateur@admin.com") {
+          this.gerants.push(element);
+        }
+      });
+      this.utilisateurs = this.gerants;
     },
     addUser() {
       if (this.selected[0]) {
@@ -386,19 +397,21 @@ export default {
       }
     },
     async deleteUser() {
-      await this.selected.forEach(element => {
-        this.$axios.delete(`/utilisateur/delete/${element._id}`);
-      });
+      let res = await this.$axios.delete(
+        `/utilisateur/delete/${this.selected[0]._id}`
+      );
+      return (
+        this.$q.notify({
+          color: "red",
+          message: "Gérant supprimé"
+        }),
+        window.location.reload(true)
 
-      window.location.reload(true);
+        // await this.getAll(),
+        // (this.selected = [])
+      );
     },
     EditUser() {
-      if (!this.selected[0]._id) {
-        return this.$q.notify({
-          color: "warning",
-          message: "no utilisateurs selected"
-        });
-      }
       this.editDialog = true;
     }
   },
@@ -408,7 +421,7 @@ export default {
     }
   },
   watch: {},
-  async created() {
+  async mounted() {
     await this.getAll();
     await this.getUser();
     await this.getUserData();
