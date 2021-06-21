@@ -153,11 +153,11 @@ export default {
       return bcrypt.hashSync(password, salt);
     },
     addUser() {
-      console.log(this.encryptPassword(this.password));
+      // console.log(this.encryptPassword(this.password));
       this.userCopy.password = this.encryptPassword(this.password);
     },
     addLivreur() {
-      console.log(this.encryptPassword(this.password));
+      // console.log(this.encryptPassword(this.password));
       this.livreurCopy.password = this.encryptPassword(this.password);
     },
     async onEditGerant() {

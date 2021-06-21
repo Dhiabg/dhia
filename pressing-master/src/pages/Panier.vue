@@ -339,7 +339,7 @@ export default {
 
     getPanier() {
       this.Panier = JSON.parse(localStorage.getItem("panier"));
-      return console.log("Panier :", this.Panier);
+      // return console.log("Panier :", this.Panier);
     }
   },
 

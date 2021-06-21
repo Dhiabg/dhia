@@ -227,7 +227,7 @@ export default {
               test = test + 1;
             }
           });
-          console.log(test);
+          // console.log(test);
           if (test === 0) {
             let res = await this.$axios.put(
               `/service/update/${this.service._id}`,

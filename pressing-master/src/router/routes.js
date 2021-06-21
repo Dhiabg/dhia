@@ -91,7 +91,7 @@ const routes = [
   // but you can also remove it
   {
     path: "*",
-    redirect: "/profil",
+    redirect: "/Profile",
     meta: {
       requiresAuth: true
     }
@@ -107,10 +107,10 @@ const routes = [
         component: () => import("src/pages/auth/LoginUser.vue")
       },
 
-      {
-        path: "/register",
-        component: () => import("src/pages/auth/RegisterUser.vue")
-      },
+      // {
+      //   path: "/register",
+      //   component: () => import("src/pages/auth/RegisterUser.vue")
+      // },
       {
         path: "/Profile",
         alias: "/",

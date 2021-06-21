@@ -252,7 +252,7 @@ export default {
     }
   },
   async mounted() {
-    console.log("produits", this.produit);
+    //  console.log("produits", this.produit);
     // this.produitCommande = { ...this.produit };
     // console.log(this.produitCommande);
     await this.getAllServices();

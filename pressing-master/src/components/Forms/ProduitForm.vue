@@ -326,7 +326,7 @@ export default {
         servprod.push(com);
         com = {};
       }
-      console.log("servprod :", servprod);
+      // console.log("servprod :", servprod);
       this.produitCopy.services = servprod;
       if (this.produitCopy.categorie && this.produitCopy.services.length > 0) {
         //  this.produitCopy.service = this.checkedServices;

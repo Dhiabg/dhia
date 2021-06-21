@@ -122,7 +122,7 @@ export default {
         localStorage.setItem("token", token);
 
         if (token) {
-          console.log("acces, token: ", token);
+          // console.log("acces, token: ", token);
           return (
             this.$q.notify({
               color: "green",

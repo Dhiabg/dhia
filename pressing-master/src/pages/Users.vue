@@ -366,9 +366,9 @@ export default {
       let token = localStorage.getItem("token");
       let decoded = VueJwtDecode.decode(token);
       this.user = decoded;
-      console.log("user : ", this.user);
+      // console.log("user : ", this.user);
       this.userId = this.user._id;
-      console.log("user id : ", this.userId);
+      //console.log("user id : ", this.userId);
     },
     async getUserData() {
       let res = await this.$axios.get(`/utilisateur/${this.userId}`);

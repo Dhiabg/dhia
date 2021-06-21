@@ -194,7 +194,7 @@ export default {
           el.quantity = 1;
         });
 
-        console.log(this.panier);
+        //  console.log(this.panier);
         localStorage.setItem("panier", JSON.stringify(this.panier));
         return this.$q.notify({
           color: "green",
@@ -221,12 +221,12 @@ export default {
     async getServices() {
       let res = await this.$axios.get("/service");
       this.serv = res.data;
-      console.log("Services :", this.serv);
+      //  console.log("Services :", this.serv);
     },
     async getCategories() {
       let res = await this.$axios.get("/categorie");
       this.cat = res.data;
-      console.log("Categories :", this.cat);
+      //  console.log("Categories :", this.cat);
     },
     async getAllCategories() {
       let res = await this.$axios.get("/categorie");
@@ -239,7 +239,7 @@ export default {
     async getAll() {
       let res = await this.$axios.get("/produit");
       this.produits = res.data;
-      console.log("Produits :", this.produits);
+      // console.log("Produits :", this.produits);
     },
     async getAllServices() {
       let res = await this.$axios.get("/service");
@@ -281,7 +281,7 @@ export default {
     await this.getAllCategories();
     await this.getCategories();
     await this.getPanier();
-    await console.log("panier : ", this.panier);
+    // await console.log("panier : ", this.panier);
   }
 };
 </script>
